@@ -20,10 +20,9 @@ class AuthRepositoryImpl @Inject constructor(
 
     override suspend fun signInWithGoogle(context: Context): Result<FirebaseUser> {
         return try {
-            // 1. Configurar opción de Google ID (Pega aquí tu Web Client ID)
             val googleIdOption = GetGoogleIdOption.Builder()
                 .setFilterByAuthorizedAccounts(false)
-                .setServerClientId("TU_WEB_CLIENT_ID_AQUI")
+                .setServerClientId("304279380132-4j6dmssij24ebbs668sqc96m4e5lh2ag.apps.googleusercontent.com")
                 .setAutoSelectEnabled(true)
                 .build()
 
@@ -31,11 +30,9 @@ class AuthRepositoryImpl @Inject constructor(
                 .addCredentialOption(googleIdOption)
                 .build()
 
-            // 2. Lanzar el Bottom Sheet nativo
             val result = credentialManager.getCredential(context, request)
             val credential = result.credential
 
-            // 3. Intercambiar Token de Google por Credencial de Firebase
             if (credential is CustomCredential && credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL) {
                 val googleIdTokenCredential = GoogleIdTokenCredential.createFrom(credential.data)
                 val firebaseAuthCredential = GoogleAuthProvider.getCredential(googleIdTokenCredential.idToken, null)
