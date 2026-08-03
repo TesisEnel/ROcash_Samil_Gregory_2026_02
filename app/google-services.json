@@ -12,7 +12,20 @@
           "package_name": "ucne.edu.rocash"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "304279380132-r65ufubf78o1jmfedm806cg287vfhm5f.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "ucne.edu.rocash",
+            "certificate_hash": "b673059a4967a00bfc5f940445ac4c2b43df8932"
+          }
+        },
+        {
+          "client_id": "304279380132-4j6dmssij24ebbs668sqc96m4e5lh2ag.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyBZyn_7y9XQGuw-VT3l0gRQrwVvl25OWyU"
@@ -20,7 +33,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "304279380132-4j6dmssij24ebbs668sqc96m4e5lh2ag.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }
