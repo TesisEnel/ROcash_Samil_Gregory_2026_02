@@ -1,7 +1,6 @@
 package ucne.edu.rocash.data.local.entity
 
-import androidx.room3.Entity
-import androidx.room3.PrimaryKey
+import androidx.room.Entity
 
 @Entity(tableName = "hoja_ruta")
 data class HojaRutaEntity(
