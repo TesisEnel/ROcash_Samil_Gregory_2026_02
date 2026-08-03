@@ -1,7 +1,9 @@
 package ucne.edu.rocash.data.local.database
 
-import androidx.room3.Database
-import androidx.room3.RoomDatabase
+import androidx.room.Database
+import androidx.room.RoomDatabase
+
+
 import ucne.edu.rocash.data.local.dao.RoCashDao
 import ucne.edu.rocash.data.local.entity.AgenteVentasEntity
 import ucne.edu.rocash.data.local.entity.EstacionVentasEntity

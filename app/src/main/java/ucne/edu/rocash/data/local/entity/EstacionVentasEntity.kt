@@ -1,8 +1,8 @@
 package ucne.edu.rocash.data.local.entity
-import androidx.room3.ColumnInfo
-import androidx.room3.Entity
-import androidx.room3.ForeignKey
-import androidx.room3.PrimaryKey
+import androidx.room.ColumnInfo
+import androidx.room.Entity
+import androidx.room.ForeignKey
+import androidx.room.PrimaryKey
 
 @Entity(
     tableName = "estacion_ventas",
@@ -16,7 +16,7 @@ import androidx.room3.PrimaryKey
     ]
 )
 data class EstacionVentasEntity(
-    @PrimaryKey(autoGenerate = true) val id: Int = 0,
+    @PrimaryKey(autoGenerate = true) val id: String = "0",
     val nombre: String,
     val direccion: String,
     @ColumnInfo(index = true) val agenteId: Int
