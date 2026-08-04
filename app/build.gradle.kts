@@ -37,33 +37,33 @@ android {
         compose = true
     }
 }
+
 dependencies {
-    implementation(platform(libs.androidx.compose.bom))
+    // AndroidX Core & Lifecycle
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
-    implementation(libs.androidx.compose.material3)
+
+    // Compose
+    implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.ui.tooling.preview)
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.compose.material3)
 
-    // Room
-    implementation(libs.androidx.room.common.jvm)
-    implementation(libs.androidx.room.ktx)
-    implementation("androidx.room:room-runtime:2.6.1")
-    ksp("androidx.room:room-compiler:2.6.1")
-
-    // Navigation 3 (Type-Safe) & Serialization
+    // Navigation & Serialization
     implementation("androidx.navigation:navigation-compose:2.8.0")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
 
-    testImplementation(libs.junit)
-    androidTestImplementation(platform(libs.androidx.compose.bom))
-    androidTestImplementation(libs.androidx.compose.ui.test.junit4)
-    androidTestImplementation(libs.androidx.espresso.core)
-    androidTestImplementation(libs.androidx.junit)
-    debugImplementation(libs.androidx.compose.ui.test.manifest)
-    debugImplementation(libs.androidx.compose.ui.tooling)
+    // Room Database
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
+    ksp(libs.androidx.room.compiler)
+
+    // Hilt Dependency Injection
+    implementation("com.google.dagger:hilt-android:2.60.1")
+    implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
+    ksp("com.google.dagger:hilt-android-compiler:2.60.1")
 
     // Firebase
     implementation(platform(libs.firebase.bom))
@@ -71,17 +71,17 @@ dependencies {
     implementation(libs.firebase.auth)
     implementation(libs.kotlinx.coroutines.play.services)
 
-    // Credential Manager
+    // Credential Manager & Google ID
     implementation(libs.androidx.credentials)
     implementation(libs.androidx.credentials.play.services.auth)
     implementation(libs.googleid)
 
-    implementation("com.google.dagger:hilt-android:2.60.1")
-    implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
-    ksp("com.google.dagger:hilt-android-compiler:2.60.1")
-
-    // Room Database
-    implementation(libs.androidx.room.runtime)
-    implementation(libs.androidx.room.ktx)
-    ksp(libs.androidx.room.compiler)
+    // Testing
+    testImplementation(libs.junit)
+    androidTestImplementation(platform(libs.androidx.compose.bom))
+    androidTestImplementation(libs.androidx.compose.ui.test.junit4)
+    androidTestImplementation(libs.androidx.espresso.core)
+    androidTestImplementation(libs.androidx.junit)
+    debugImplementation(libs.androidx.compose.ui.test.manifest)
+    debugImplementation(libs.androidx.compose.ui.tooling)
 }
