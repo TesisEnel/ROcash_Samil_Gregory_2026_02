@@ -16,8 +16,8 @@ import androidx.room.PrimaryKey
     ]
 )
 data class EstacionVentasEntity(
-    @PrimaryKey(autoGenerate = true) val id: String = "0",
+    @PrimaryKey val id: String,
     val nombre: String,
     val direccion: String,
-    @ColumnInfo(index = true) val agenteId: Int
+    @ColumnInfo(index = true) val agenteId: String
 )

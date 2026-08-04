@@ -6,7 +6,7 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "agente_ventas")
 data class AgenteVentasEntity(
-    @PrimaryKey(autoGenerate = true) val id: String = "0",
+    @PrimaryKey val id: String,
     val nombre: String,
     val telefono: String,
     val deudaAcumulada: Double = 0.0

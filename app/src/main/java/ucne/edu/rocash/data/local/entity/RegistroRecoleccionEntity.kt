@@ -17,9 +17,9 @@ import androidx.room.PrimaryKey
     ]
 )
 data class RegistroRecoleccionEntity(
-    @PrimaryKey(autoGenerate = true) val id: String = "0",
-    @ColumnInfo(index = true) val hojaRutaId: Int,
-    @ColumnInfo(index = true) val estacionId: Int,
+    @PrimaryKey val id: String,
+    @ColumnInfo(index = true) val hojaRutaId: String,
+    @ColumnInfo(index = true) val estacionId: String,
     val ventaBruta: Double,
     val porcentajeCliente: Double,
     val montoEsperado: Double,
