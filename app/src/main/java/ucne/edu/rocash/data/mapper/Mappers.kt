@@ -20,6 +20,7 @@ fun HojaRutaEntity.toDomain(): HojaRuta {
 fun EstacionVentasEntity.toDomain(): EstacionVentas {
     return EstacionVentas(
         id = this.id,
+        hojaRutaId = hojaRutaId,
         nombre = this.nombre,
         direccion = this.direccion,
         agenteId = this.agenteId
@@ -38,5 +39,24 @@ fun RegistroRecoleccion.toEntity(): RegistroRecoleccionEntity {
         montoDeuda = this.montoDeuda,
         estadoVisita = this.estadoVisita.name,
         notaIncidencia = this.notaIncidencia
+    )
+}
+
+fun HojaRuta.toEntity(): HojaRutaEntity {
+    return HojaRutaEntity(
+        id = this.id,
+        recolectorId = this.recolectorId,
+        fechaCreacion = this.fechaCreacion,
+        estado = this.estado.name
+    )
+}
+
+fun EstacionVentas.toEntity(): EstacionVentasEntity {
+    return EstacionVentasEntity(
+        id = this.id,
+        hojaRutaId = hojaRutaId,
+        nombre = this.nombre,
+        direccion = this.direccion,
+        agenteId = this.agenteId
     )
 }

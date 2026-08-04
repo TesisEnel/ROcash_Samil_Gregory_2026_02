@@ -17,6 +17,7 @@ import androidx.room.PrimaryKey
 )
 data class EstacionVentasEntity(
     @PrimaryKey val id: String,
+    val hojaRutaId: String,
     val nombre: String,
     val direccion: String,
     @ColumnInfo(index = true) val agenteId: String
