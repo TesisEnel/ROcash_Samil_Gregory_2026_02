@@ -3,9 +3,9 @@ package ucne.edu.rocash.domain.model
 enum class EstadoVisita { COMPLETADA, OMITIDA }
 
 data class RegistroRecoleccion(
-    val id: String = "0",
-    val hojaRutaId: Int,
-    val estacionId: Int,
+    val id: String,
+    val hojaRutaId: String,
+    val estacionId: String,
     val ventaBruta: Double,
     val porcentajeCliente: Double,
     val montoRecolectado: Double,

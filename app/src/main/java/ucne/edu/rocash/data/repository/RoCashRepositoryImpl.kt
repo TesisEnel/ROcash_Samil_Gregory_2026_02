@@ -14,11 +14,11 @@ import javax.inject.Inject
 class RoCashRepositoryImpl @Inject constructor(
     private val dao: RoCashDao
 ) : RoCashRepository {
-    override fun obtenerHojaRutaActiva(recolectorId: Int): Flow<HojaRuta?> {
+    override fun obtenerHojaRutaActiva(recolectorId: String): Flow<HojaRuta?> {
         return dao.obtenerHojaRutaActiva(recolectorId).map { it?.toDomain() }
     }
 
-    override fun obtenerEstacionesPorRuta(hojaRutaId: Int): Flow<List<EstacionVentas>> {
+    override fun obtenerEstacionesPorRuta(hojaRutaId: String): Flow<List<EstacionVentas>> {
         return dao.obtenerTodasLasEstaciones().map { lista ->
             lista.map { it.toDomain() }
         }
@@ -28,11 +28,11 @@ class RoCashRepositoryImpl @Inject constructor(
         dao.insertarRegistroRecoleccion(registro.toEntity())
     }
 
-    override suspend fun actualizarDeudaAgente(agenteId: Int, nuevaDeuda: Double) {
+    override suspend fun actualizarDeudaAgente(agenteId: String, nuevaDeuda: Double) {
         dao.sumarDeudaAgente(agenteId, nuevaDeuda)
     }
 
-    override suspend fun cerrarHojaRuta(hojaRutaId: Int) {
+    override suspend fun cerrarHojaRuta(hojaRutaId: String) {
         dao.cerrarHojaRuta(hojaRutaId)
 
     }

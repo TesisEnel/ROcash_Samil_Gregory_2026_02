@@ -5,8 +5,8 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "hoja_ruta")
 data class HojaRutaEntity(
-    @PrimaryKey(autoGenerate = true) val id: String = "0",
-    val recolectorId: Int,
+    @PrimaryKey val id: String,
+    val recolectorId: String,
     val fechaCreacion: Long,
     val estado: String
 )

@@ -3,15 +3,16 @@ package ucne.edu.rocash.domain.usecase
 import ucne.edu.rocash.domain.model.EstadoVisita
 import ucne.edu.rocash.domain.model.RegistroRecoleccion
 import ucne.edu.rocash.domain.repository.RoCashRepository
+import java.util.UUID
 import javax.inject.Inject
 
 class ProcesarRecoleccionEstacionUseCase @Inject constructor(
     private val repository: RoCashRepository
 ) {
     suspend operator fun invoke(
-        hojaRutaId: Int,
-        estacionId: Int,
-        agenteId: Int,
+        hojaRutaId: String,
+        estacionId: String,
+        agenteId: String,
         ventaBruta: Double,
         porcentajeCliente: Double,
         montoRecolectado: Double
@@ -22,6 +23,7 @@ class ProcesarRecoleccionEstacionUseCase @Inject constructor(
         } else 0.0
 
         val registro = RegistroRecoleccion(
+            id = UUID.randomUUID().toString(),
             hojaRutaId = hojaRutaId,
             estacionId = estacionId,
             ventaBruta = ventaBruta,
