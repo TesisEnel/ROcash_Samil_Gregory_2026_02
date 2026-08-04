@@ -3,7 +3,7 @@ package ucne.edu.rocash.domain.model
 enum class EstadoVisita { COMPLETADA, OMITIDA }
 
 data class RegistroRecoleccion(
-    val id: Int = 0,
+    val id: String = "0",
     val hojaRutaId: Int,
     val estacionId: Int,
     val ventaBruta: Double,

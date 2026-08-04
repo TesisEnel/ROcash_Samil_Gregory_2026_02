@@ -3,7 +3,7 @@ package ucne.edu.rocash.domain.model
 enum class EstadoRuta { PENDIENTE, EN_PROGRESO, CERRADA }
 
 data class HojaRuta(
-    val id: Int = 0,
+    val id: String = "0",
     val recolectorId: Int,
     val fechaCreacion: Long = System.currentTimeMillis(),
     val estado: EstadoRuta,
