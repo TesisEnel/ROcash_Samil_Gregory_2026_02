@@ -43,6 +43,7 @@ fun HomeScreen(
                 state.isLoading -> {
                     CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
                 }
+
                 state.errorMessage != null -> {
                     Text(
                         text = state.errorMessage!!,
@@ -50,28 +51,48 @@ fun HomeScreen(
                         modifier = Modifier.align(Alignment.Center).padding(16.dp)
                     )
                 }
+
                 state.hojaRutaActiva == null -> {
                     Column(
                         modifier = Modifier.align(Alignment.Center),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Text("No tienes ninguna hoja de ruta activa.", style = MaterialTheme.typography.bodyLarge)
+                        Text(
+                            "No tienes ninguna hoja de ruta activa.",
+                            style = MaterialTheme.typography.bodyLarge
+                        )
                         Spacer(modifier = Modifier.height(16.dp))
-                        Button(onClick = { /* Aquí irá el intent para crear una nueva ruta */ }) {
+                        Button(
+                            onClick = { viewModel.processIntent(HomeUIEvent.CrearRutaPrueba) }
+                        ) {
                             Text("Iniciar Nueva Hoja de Ruta")
                         }
                     }
                 }
+
                 else -> {
+                    // Vista de lista de estaciones
                     LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
                         contentPadding = PaddingValues(16.dp),
                         verticalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
                         item {
                             Text(
-                                text = "Ruta Activa #${state.hojaRutaActiva?.id}",
+                                text = "Ruta Activa",
+                                style = MaterialTheme.typography.titleMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                            Text(
+                                text = "#${state.hojaRutaActiva?.id}",
                                 style = MaterialTheme.typography.titleLarge,
                                 fontWeight = FontWeight.Bold
+                            )
+                            Spacer(modifier = Modifier.height(16.dp))
+                            Text(
+                                text = "Estaciones Asignadas (${state.estaciones.size}):",
+                                style = MaterialTheme.typography.bodyLarge,
+                                fontWeight = FontWeight.SemiBold
                             )
                             Spacer(modifier = Modifier.height(8.dp))
                         }
@@ -91,17 +112,21 @@ fun HomeScreen(
     }
 }
 
-@Composable
-fun EstacionItem(estacion: EstacionVentas, onClick: () -> Unit) {
-    ElevatedCard(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { onClick() }
-    ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text(text = estacion.nombre, style = MaterialTheme.typography.titleMedium)
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(text = estacion.direccion, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+    @Composable
+    fun EstacionItem(estacion: EstacionVentas, onClick: () -> Unit) {
+        ElevatedCard(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { onClick() }
+        ) {
+            Column(modifier = Modifier.padding(16.dp)) {
+                Text(text = estacion.nombre, style = MaterialTheme.typography.titleMedium)
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = estacion.direccion,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
         }
     }
-}
