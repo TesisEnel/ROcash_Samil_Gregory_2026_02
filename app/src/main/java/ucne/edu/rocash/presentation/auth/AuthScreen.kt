@@ -13,8 +13,16 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 
 @Composable
-fun AuthScreen(viewModel: AuthViewModel = hiltViewModel()) {
+fun AuthScreen(
+    viewModel: AuthViewModel = hiltViewModel(),
+    onLoginSuccess: () -> Unit
+) {
     val state by viewModel.state.collectAsState()
+    LaunchedEffect(state.user) {
+        if (state.user != null) {
+            onLoginSuccess()
+        }
+    }
     val context = LocalContext.current
 
     var email by remember { mutableStateOf("") }
@@ -24,19 +32,6 @@ fun AuthScreen(viewModel: AuthViewModel = hiltViewModel()) {
         Box(contentAlignment = Alignment.Center, modifier = Modifier.padding(24.dp)) {
             when {
                 state.isLoading -> CircularProgressIndicator()
-
-                state.user != null -> {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text(
-                            text = "¡Hola, ${state.user?.displayName ?: "Usuario"}!",
-                            style = MaterialTheme.typography.headlineMedium
-                        )
-                        Spacer(modifier = Modifier.height(24.dp))
-                        Button(onClick = { viewModel.processIntent(AuthIntent.SignOut) }) {
-                            Text("Cerrar Sesión")
-                        }
-                    }
-                }
 
                 else -> {
                     Column(
