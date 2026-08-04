@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import dagger.hilt.android.AndroidEntryPoint
 import ucne.edu.rocash.presentation.auth.AuthScreen
+import ucne.edu.rocash.presentation.navigation.RoCashNavHost
 import ucne.edu.rocash.ui.theme.ROcashTheme
 
 @AndroidEntryPoint
@@ -28,7 +29,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    AuthScreen()
+                    RoCashNavHost()
                 }
             }
         }
