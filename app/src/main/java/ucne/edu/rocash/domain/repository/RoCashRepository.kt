@@ -10,4 +10,8 @@ interface RoCashRepository {
     suspend fun guardarRegistroRecoleccion(registro: RegistroRecoleccion)
     suspend fun actualizarDeudaAgente(agenteId: String, nuevaDeuda: Double)
     suspend fun cerrarHojaRuta(hojaRutaId: String)
+
+    suspend fun insertarHojaRuta(hojaRuta: HojaRuta)
+
+    suspend fun insertarEstacion(estacion: EstacionVentas)
 }
