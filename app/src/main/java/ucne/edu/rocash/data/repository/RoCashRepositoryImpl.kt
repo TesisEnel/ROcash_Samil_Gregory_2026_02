@@ -19,7 +19,7 @@ class RoCashRepositoryImpl @Inject constructor(
     }
 
     override fun obtenerEstacionesPorRuta(hojaRutaId: String): Flow<List<EstacionVentas>> {
-        return dao.obtenerTodasLasEstaciones().map { lista ->
+        return dao.obtenerTodasLasEstaciones(hojaRutaId).map { lista ->
             lista.map { it.toDomain() }
         }
     }
@@ -35,5 +35,13 @@ class RoCashRepositoryImpl @Inject constructor(
     override suspend fun cerrarHojaRuta(hojaRutaId: String) {
         dao.cerrarHojaRuta(hojaRutaId)
 
+    }
+
+    override suspend fun insertarHojaRuta(hojaRuta: HojaRuta) {
+        dao.insertarHojaRuta(hojaRuta.toEntity())
+    }
+
+    override suspend fun insertarEstacion(estacion: EstacionVentas) {
+        dao.insertarEstacion(estacion.toEntity())
     }
 }
