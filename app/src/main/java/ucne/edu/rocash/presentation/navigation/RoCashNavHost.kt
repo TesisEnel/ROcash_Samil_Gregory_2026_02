@@ -6,15 +6,17 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.google.firebase.auth.FirebaseAuth
-import ucne.edu.rocash.presentation.auth.AuthScreen // Ajusta este import a donde esté tu pantalla
+import ucne.edu.rocash.presentation.auth.AuthScreen
 import ucne.edu.rocash.presentation.home.HomeScreen
+import ucne.edu.rocash.presentation.detalle.DetalleEstacionScreen
+import ucne.edu.rocash.presentation.estacion.CrearEstacionScreen
 
 @Composable
 fun RoCashNavHost() {
     val navController = rememberNavController()
 
     val usuarioActual = FirebaseAuth.getInstance().currentUser
-    val rutaInicial = if (usuarioActual != null) HomeRecolectorRoute else AuthRoute
+    val rutaInicial = if (usuarioActual != null) HomeRecolectorRoute else HomeRecolectorRoute
 
     NavHost(
         navController = navController,
@@ -40,15 +42,38 @@ fun RoCashNavHost() {
                             nombreEstacion = nombreEstacion
                         )
                     )
+                },
+                onNavigateToCrearEstacion = {
+                    navController.navigate(CrearEstacionRoute)
+                },
+                onNavigateToCrearRuta = {
+                    navController.navigate(CrearRutaRoute)
                 }
             )
         }
 
         composable<DetalleEstacionRoute> { backStackEntry ->
             val argumentos = backStackEntry.toRoute<DetalleEstacionRoute>()
+
+            DetalleEstacionScreen(
+                estacionId = argumentos.estacionId,
+                agenteId = argumentos.agenteId,
+                nombreEstacion = argumentos.nombreEstacion,
+                onNavigateBack = {
+                    navController.popBackStack()
+                }
+            )
         }
 
         composable<HojaRutaCierreRoute> {
+        }
+
+        composable<CrearEstacionRoute> {
+            CrearEstacionScreen(
+                onNavigateBack = {
+                    navController.popBackStack()
+                }
+            )
         }
     }
 }

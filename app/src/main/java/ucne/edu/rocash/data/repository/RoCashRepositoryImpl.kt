@@ -14,14 +14,25 @@ import javax.inject.Inject
 class RoCashRepositoryImpl @Inject constructor(
     private val dao: RoCashDao
 ) : RoCashRepository {
+
     override fun obtenerHojaRutaActiva(recolectorId: String): Flow<HojaRuta?> {
         return dao.obtenerHojaRutaActiva(recolectorId).map { it?.toDomain() }
     }
 
-    override fun obtenerEstacionesPorRuta(hojaRutaId: String): Flow<List<EstacionVentas>> {
-        return dao.obtenerTodasLasEstaciones(hojaRutaId).map { lista ->
+    override fun obtenerEstacionesPorRuta(rutaId: String): Flow<List<EstacionVentas>> {
+        return dao.obtenerEstacionesPorRuta(rutaId).map { lista ->
             lista.map { it.toDomain() }
         }
+    }
+
+    override fun obtenerTodasLasEstaciones(): Flow<List<EstacionVentas>> {
+        return dao.obtenerTodasLasEstaciones().map { lista ->
+            lista.map { it.toDomain() }
+        }
+    }
+
+    override suspend fun asignarRutaAEstacion(estacionId: String, rutaId: String) {
+        dao.asignarRutaAEstacion(estacionId, rutaId)
     }
 
     override suspend fun guardarRegistroRecoleccion(registro: RegistroRecoleccion) {
@@ -34,14 +45,13 @@ class RoCashRepositoryImpl @Inject constructor(
 
     override suspend fun cerrarHojaRuta(hojaRutaId: String) {
         dao.cerrarHojaRuta(hojaRutaId)
-
     }
 
-    override suspend fun insertarHojaRuta(hojaRuta: HojaRuta) {
+    override suspend fun guardarHojaRuta(hojaRuta: HojaRuta) {
         dao.insertarHojaRuta(hojaRuta.toEntity())
     }
 
-    override suspend fun insertarEstacion(estacion: EstacionVentas) {
+    override suspend fun guardarEstacion(estacion: EstacionVentas) {
         dao.insertarEstacion(estacion.toEntity())
     }
 }
