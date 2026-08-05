@@ -8,6 +8,6 @@ class CrearEstacionUseCase @Inject constructor(
     private val repository: RoCashRepository
 ) {
     suspend operator fun invoke(estacion: EstacionVentas) {
-        repository.insertarEstacion(estacion)
+        repository.guardarEstacion(estacion)
     }
 }

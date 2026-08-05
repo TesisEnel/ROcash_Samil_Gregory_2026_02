@@ -17,3 +17,9 @@ data class DetalleEstacionRoute(
     val agenteId: String,
     val nombreEstacion: String
 )
+
+@Serializable
+object CrearEstacionRoute
+
+@Serializable
+object CrearRutaRoute
