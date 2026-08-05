@@ -9,16 +9,23 @@ import kotlinx.coroutines.flow.Flow
 import ucne.edu.rocash.data.local.entity.EstacionVentasEntity
 import ucne.edu.rocash.data.local.entity.HojaRutaEntity
 import ucne.edu.rocash.data.local.entity.RegistroRecoleccionEntity
-import ucne.edu.rocash.domain.model.EstacionVentas
-import ucne.edu.rocash.domain.model.HojaRuta
 
 @Dao
 interface RoCashDao {
     @Query("SELECT * FROM hoja_ruta WHERE recolectorId = :recolectorId AND (estado = 'PENDIENTE' OR estado = 'EN_PROGRESO') LIMIT 1")
     fun obtenerHojaRutaActiva(recolectorId: String): Flow<HojaRutaEntity?>
 
+    // Renombrado: Para el Home (Solo las de la ruta)
     @Query("SELECT * FROM estacion_ventas WHERE hojaRutaId = :rutaId")
-    fun obtenerTodasLasEstaciones(rutaId: String): Flow<List<EstacionVentasEntity>>
+    fun obtenerEstacionesPorRuta(rutaId: String): Flow<List<EstacionVentasEntity>>
+
+    // NUEVO: Para CrearRutaScreen (Todas las estaciones disponibles)
+    @Query("SELECT * FROM estacion_ventas")
+    fun obtenerTodasLasEstaciones(): Flow<List<EstacionVentasEntity>>
+
+    // NUEVO: Para asignar las estaciones a una ruta
+    @Query("UPDATE estacion_ventas SET hojaRutaId = :rutaId WHERE id = :estacionId")
+    suspend fun asignarRutaAEstacion(estacionId: String, rutaId: String)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertarRegistroRecoleccion(registro: RegistroRecoleccionEntity): Long

@@ -8,6 +8,6 @@ class CrearHojaRutaUseCase @Inject constructor(
     private val repository: RoCashRepository
 ) {
     suspend operator fun invoke(hojaRuta: HojaRuta) {
-        repository.insertarHojaRuta(hojaRuta)
+        repository.guardarHojaRuta(hojaRuta)
     }
 }

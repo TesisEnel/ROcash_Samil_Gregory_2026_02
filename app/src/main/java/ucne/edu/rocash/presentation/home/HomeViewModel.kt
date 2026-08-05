@@ -17,7 +17,9 @@ import ucne.edu.rocash.domain.repository.RoCashRepository
 import ucne.edu.rocash.domain.usecase.CrearEstacionUseCase
 import ucne.edu.rocash.domain.usecase.CrearHojaRutaUseCase
 import javax.inject.Inject
-
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val repository: RoCashRepository,
@@ -41,7 +43,8 @@ class HomeViewModel @Inject constructor(
     }
 
     private fun generarDatosDePrueba() {
-        val userId = auth.currentUser?.uid ?: return
+        // Bypass para desarrollo: Asignamos un ID temporal si no hay usuario en Firebase
+        val userId = auth.currentUser?.uid ?: "DEV-USER-123"
 
         viewModelScope.launch {
             try {
@@ -73,35 +76,41 @@ class HomeViewModel @Inject constructor(
                 crearEstacionUseCase(estacion1)
                 crearEstacionUseCase(estacion2)
 
+                // Recargamos la interfaz automáticamente después de insertar
+                processIntent(HomeUIEvent.CargarDatos)
 
             } catch (e: Exception) {
                 _state.update { it.copy(errorMessage = "Error al insertar prueba: ${e.message}") }
             }
         }
     }
-
     private fun cargarDatosRecolector() {
-        val userId = auth.currentUser?.uid
-        if (userId == null) {
-            _state.update { it.copy(isLoading = false, errorMessage = "Error: Usuario no autenticado") }
-            return
-        }
+        val userId = auth.currentUser?.uid ?: "DEV-USER-123"
 
         viewModelScope.launch {
             try {
-                repository.obtenerHojaRutaActiva(userId).collectLatest { hoja ->
-                    if (hoja != null) {
-                        repository.obtenerEstacionesPorRuta(hoja.id).collectLatest { listaEstaciones ->
-                            _state.update {
-                                it.copy(isLoading = false, hojaRutaActiva = hoja, estaciones = listaEstaciones)
+                repository.obtenerHojaRutaActiva(userId)
+                    .flatMapLatest { hoja ->
+                        if (hoja != null) {
+                            // Si hay hoja, buscamos sus estaciones y combinamos los datos
+                            repository.obtenerEstacionesPorRuta(hoja.id).map { estaciones ->
+                                hoja to estaciones // Retornamos un Pair<HojaRuta, List<Estacion>>
                             }
-                        }
-                    } else {
-                        _state.update {
-                            it.copy(isLoading = false, hojaRutaActiva = null, estaciones = emptyList())
+                        } else {
+                            // Si no hay hoja, retornamos vacío
+                            flowOf(null to emptyList())
                         }
                     }
-                }
+                    .collectLatest { (hoja, listaEstaciones) ->
+                        _state.update {
+                            it.copy(
+                                isLoading = false,
+                                hojaRutaActiva = hoja,
+                                estaciones = listaEstaciones,
+                                errorMessage = null
+                            )
+                        }
+                    }
             } catch (e: Exception) {
                 _state.update { it.copy(isLoading = false, errorMessage = e.localizedMessage) }
             }

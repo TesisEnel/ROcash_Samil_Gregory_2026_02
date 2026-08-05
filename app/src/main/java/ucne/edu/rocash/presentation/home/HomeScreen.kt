@@ -4,10 +4,10 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -19,10 +19,12 @@ import ucne.edu.rocash.domain.model.EstacionVentas
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
-    onEstacionClick: (String, String, String) -> Unit
+    onEstacionClick: (String, String, String) -> Unit,
+    onNavigateToCrearEstacion: () -> Unit,
+    onNavigateToCrearRuta: () -> Unit
 ) {
     val state by viewModel.state.collectAsState()
-
+    var expandedMenu by remember { mutableStateOf(false) }
     Scaffold(
         topBar = {
             TopAppBar(
@@ -30,7 +32,33 @@ fun HomeScreen(
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
                     titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
-                )
+                ),
+                actions = {
+                    // Botón de los tres puntos
+                    IconButton(onClick = { expandedMenu = true }) {
+                        Icon(Icons.Filled.MoreVert, contentDescription = "Opciones")
+                    }
+                    // Menú desplegable
+                    DropdownMenu(
+                        expanded = expandedMenu,
+                        onDismissRequest = { expandedMenu = false }
+                    ) {
+                        DropdownMenuItem(
+                            text = { Text("Administrar Estaciones") },
+                            onClick = {
+                                expandedMenu = false
+                                onNavigateToCrearEstacion()
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text("Armar Nueva Ruta") },
+                            onClick = {
+                                expandedMenu = false
+                                onNavigateToCrearRuta()
+                            }
+                        )
+                    }
+                }
             )
         }
     ) { paddingValues ->
@@ -62,10 +90,12 @@ fun HomeScreen(
                             style = MaterialTheme.typography.bodyLarge
                         )
                         Spacer(modifier = Modifier.height(16.dp))
+                        // Este botón se puede dejar como atajo o eliminar en el futuro,
+                        // ya que ahora tienes el menú oficial arriba.
                         Button(
                             onClick = { viewModel.processIntent(HomeUIEvent.CrearRutaPrueba) }
                         ) {
-                            Text("Iniciar Nueva Hoja de Ruta")
+                            Text("Iniciar Nueva Hoja de Ruta (Prueba)")
                         }
                     }
                 }
@@ -112,21 +142,21 @@ fun HomeScreen(
     }
 }
 
-    @Composable
-    fun EstacionItem(estacion: EstacionVentas, onClick: () -> Unit) {
-        ElevatedCard(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable { onClick() }
-        ) {
-            Column(modifier = Modifier.padding(16.dp)) {
-                Text(text = estacion.nombre, style = MaterialTheme.typography.titleMedium)
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = estacion.direccion,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
+@Composable
+fun EstacionItem(estacion: EstacionVentas, onClick: () -> Unit) {
+    ElevatedCard(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() }
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(text = estacion.nombre, style = MaterialTheme.typography.titleMedium)
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = estacion.direccion,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
         }
     }
+}
