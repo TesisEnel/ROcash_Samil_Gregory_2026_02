@@ -86,6 +86,5 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
 
-    // RoboLectri
-    testImplementation("org.robolectric:robolectric:4.13")
+    testImplementation(libs.robolectric)
 }
