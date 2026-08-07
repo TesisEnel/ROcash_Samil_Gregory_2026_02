@@ -41,4 +41,7 @@ interface RoCashDao {
 
     @Upsert
     suspend fun insertarEstacion(estacion: EstacionVentasEntity)
+
+    @Query("SELECT * FROM estacion_ventas")
+    fun observeAllEstaciones(): Flow<List<EstacionVentasEntity>>
 }

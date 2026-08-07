@@ -1,27 +1,27 @@
-package ucne.edu.rocash.presentation.estacion
+package ucne.edu.rocash.presentation.recolector.form
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CrearEstacionScreen(
-    viewModel: CrearEstacionViewModel = hiltViewModel(),
+fun FormRecolectorScreen(
+    viewModel: FormRecolectorViewModel = hiltViewModel(),
     onNavigateBack: () -> Unit
 ) {
     val state by viewModel.state.collectAsState()
 
     LaunchedEffect(state.isSuccess) {
         if (state.isSuccess) {
+            viewModel.processIntent(FormRecolectorUiEvent.ResetSuccessState)
             onNavigateBack()
         }
     }
@@ -29,10 +29,10 @@ fun CrearEstacionScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Nueva Estación (Banca)") },
+                title = { Text("Nuevo Recolector") },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Volver")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Cancelar")
                     }
                 }
             )
@@ -55,33 +55,27 @@ fun CrearEstacionScreen(
 
             OutlinedTextField(
                 value = state.nombre,
-                onValueChange = { viewModel.processIntent(CrearEstacionUIEvent.OnNombreChange(it)) },
-                label = { Text("Nombre de la Banca") },
+                onValueChange = { viewModel.processIntent(FormRecolectorUiEvent.OnNombreChange(it)) },
+                label = { Text("Nombre Completo") },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true
             )
 
             OutlinedTextField(
-                value = state.direccion,
-                onValueChange = { viewModel.processIntent(CrearEstacionUIEvent.OnDireccionChange(it)) },
-                label = { Text("Dirección") },
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            OutlinedTextField(
-                value = state.agenteId,
-                onValueChange = { viewModel.processIntent(CrearEstacionUIEvent.OnAgenteIdChange(it)) },
-                label = { Text("ID del Agente de Ventas") },
+                value = state.telefono,
+                onValueChange = { viewModel.processIntent(FormRecolectorUiEvent.OnTelefonoChange(it)) },
+                label = { Text("Número de Teléfono") },
                 modifier = Modifier.fillMaxWidth(),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
                 singleLine = true
             )
 
             Spacer(modifier = Modifier.weight(1f))
 
             Button(
-                onClick = { viewModel.processIntent(CrearEstacionUIEvent.GuardarEstacion) },
+                onClick = { viewModel.processIntent(FormRecolectorUiEvent.GuardarRecolector) },
                 modifier = Modifier.fillMaxWidth().height(50.dp),
-                enabled = !state.isLoading
+                enabled = state.nombre.isNotBlank() && state.telefono.isNotBlank() && !state.isLoading
             ) {
                 if (state.isLoading) {
                     CircularProgressIndicator(
@@ -89,7 +83,7 @@ fun CrearEstacionScreen(
                         modifier = Modifier.size(24.dp)
                     )
                 } else {
-                    Text("Guardar Estación")
+                    Text("Guardar Recolector")
                 }
             }
         }

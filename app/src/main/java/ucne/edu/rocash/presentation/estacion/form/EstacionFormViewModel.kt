@@ -1,4 +1,4 @@
-package ucne.edu.rocash.presentation.estacion
+package ucne.edu.rocash.presentation.estacion.form
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -10,23 +10,23 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import ucne.edu.rocash.domain.model.EstacionVentas
 import ucne.edu.rocash.domain.usecase.CrearEstacionUseCase
-import javax.inject.Inject
 import java.util.UUID
+import javax.inject.Inject
 
 @HiltViewModel
-class CrearEstacionViewModel @Inject constructor(
+class EstacionFormViewModel @Inject constructor(
     private val crearEstacionUseCase: CrearEstacionUseCase
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow(CrearEstacionUIState())
-    val state: StateFlow<CrearEstacionUIState> = _state.asStateFlow()
+    private val _state = MutableStateFlow(EstacionFormUiState())
+    val state: StateFlow<EstacionFormUiState> = _state.asStateFlow()
 
-    fun processIntent(intent: CrearEstacionUIEvent) {
+    fun processIntent(intent: EstacionFormUiEvent) {
         when (intent) {
-            is CrearEstacionUIEvent.OnNombreChange -> _state.update { it.copy(nombre = intent.value) }
-            is CrearEstacionUIEvent.OnDireccionChange -> _state.update { it.copy(direccion = intent.value) }
-            is CrearEstacionUIEvent.OnAgenteIdChange -> _state.update { it.copy(agenteId = intent.value) }
-            is CrearEstacionUIEvent.GuardarEstacion -> guardar()
+            is EstacionFormUiEvent.OnNombreChange -> _state.update { it.copy(nombre = intent.value) }
+            is EstacionFormUiEvent.OnDireccionChange -> _state.update { it.copy(direccion = intent.value) }
+            is EstacionFormUiEvent.OnAgenteIdChange -> _state.update { it.copy(agenteId = intent.value) }
+            is EstacionFormUiEvent.GuardarEstacion -> guardar()
         }
     }
 
