@@ -21,18 +21,6 @@ class RoCashRepositoryImpl @Inject constructor(
         return dao.obtenerHojaRutaActiva(recolectorId).map { it?.toDomain() }
     }
 
-    override fun obtenerEstacionesPorRuta(rutaId: String): Flow<List<EstacionVentas>> {
-        return dao.obtenerEstacionesPorRuta(rutaId).map { lista ->
-            lista.map { it.toDomain() }
-        }
-    }
-
-    override fun obtenerTodasLasEstaciones(): Flow<List<EstacionVentas>> {
-        return dao.obtenerTodasLasEstaciones().map { lista ->
-            lista.map { it.toDomain() }
-        }
-    }
-
     override suspend fun asignarRutaAEstacion(estacionId: String, rutaId: String) {
         dao.asignarRutaAEstacion(estacionId, rutaId)
     }
@@ -47,13 +35,5 @@ class RoCashRepositoryImpl @Inject constructor(
 
     override suspend fun guardarHojaRuta(hojaRuta: HojaRuta) {
         dao.insertarHojaRuta(hojaRuta.toEntity())
-    }
-
-    override suspend fun guardarEstacion(estacion: EstacionVentas) {
-        dao.insertarEstacion(estacion.toEntity())
-    }
-
-    override suspend fun observeAllEstaciones(): Flow<List<EstacionVentas>> {
-        return dao.observeAllEstaciones().map { lista -> lista.map { it.toDomain() } }
     }
 }
