@@ -14,8 +14,7 @@ import ucne.edu.rocash.domain.repository.RoCashRepository
 import javax.inject.Inject
 
 class RoCashRepositoryImpl @Inject constructor(
-    private val dao: RoCashDao,
-    private val recolectorDao: RecolectorDao
+    private val dao: RoCashDao
 ) : RoCashRepository {
 
     override fun obtenerHojaRutaActiva(recolectorId: String): Flow<HojaRuta?> {
