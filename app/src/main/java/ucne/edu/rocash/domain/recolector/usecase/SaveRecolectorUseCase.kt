@@ -1,11 +1,11 @@
 package ucne.edu.rocash.domain.recolector.usecase
 
 import ucne.edu.rocash.domain.recolector.model.Recolector
-import ucne.edu.rocash.domain.repository.RoCashRepository
+import ucne.edu.rocash.domain.recolector.repository.RecolectorRepository
 import javax.inject.Inject
 
 class SaveRecolectorUseCase @Inject constructor(
-    private val repository: RoCashRepository
+    private val repository: RecolectorRepository
 ) {
     suspend operator fun invoke(recolector: Recolector) {
         if (recolector.nombre.isBlank()) {
