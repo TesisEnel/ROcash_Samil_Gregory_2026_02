@@ -35,9 +35,5 @@ class ProcesarRecoleccionEstacionUseCase @Inject constructor(
         )
 
         repository.guardarRegistroRecoleccion(registro)
-
-        if (deudaGenerada > 0) {
-            repository.actualizarDeudaAgente(agenteId, deudaGenerada)
-        }
     }
 }

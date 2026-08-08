@@ -66,7 +66,7 @@ fun AgenteListScreen(
             OutlinedTextField(
                 value = state.searchQuery,
                 onValueChange = { viewModel.processIntent(AgenteListUiEvent.OnSearchQueryChange(it)) },
-                modifier = Modifier.fillMaxSize().padding(16.dp),
+                modifier = Modifier.fillMaxWidth().padding(16.dp),
                 placeholder = { Text("Buscar agente...") },
                 leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
                 singleLine = true,
