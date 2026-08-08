@@ -18,17 +18,6 @@ fun HojaRutaEntity.toDomain(): HojaRuta {
         estado = EstadoRuta.valueOf(this.estado)
     )
 }
-
-fun EstacionVentasEntity.toDomain(): EstacionVentas {
-    return EstacionVentas(
-        id = this.id,
-        hojaRutaId = hojaRutaId,
-        nombre = this.nombre,
-        direccion = this.direccion,
-        agenteId = this.agenteId
-    )
-}
-
 fun RegistroRecoleccion.toEntity(): RegistroRecoleccionEntity {
     return RegistroRecoleccionEntity(
         id = this.id,
@@ -50,15 +39,5 @@ fun HojaRuta.toEntity(): HojaRutaEntity {
         recolectorId = this.recolectorId,
         fechaCreacion = this.fechaCreacion,
         estado = this.estado.name
-    )
-}
-
-fun EstacionVentas.toEntity(): EstacionVentasEntity {
-    return EstacionVentasEntity(
-        id = this.id,
-        hojaRutaId = hojaRutaId,
-        nombre = this.nombre,
-        direccion = this.direccion,
-        agenteId = this.agenteId
     )
 }
