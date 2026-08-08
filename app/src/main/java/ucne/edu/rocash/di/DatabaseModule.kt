@@ -9,12 +9,15 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import ucne.edu.rocash.data.agenteVentas.local.AgenteVentasDao
 import ucne.edu.rocash.data.agenteVentas.repository.AgenteVentasRepositoryImpl
+import ucne.edu.rocash.data.estacion.local.EstacionVentasDao
+import ucne.edu.rocash.data.estacion.repository.EstacionRepositoryImpl
 import ucne.edu.rocash.data.local.dao.RoCashDao
 import ucne.edu.rocash.data.local.database.RoCashDatabase
 import ucne.edu.rocash.data.recolector.local.RecolectorDao
 import ucne.edu.rocash.data.recolector.repository.RecolectorRepositoryImpl
 import ucne.edu.rocash.data.repository.RoCashRepositoryImpl
 import ucne.edu.rocash.domain.agenteVentas.repository.AgenteVentasRepository
+import ucne.edu.rocash.domain.estacion.repository.EstacionRepository
 import ucne.edu.rocash.domain.recolector.repository.RecolectorRepository
 import ucne.edu.rocash.domain.repository.RoCashRepository
 import javax.inject.Singleton
@@ -74,5 +77,19 @@ object DatabaseModule {
         agenteDao: AgenteVentasDao
     ): AgenteVentasRepository {
         return AgenteVentasRepositoryImpl(agenteDao)
+    }
+
+    @Provides
+    @Singleton
+    fun provideEstacionVentasDao(database: RoCashDatabase): EstacionVentasDao {
+        return database.estacionVentasDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideEstacionRepository(
+        dao: EstacionVentasDao
+    ): EstacionRepository {
+        return EstacionRepositoryImpl(dao)
     }
 }

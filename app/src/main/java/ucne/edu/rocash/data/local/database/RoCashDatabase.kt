@@ -5,6 +5,7 @@ import androidx.room.RoomDatabase
 import ucne.edu.rocash.data.agenteVentas.local.AgenteVentasDao
 import ucne.edu.rocash.data.local.dao.RoCashDao
 import ucne.edu.rocash.data.agenteVentas.local.AgenteVentasEntity
+import ucne.edu.rocash.data.estacion.local.EstacionVentasDao
 import ucne.edu.rocash.data.estacion.local.EstacionVentasEntity
 import ucne.edu.rocash.data.local.entity.HojaRutaEntity
 import ucne.edu.rocash.data.local.entity.RegistroRecoleccionEntity
@@ -28,6 +29,8 @@ abstract class RoCashDatabase : RoomDatabase() {
     abstract fun recolectorDao(): RecolectorDao
 
     abstract fun agenteVentasDao(): AgenteVentasDao
+
+    abstract fun estacionVentasDao(): EstacionVentasDao
 
     companion object {
         const val DATABASE_NAME = "rocash_db"
