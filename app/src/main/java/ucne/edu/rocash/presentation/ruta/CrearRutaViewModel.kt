@@ -10,17 +10,20 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import ucne.edu.rocash.domain.estacion.usecase.GetEstacionesUseCase
 import ucne.edu.rocash.domain.model.EstadoRuta
 import ucne.edu.rocash.domain.model.HojaRuta
 import ucne.edu.rocash.domain.repository.RoCashRepository
+import ucne.edu.rocash.domain.usecase.AsignarRutaAEstacionUseCase
 import ucne.edu.rocash.domain.usecase.CrearHojaRutaUseCase
 import java.util.UUID
 import javax.inject.Inject
 
 @HiltViewModel
 class CrearRutaViewModel @Inject constructor(
-    private val repository: RoCashRepository,
+    private val getEstacionesUseCase: GetEstacionesUseCase,
     private val crearHojaRutaUseCase: CrearHojaRutaUseCase,
+    private val asignarRutaAEstacionUseCase: AsignarRutaAEstacionUseCase,
     private val auth: FirebaseAuth
 ) : ViewModel() {
 
@@ -42,7 +45,7 @@ class CrearRutaViewModel @Inject constructor(
     private fun cargarEstaciones() {
         viewModelScope.launch {
             try {
-                 repository.obtenerTodasLasEstaciones().collectLatest { lista ->
+                getEstacionesUseCase().collectLatest { lista ->
                     _state.update { it.copy(isLoading = false, estacionesDisponibles = lista) }
                 }
             } catch (e: Exception) {
@@ -84,13 +87,10 @@ class CrearRutaViewModel @Inject constructor(
                     estado = EstadoRuta.EN_PROGRESO
                 )
 
-                // 1. Guardamos la hoja de ruta
                 crearHojaRutaUseCase(nuevaRuta)
 
-                // 2. Actualizamos las estaciones seleccionadas para que pertenezcan a esta ruta
-                // (Necesitarás asegurarte de tener un método en tu repositorio para actualizar la estación)
                 currentState.estacionesSeleccionadas.forEach { estacionId ->
-                    repository.asignarRutaAEstacion(estacionId, nuevaRutaId)
+                    asignarRutaAEstacionUseCase(estacionId, nuevaRutaId)
                 }
 
                 _state.update { it.copy(isLoading = false, isSuccess = true) }

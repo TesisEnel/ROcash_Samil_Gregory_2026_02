@@ -124,18 +124,6 @@ fun HomeScreen(
                         IconButton(onClick = { expandedMenu = true }) {
                             Icon(Icons.Filled.MoreVert, contentDescription = "Opciones")
                         }
-                        DropdownMenu(
-                            expanded = expandedMenu,
-                            onDismissRequest = { expandedMenu = false }
-                        ) {
-                            DropdownMenuItem(
-                                text = { Text("Generar Datos de Prueba") },
-                                onClick = {
-                                    expandedMenu = false
-                                    viewModel.processIntent(HomeUIEvent.CrearRutaPrueba)
-                                }
-                            )
-                        }
                     }
                 )
             }

@@ -3,6 +3,7 @@ package ucne.edu.rocash.presentation.estacion.form
 import ucne.edu.rocash.domain.agenteVentas.model.AgenteVentas
 
 data class EstacionFormUiState(
+    val id: String? = null,
     val nombre: String = "",
     val direccion: String = "",
     val agenteId: String = "",

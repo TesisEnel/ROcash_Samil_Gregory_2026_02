@@ -20,6 +20,7 @@ fun EstacionFormScreen(
 
     LaunchedEffect(state.isSuccess) {
         if (state.isSuccess) {
+            viewModel.processIntent(EstacionFormUiEvent.ResetSuccessState)
             onNavigateBack()
         }
     }
@@ -27,7 +28,7 @@ fun EstacionFormScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Nueva Estación (Banca)") },
+                title = { Text(if (state.id == null) "Nueva Estación (Banca)" else "Editar Estación") },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Volver")
@@ -116,7 +117,7 @@ fun EstacionFormScreen(
                         modifier = Modifier.size(24.dp)
                     )
                 } else {
-                    Text("Guardar Estación")
+                    Text(if (state.id == null) "Guardar Estación" else "Actualizar Estación")
                 }
             }
         }
