@@ -1,6 +1,6 @@
-package ucne.edu.rocash.presentation.estacion
+package ucne.edu.rocash.presentation.estacion.form
 
-data class CrearEstacionUIState(
+data class EstacionFormUiState(
     val nombre: String = "",
     val direccion: String = "",
     val agenteId: String = "",

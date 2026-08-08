@@ -9,6 +9,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import ucne.edu.rocash.data.local.dao.RoCashDao
 import ucne.edu.rocash.data.local.database.RoCashDatabase
+import ucne.edu.rocash.data.recolector.local.RecolectorDao
 import ucne.edu.rocash.data.repository.RoCashRepositoryImpl
 import ucne.edu.rocash.domain.repository.RoCashRepository
 import javax.inject.Singleton
@@ -37,8 +38,15 @@ object DatabaseModule {
     @Provides
     @Singleton
     fun provideRoCashRepository(
-        dao: RoCashDao
+        dao: RoCashDao,
+        recolectorDao: RecolectorDao
     ): RoCashRepository {
-        return RoCashRepositoryImpl(dao)
+        return RoCashRepositoryImpl(dao, recolectorDao)
+    }
+
+    @Provides
+    @Singleton
+    fun provideRecolectorDao(database: RoCashDatabase): RecolectorDao {
+        return database.recolectorDao()
     }
 }

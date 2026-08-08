@@ -3,10 +3,12 @@ package ucne.edu.rocash.data.mapper
 import ucne.edu.rocash.data.local.entity.EstacionVentasEntity
 import ucne.edu.rocash.data.local.entity.HojaRutaEntity
 import ucne.edu.rocash.data.local.entity.RegistroRecoleccionEntity
+import ucne.edu.rocash.data.recolector.local.RecolectorEntity
 import ucne.edu.rocash.domain.model.EstacionVentas
 import ucne.edu.rocash.domain.model.EstadoRuta
 import ucne.edu.rocash.domain.model.HojaRuta
 import ucne.edu.rocash.domain.model.RegistroRecoleccion
+import ucne.edu.rocash.domain.recolector.model.Recolector
 
 fun HojaRutaEntity.toDomain(): HojaRuta {
     return HojaRuta(
@@ -60,3 +62,22 @@ fun EstacionVentas.toEntity(): EstacionVentasEntity {
         agenteId = this.agenteId
     )
 }
+    fun Recolector.toEntity(): RecolectorEntity
+    {
+        return RecolectorEntity(
+            id = this.id,
+            nombre = this.nombre,
+            telefono = this.telefono,
+            estado = this.estado
+        )
+    }
+
+    fun RecolectorEntity.toDomain(): Recolector {
+        return Recolector(
+            id = this.id,
+            nombre = this.nombre,
+            telefono = this.telefono,
+            estado = this.estado
+        )
+    }
+

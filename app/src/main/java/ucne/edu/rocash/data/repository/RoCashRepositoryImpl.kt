@@ -5,14 +5,17 @@ import kotlinx.coroutines.flow.map
 import ucne.edu.rocash.data.local.dao.RoCashDao
 import ucne.edu.rocash.data.mapper.toDomain
 import ucne.edu.rocash.data.mapper.toEntity
+import ucne.edu.rocash.data.recolector.local.RecolectorDao
 import ucne.edu.rocash.domain.model.EstacionVentas
 import ucne.edu.rocash.domain.model.HojaRuta
 import ucne.edu.rocash.domain.model.RegistroRecoleccion
+import ucne.edu.rocash.domain.recolector.model.Recolector
 import ucne.edu.rocash.domain.repository.RoCashRepository
 import javax.inject.Inject
 
 class RoCashRepositoryImpl @Inject constructor(
-    private val dao: RoCashDao
+    private val dao: RoCashDao,
+    private val recolectorDao: RecolectorDao
 ) : RoCashRepository {
 
     override fun obtenerHojaRutaActiva(recolectorId: String): Flow<HojaRuta?> {
@@ -53,5 +56,29 @@ class RoCashRepositoryImpl @Inject constructor(
 
     override suspend fun guardarEstacion(estacion: EstacionVentas) {
         dao.insertarEstacion(estacion.toEntity())
+    }
+
+    override suspend fun observeAllEstaciones(): Flow<List<EstacionVentas>> {
+        return dao.observeAllEstaciones().map { lista -> lista.map { it.toDomain() } }
+    }
+
+    override suspend fun insertarRecolector(recolector: Recolector) {
+        recolectorDao.upsert(recolector.toEntity())
+    }
+
+    override fun obtenerRecolectores(): Flow<List<Recolector>> {
+        return recolectorDao.observeAll().map { lista ->
+            lista.map { it.toDomain() }
+        }
+    }
+
+    override suspend fun obtenerRecolectorPorId(id: String): Recolector? {
+        return recolectorDao.getById(id)?.toDomain()
+    }
+
+    override fun buscarRecolectoresPorNombre(nombre: String): Flow<List<Recolector>> {
+        return recolectorDao.searchByName(nombre).map { lista ->
+            lista.map { it.toDomain() }
+        }
     }
 }

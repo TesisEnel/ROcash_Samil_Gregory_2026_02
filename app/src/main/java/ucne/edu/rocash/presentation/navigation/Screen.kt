@@ -19,7 +19,16 @@ data class DetalleEstacionRoute(
 )
 
 @Serializable
+object ListaEstacionesRoute
+
+@Serializable
 object CrearEstacionRoute
 
 @Serializable
 object CrearRutaRoute
+
+@Serializable
+object ListaRecolectoresRoute
+
+@Serializable
+object FormRecolectorRoute
