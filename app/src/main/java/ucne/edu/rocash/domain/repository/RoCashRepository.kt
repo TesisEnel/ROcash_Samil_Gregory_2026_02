@@ -8,12 +8,8 @@ import ucne.edu.rocash.domain.recolector.model.Recolector
 interface RoCashRepository {
     fun obtenerHojaRutaActiva(recolectorId: String): Flow<HojaRuta?>
     fun obtenerEstacionesPorRuta(rutaId: String): Flow<List<EstacionVentas>>
-    fun obtenerTodasLasEstaciones(): Flow<List<EstacionVentas>>
     suspend fun asignarRutaAEstacion(estacionId: String, rutaId: String)
     suspend fun guardarRegistroRecoleccion(registro: RegistroRecoleccion)
     suspend fun cerrarHojaRuta(hojaRutaId: String)
     suspend fun guardarHojaRuta(hojaRuta: HojaRuta)
-    suspend fun guardarEstacion(estacion: EstacionVentas)
-
-    suspend fun observeAllEstaciones(): Flow<List<EstacionVentas>>
 }

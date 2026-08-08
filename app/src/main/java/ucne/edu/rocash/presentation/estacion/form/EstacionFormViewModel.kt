@@ -11,13 +11,15 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import ucne.edu.rocash.domain.agenteVentas.usecase.GetAgentesUseCase
 import ucne.edu.rocash.domain.estacion.model.EstacionVentas
-import ucne.edu.rocash.domain.usecase.CrearEstacionUseCase
+import ucne.edu.rocash.domain.estacion.usecase.GetEstacionPorIdUseCase
+import ucne.edu.rocash.domain.estacion.usecase.SaveEstacionUseCase
 import java.util.UUID
 import javax.inject.Inject
 
 @HiltViewModel
 class EstacionFormViewModel @Inject constructor(
-    private val crearEstacionUseCase: CrearEstacionUseCase,
+    private val saveEstacionUseCase: SaveEstacionUseCase,
+    private val getEstacionPorIdUseCase: GetEstacionPorIdUseCase,
     private val getAgentesUseCase: GetAgentesUseCase
 ) : ViewModel() {
 
@@ -28,6 +30,30 @@ class EstacionFormViewModel @Inject constructor(
         viewModelScope.launch {
             getAgentesUseCase().collectLatest { listaAgentes ->
                 _state.update { it.copy(agentesDisponibles = listaAgentes.filter { agente -> agente.estado }) }
+
+                val currentAgenteId = _state.value.agenteId
+                if (currentAgenteId.isNotBlank()) {
+                    val nombre = listaAgentes.find { it.id == currentAgenteId }?.nombre ?: ""
+                    _state.update { it.copy(agenteNombreSeleccionado = nombre) }
+                }
+            }
+        }
+    }
+
+    fun inicializar(estacionId: String?) {
+        if (estacionId != null && _state.value.id == null) {
+            viewModelScope.launch {
+                val estacion = getEstacionPorIdUseCase(estacionId)
+                if (estacion != null) {
+                    _state.update {
+                        it.copy(
+                            id = estacion.id,
+                            nombre = estacion.nombre,
+                            direccion = estacion.direccion,
+                            agenteId = estacion.agenteId
+                        )
+                    }
+                }
             }
         }
     }
@@ -55,14 +81,14 @@ class EstacionFormViewModel @Inject constructor(
 
         viewModelScope.launch {
             try {
-                val nuevaEstacion = EstacionVentas(
-                    id = UUID.randomUUID().toString(),
+                val estacion = EstacionVentas(
+                    id = currentState.id ?: UUID.randomUUID().toString(),
                     nombre = currentState.nombre,
                     direccion = currentState.direccion,
                     agenteId = currentState.agenteId
                 )
 
-                crearEstacionUseCase(nuevaEstacion)
+                saveEstacionUseCase(estacion)
 
                 _state.update { it.copy(isLoading = false, isSuccess = true) }
             } catch (e: Exception) {

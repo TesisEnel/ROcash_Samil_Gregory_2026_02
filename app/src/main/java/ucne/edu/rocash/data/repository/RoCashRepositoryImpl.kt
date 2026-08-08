@@ -2,6 +2,7 @@ package ucne.edu.rocash.data.repository
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import ucne.edu.rocash.data.estacion.mapper.toDomain
 import ucne.edu.rocash.data.local.dao.RoCashDao
 import ucne.edu.rocash.data.mapper.toDomain
 import ucne.edu.rocash.data.mapper.toEntity
@@ -27,11 +28,6 @@ class RoCashRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun obtenerTodasLasEstaciones(): Flow<List<EstacionVentas>> {
-        return dao.obtenerTodasLasEstaciones().map { lista ->
-            lista.map { it.toDomain() }
-        }
-    }
 
     override suspend fun asignarRutaAEstacion(estacionId: String, rutaId: String) {
         dao.asignarRutaAEstacion(estacionId, rutaId)
@@ -47,13 +43,5 @@ class RoCashRepositoryImpl @Inject constructor(
 
     override suspend fun guardarHojaRuta(hojaRuta: HojaRuta) {
         dao.insertarHojaRuta(hojaRuta.toEntity())
-    }
-
-    override suspend fun guardarEstacion(estacion: EstacionVentas) {
-        dao.insertarEstacion(estacion.toEntity())
-    }
-
-    override suspend fun observeAllEstaciones(): Flow<List<EstacionVentas>> {
-        return dao.observeAllEstaciones().map { lista -> lista.map { it.toDomain() } }
     }
 }
