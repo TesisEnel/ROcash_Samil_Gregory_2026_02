@@ -30,8 +30,6 @@ interface RoCashDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertarRegistroRecoleccion(registro: RegistroRecoleccionEntity): Long
 
-    @Query("UPDATE agente_ventas SET deudaAcumulada = deudaAcumulada + :nuevaDeuda WHERE id = :agenteId")
-    suspend fun sumarDeudaAgente(agenteId: String, nuevaDeuda: Double)
 
     @Query("UPDATE hoja_ruta SET estado = 'CERRADA' WHERE id = :hojaRutaId")
     suspend fun cerrarHojaRuta(hojaRutaId: String)

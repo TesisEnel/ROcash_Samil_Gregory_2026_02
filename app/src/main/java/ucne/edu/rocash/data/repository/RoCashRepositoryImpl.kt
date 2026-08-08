@@ -14,8 +14,7 @@ import ucne.edu.rocash.domain.repository.RoCashRepository
 import javax.inject.Inject
 
 class RoCashRepositoryImpl @Inject constructor(
-    private val dao: RoCashDao,
-    private val recolectorDao: RecolectorDao
+    private val dao: RoCashDao
 ) : RoCashRepository {
 
     override fun obtenerHojaRutaActiva(recolectorId: String): Flow<HojaRuta?> {
@@ -40,10 +39,6 @@ class RoCashRepositoryImpl @Inject constructor(
 
     override suspend fun guardarRegistroRecoleccion(registro: RegistroRecoleccion) {
         dao.insertarRegistroRecoleccion(registro.toEntity())
-    }
-
-    override suspend fun actualizarDeudaAgente(agenteId: String, nuevaDeuda: Double) {
-        dao.sumarDeudaAgente(agenteId, nuevaDeuda)
     }
 
     override suspend fun cerrarHojaRuta(hojaRutaId: String) {

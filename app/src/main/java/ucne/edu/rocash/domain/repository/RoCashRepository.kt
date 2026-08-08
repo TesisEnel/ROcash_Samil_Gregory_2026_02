@@ -11,7 +11,6 @@ interface RoCashRepository {
     fun obtenerTodasLasEstaciones(): Flow<List<EstacionVentas>>
     suspend fun asignarRutaAEstacion(estacionId: String, rutaId: String)
     suspend fun guardarRegistroRecoleccion(registro: RegistroRecoleccion)
-    suspend fun actualizarDeudaAgente(agenteId: String, nuevaDeuda: Double)
     suspend fun cerrarHojaRuta(hojaRutaId: String)
     suspend fun guardarHojaRuta(hojaRuta: HojaRuta)
     suspend fun guardarEstacion(estacion: EstacionVentas)

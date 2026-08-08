@@ -6,6 +6,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -18,7 +19,7 @@ import ucne.edu.rocash.presentation.home.EstacionItem
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ListaEstacionesScreen(
+fun EstacionListScreen(
     viewModel: EstacionListViewModel = hiltViewModel(),
     onNavigateBack: () -> Unit,
     onNavigateToCrear: () -> Unit
@@ -45,40 +46,56 @@ fun ListaEstacionesScreen(
             }
         }
     ) { paddingValues ->
-        Box(
+        Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            when {
-                state.isLoading -> {
-                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-                }
-                state.errorMessage != null -> {
-                    Text(
-                        text = state.errorMessage!!,
-                        color = MaterialTheme.colorScheme.error,
-                        modifier = Modifier.align(Alignment.Center).padding(16.dp)
-                    )
-                }
-                state.estaciones.isEmpty() -> {
-                    Text(
-                        text = "No hay estaciones registradas.",
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.align(Alignment.Center)
-                    )
-                }
-                else -> {
-                    LazyColumn(
-                        modifier = Modifier.fillMaxSize(),
-                        contentPadding = PaddingValues(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
-                        items(state.estaciones) { estacion ->
-                            EstacionItem(
-                                estacion = estacion,
-                                onClick = { /* TODO: Navegar a editar o detalles */ }
-                            )
+            OutlinedTextField(
+                value = state.searchQuery,
+                onValueChange = { viewModel.processIntent(EstacionListUiEvent.OnSearchQueryChange(it)) },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                placeholder = { Text("Buscar estación...") },
+                leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
+                singleLine = true,
+                shape = MaterialTheme.shapes.large
+            )
+
+            Box(modifier = Modifier.fillMaxSize()) {
+                when {
+                    state.isLoading && state.estaciones.isEmpty() -> {
+                        CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                    }
+                    state.errorMessage != null -> {
+                        Text(
+                            text = state.errorMessage!!,
+                            color = MaterialTheme.colorScheme.error,
+                            modifier = Modifier
+                                .align(Alignment.Center)
+                                .padding(16.dp)
+                        )
+                    }
+                    state.estaciones.isEmpty() -> {
+                        Text(
+                            text = "No hay estaciones registradas.",
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.align(Alignment.Center)
+                        )
+                    }
+                    else -> {
+                        LazyColumn(
+                            modifier = Modifier.fillMaxSize(),
+                            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                            verticalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            items(state.estaciones) { estacion ->
+                                EstacionItem(
+                                    estacion = estacion,
+                                    onClick = { /* TODO: Navegar a editar o detalles */ }
+                                )
+                            }
                         }
                     }
                 }

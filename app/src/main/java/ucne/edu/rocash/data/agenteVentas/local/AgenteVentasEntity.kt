@@ -1,13 +1,13 @@
-package ucne.edu.rocash.data.local.entity
+package ucne.edu.rocash.data.agenteVentas.local
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-
-@Entity(tableName = "agente_ventas")
+@Entity(tableName = "agentes_ventas")
 data class AgenteVentasEntity(
     @PrimaryKey val id: String,
     val nombre: String,
     val telefono: String,
-    val deudaAcumulada: Double = 0.0
+    val deudaAcumulada: Double,
+    val estado: Boolean
 )

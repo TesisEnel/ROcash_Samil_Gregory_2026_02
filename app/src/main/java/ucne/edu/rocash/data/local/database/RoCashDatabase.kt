@@ -2,10 +2,9 @@ package ucne.edu.rocash.data.local.database
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
-
-
+import ucne.edu.rocash.data.agenteVentas.local.AgenteVentasDao
 import ucne.edu.rocash.data.local.dao.RoCashDao
-import ucne.edu.rocash.data.local.entity.AgenteVentasEntity
+import ucne.edu.rocash.data.agenteVentas.local.AgenteVentasEntity
 import ucne.edu.rocash.data.local.entity.EstacionVentasEntity
 import ucne.edu.rocash.data.local.entity.HojaRutaEntity
 import ucne.edu.rocash.data.local.entity.RegistroRecoleccionEntity
@@ -20,13 +19,15 @@ import ucne.edu.rocash.data.recolector.local.RecolectorEntity
         RegistroRecoleccionEntity::class,
         RecolectorEntity::class
     ],
-    version = 3,
+    version = 4,
     exportSchema = false
 )
 abstract class RoCashDatabase : RoomDatabase() {
     abstract val roCashDao: RoCashDao
 
     abstract fun recolectorDao(): RecolectorDao
+
+    abstract fun agenteVentasDao(): AgenteVentasDao
 
     companion object {
         const val DATABASE_NAME = "rocash_db"

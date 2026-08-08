@@ -6,11 +6,13 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.google.firebase.auth.FirebaseAuth
+import ucne.edu.rocash.presentation.agenteVentas.form.AgenteFormScreen
+import ucne.edu.rocash.presentation.agenteVentas.list.AgenteListScreen
 import ucne.edu.rocash.presentation.auth.AuthScreen
 import ucne.edu.rocash.presentation.home.HomeScreen
 import ucne.edu.rocash.presentation.detalle.DetalleEstacionScreen
-import ucne.edu.rocash.presentation.estacion.form.CrearEstacionScreen
-import ucne.edu.rocash.presentation.estacion.list.ListaEstacionesScreen
+import ucne.edu.rocash.presentation.estacion.form.EstacionFormScreen
+import ucne.edu.rocash.presentation.estacion.list.EstacionListScreen
 import ucne.edu.rocash.presentation.recolector.form.FormRecolectorScreen
 import ucne.edu.rocash.presentation.recolector.list.ListRecolectorScreen
 import ucne.edu.rocash.presentation.ruta.CrearRutaScreen
@@ -48,13 +50,16 @@ fun RoCashNavHost() {
                     )
                 },
                 onNavigateToCrearEstacion = {
-                    navController.navigate(ListaEstacionesRoute)
+                    navController.navigate(EstacionListRoute)
                 },
                 onNavigateToCrearRuta = {
                     navController.navigate(CrearRutaRoute)
                 },
                 onNavigateToRecolectores = {
                     navController.navigate(ListaRecolectoresRoute)
+                },
+                onNavigateToAgentes = {
+                    navController.navigate(AgenteListRoute)
                 }
             )
         }
@@ -77,23 +82,21 @@ fun RoCashNavHost() {
         }
 
 
-        composable<ListaEstacionesRoute> {
-            ListaEstacionesScreen(
+        composable<EstacionListRoute> {
+            EstacionListScreen(
                 onNavigateBack = {
                     navController.popBackStack()
                 },
                 onNavigateToCrear = {
-                    navController.navigate(CrearEstacionRoute)
+                    navController.navigate(EstacionFormRoute)
                 }
             )
         }
 
-        composable<CrearEstacionRoute> {
-            CrearEstacionScreen(
-                onNavigateBack = {
-                    navController.popBackStack()
-                }
-            )
+        composable<EstacionFormRoute> {
+            EstacionFormScreen(
+                    onNavigateBack = { navController.popBackStack() }
+                )
         }
 
         composable<CrearRutaRoute> {
@@ -120,6 +123,19 @@ fun RoCashNavHost() {
                 onNavigateBack = {
                     navController.popBackStack()
                 }
+            )
+        }
+
+        composable<AgenteListRoute> {
+            AgenteListScreen(
+                onNavigateBack = { navController.popBackStack() },
+                onNavigateToCrear = { navController.navigate(AgenteFormRoute) }
+            )
+        }
+
+        composable<AgenteFormRoute> {
+            AgenteFormScreen(
+                onNavigateBack = { navController.popBackStack() }
             )
         }
     }

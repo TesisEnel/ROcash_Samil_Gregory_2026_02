@@ -4,21 +4,19 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CrearEstacionScreen(
+fun EstacionFormScreen(
     viewModel: EstacionFormViewModel = hiltViewModel(),
     onNavigateBack: () -> Unit
 ) {
     val state by viewModel.state.collectAsState()
+    var expanded by remember { mutableStateOf(false) }
 
     LaunchedEffect(state.isSuccess) {
         if (state.isSuccess) {
@@ -68,13 +66,42 @@ fun CrearEstacionScreen(
                 modifier = Modifier.fillMaxWidth()
             )
 
-            OutlinedTextField(
-                value = state.agenteId,
-                onValueChange = { viewModel.processIntent(EstacionFormUiEvent.OnAgenteIdChange(it)) },
-                label = { Text("ID del Agente de Ventas") },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true
-            )
+            ExposedDropdownMenuBox(
+                expanded = expanded,
+                onExpandedChange = { expanded = !expanded }
+            ) {
+                OutlinedTextField(
+                    value = state.agenteNombreSeleccionado.ifEmpty { "Seleccione un agente" },
+                    onValueChange = {},
+                    readOnly = true,
+                    label = { Text("Agente Asignado") },
+                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+                    modifier = Modifier.menuAnchor().fillMaxWidth(),
+                    colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors()
+                )
+
+                ExposedDropdownMenu(
+                    expanded = expanded,
+                    onDismissRequest = { expanded = false }
+                ) {
+                    if (state.agentesDisponibles.isEmpty()) {
+                        DropdownMenuItem(
+                            text = { Text("No hay agentes activos") },
+                            onClick = { expanded = false }
+                        )
+                    } else {
+                        state.agentesDisponibles.forEach { agente ->
+                            DropdownMenuItem(
+                                text = { Text(agente.nombre) },
+                                onClick = {
+                                    viewModel.processIntent(EstacionFormUiEvent.OnAgenteSeleccionado(agente.id, agente.nombre))
+                                    expanded = false
+                                }
+                            )
+                        }
+                    }
+                }
+            }
 
             Spacer(modifier = Modifier.weight(1f))
 
