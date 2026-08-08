@@ -15,6 +15,7 @@ import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.People
 import androidx.compose.material.icons.filled.Storefront
+import androidx.compose.material.icons.filled.SupportAgent
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -33,7 +34,8 @@ fun HomeScreen(
     onEstacionClick: (String, String, String) -> Unit,
     onNavigateToCrearEstacion: () -> Unit,
     onNavigateToCrearRuta: () -> Unit,
-    onNavigateToRecolectores: () -> Unit
+    onNavigateToRecolectores: () -> Unit,
+    onNavigateToAgentes: () -> Unit
 ) {
     val state by viewModel.state.collectAsState()
     var expandedMenu by remember { mutableStateOf(false) }
@@ -69,6 +71,16 @@ fun HomeScreen(
                     onClick = {
                         scope.launch { drawerState.close() }
                         onNavigateToCrearEstacion()
+                    },
+                    modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
+                )
+                NavigationDrawerItem(
+                    icon = { Icon(Icons.Default.SupportAgent, contentDescription = "Agentes") },
+                    label = { Text("Administrar Agentes") },
+                    selected = false,
+                    onClick = {
+                        scope.launch { drawerState.close() }
+                        onNavigateToAgentes()
                     },
                     modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
                 )
