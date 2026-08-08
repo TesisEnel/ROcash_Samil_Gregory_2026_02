@@ -1,5 +1,5 @@
 package ucne.edu.rocash.presentation.ruta
-import ucne.edu.rocash.domain.model.EstacionVentas
+import ucne.edu.rocash.domain.estacion.model.EstacionVentas
 data class CrearRutaUIState(
     val isLoading: Boolean = true,
     val estacionesDisponibles: List<EstacionVentas> = emptyList(),

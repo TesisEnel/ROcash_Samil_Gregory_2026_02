@@ -1,10 +1,10 @@
 package ucne.edu.rocash.data.mapper
 
-import ucne.edu.rocash.data.local.entity.EstacionVentasEntity
+import ucne.edu.rocash.data.estacion.local.EstacionVentasEntity
 import ucne.edu.rocash.data.local.entity.HojaRutaEntity
 import ucne.edu.rocash.data.local.entity.RegistroRecoleccionEntity
 import ucne.edu.rocash.data.recolector.local.RecolectorEntity
-import ucne.edu.rocash.domain.model.EstacionVentas
+import ucne.edu.rocash.domain.estacion.model.EstacionVentas
 import ucne.edu.rocash.domain.model.EstadoRuta
 import ucne.edu.rocash.domain.model.HojaRuta
 import ucne.edu.rocash.domain.model.RegistroRecoleccion

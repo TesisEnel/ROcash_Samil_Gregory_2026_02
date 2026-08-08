@@ -5,7 +5,7 @@ import androidx.room.RoomDatabase
 import ucne.edu.rocash.data.agenteVentas.local.AgenteVentasDao
 import ucne.edu.rocash.data.local.dao.RoCashDao
 import ucne.edu.rocash.data.agenteVentas.local.AgenteVentasEntity
-import ucne.edu.rocash.data.local.entity.EstacionVentasEntity
+import ucne.edu.rocash.data.estacion.local.EstacionVentasEntity
 import ucne.edu.rocash.data.local.entity.HojaRutaEntity
 import ucne.edu.rocash.data.local.entity.RegistroRecoleccionEntity
 import ucne.edu.rocash.data.recolector.local.RecolectorDao

@@ -25,7 +25,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.launch
-import ucne.edu.rocash.domain.model.EstacionVentas
+import ucne.edu.rocash.domain.estacion.model.EstacionVentas
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

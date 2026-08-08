@@ -4,6 +4,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
+import ucne.edu.rocash.data.estacion.local.EstacionVentasEntity
 
 @Entity(
     tableName = "registro_recoleccion",

@@ -1,6 +1,6 @@
 package ucne.edu.rocash.presentation.home
 
-import ucne.edu.rocash.domain.model.EstacionVentas
+import ucne.edu.rocash.domain.estacion.model.EstacionVentas
 import ucne.edu.rocash.domain.model.HojaRuta
 
 data class HomeUIState(

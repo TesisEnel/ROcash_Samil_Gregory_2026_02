@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import ucne.edu.rocash.domain.agenteVentas.usecase.GetAgentesUseCase
-import ucne.edu.rocash.domain.model.EstacionVentas
+import ucne.edu.rocash.domain.estacion.model.EstacionVentas
 import ucne.edu.rocash.domain.usecase.CrearEstacionUseCase
 import java.util.UUID
 import javax.inject.Inject

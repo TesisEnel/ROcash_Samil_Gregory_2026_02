@@ -1,6 +1,6 @@
 package ucne.edu.rocash.domain.usecase
 
-import ucne.edu.rocash.domain.model.EstacionVentas
+import ucne.edu.rocash.domain.estacion.model.EstacionVentas
 import ucne.edu.rocash.domain.repository.RoCashRepository
 import javax.inject.Inject
 

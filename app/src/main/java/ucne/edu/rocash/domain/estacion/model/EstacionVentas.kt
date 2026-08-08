@@ -1,4 +1,4 @@
-package ucne.edu.rocash.domain.model
+package ucne.edu.rocash.domain.estacion.model
 
 data class EstacionVentas(
     val id: String,

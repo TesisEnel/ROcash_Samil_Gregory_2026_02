@@ -1,6 +1,6 @@
 package ucne.edu.rocash.presentation.estacion.list
 
-import ucne.edu.rocash.domain.model.EstacionVentas
+import ucne.edu.rocash.domain.estacion.model.EstacionVentas
 
 data class EstacionListUiState(
     val isLoading: Boolean = true,

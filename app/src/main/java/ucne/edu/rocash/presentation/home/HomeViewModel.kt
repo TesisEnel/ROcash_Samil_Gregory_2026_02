@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import ucne.edu.rocash.domain.model.EstacionVentas
+import ucne.edu.rocash.domain.estacion.model.EstacionVentas
 import ucne.edu.rocash.domain.model.EstadoRuta
 import ucne.edu.rocash.domain.model.HojaRuta
 import ucne.edu.rocash.domain.repository.RoCashRepository
@@ -20,6 +20,8 @@ import javax.inject.Inject
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
+import java.util.UUID
+
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val repository: RoCashRepository,
@@ -58,7 +60,7 @@ class HomeViewModel @Inject constructor(
                 crearHojaRutaUseCase(nuevaRuta)
 
                 val estacion1 = EstacionVentas(
-                    id = java.util.UUID.randomUUID().toString(),
+                    id = UUID.randomUUID().toString(),
                     hojaRutaId = nuevaRutaId,
                     agenteId = "AGE-001",
                     nombre = "Estación Los Prados",
@@ -66,7 +68,7 @@ class HomeViewModel @Inject constructor(
                 )
 
                 val estacion2 = EstacionVentas(
-                    id = java.util.UUID.randomUUID().toString(),
+                    id = UUID.randomUUID().toString(),
                     hojaRutaId = nuevaRutaId,
                     agenteId = "AGE-002",
                     nombre = "Estación Centro",

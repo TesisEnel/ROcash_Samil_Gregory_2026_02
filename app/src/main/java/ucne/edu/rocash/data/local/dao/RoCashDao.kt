@@ -6,7 +6,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Upsert
 import kotlinx.coroutines.flow.Flow
-import ucne.edu.rocash.data.local.entity.EstacionVentasEntity
+import ucne.edu.rocash.data.estacion.local.EstacionVentasEntity
 import ucne.edu.rocash.data.local.entity.HojaRutaEntity
 import ucne.edu.rocash.data.local.entity.RegistroRecoleccionEntity
 

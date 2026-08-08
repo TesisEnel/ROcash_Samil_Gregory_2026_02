@@ -6,7 +6,7 @@ import ucne.edu.rocash.data.local.dao.RoCashDao
 import ucne.edu.rocash.data.mapper.toDomain
 import ucne.edu.rocash.data.mapper.toEntity
 import ucne.edu.rocash.data.recolector.local.RecolectorDao
-import ucne.edu.rocash.domain.model.EstacionVentas
+import ucne.edu.rocash.domain.estacion.model.EstacionVentas
 import ucne.edu.rocash.domain.model.HojaRuta
 import ucne.edu.rocash.domain.model.RegistroRecoleccion
 import ucne.edu.rocash.domain.recolector.model.Recolector

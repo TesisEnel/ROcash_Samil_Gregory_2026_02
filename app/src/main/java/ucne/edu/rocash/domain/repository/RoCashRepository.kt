@@ -1,6 +1,6 @@
 package ucne.edu.rocash.domain.repository
 import kotlinx.coroutines.flow.Flow
-import ucne.edu.rocash.domain.model.EstacionVentas
+import ucne.edu.rocash.domain.estacion.model.EstacionVentas
 import ucne.edu.rocash.domain.model.HojaRuta
 import ucne.edu.rocash.domain.model.RegistroRecoleccion
 import ucne.edu.rocash.domain.recolector.model.Recolector

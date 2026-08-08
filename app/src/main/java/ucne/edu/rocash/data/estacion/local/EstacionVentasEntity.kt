@@ -1,4 +1,5 @@
-package ucne.edu.rocash.data.local.entity
+package ucne.edu.rocash.data.estacion.local
+
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
@@ -12,7 +13,7 @@ import ucne.edu.rocash.data.agenteVentas.local.AgenteVentasEntity
             entity = AgenteVentasEntity::class,
             parentColumns = ["id"],
             childColumns = ["agenteId"],
-            onDelete = ForeignKey.RESTRICT
+            onDelete = ForeignKey.Companion.RESTRICT
         )
     ]
 )
