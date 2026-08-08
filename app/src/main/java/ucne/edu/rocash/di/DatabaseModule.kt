@@ -38,15 +38,16 @@ object DatabaseModule {
     @Provides
     @Singleton
     fun provideRoCashRepository(
-        dao: RoCashDao,
-        recolectorDao: RecolectorDao
+        dao: RoCashDao
     ): RoCashRepository {
         return RoCashRepositoryImpl(dao, recolectorDao)
     }
 
     @Provides
     @Singleton
-    fun provideRecolectorDao(database: RoCashDatabase): RecolectorDao {
-        return database.recolectorDao()
+    fun provideRecolectorRepository(
+        recolectorDao: RecolectorDao
+    ): RecolectorRepository {
+        return RecolectorRepositoryImpl(recolectorDao)
     }
 }

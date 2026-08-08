@@ -61,24 +61,4 @@ class RoCashRepositoryImpl @Inject constructor(
     override suspend fun observeAllEstaciones(): Flow<List<EstacionVentas>> {
         return dao.observeAllEstaciones().map { lista -> lista.map { it.toDomain() } }
     }
-
-    override suspend fun insertarRecolector(recolector: Recolector) {
-        recolectorDao.upsert(recolector.toEntity())
-    }
-
-    override fun obtenerRecolectores(): Flow<List<Recolector>> {
-        return recolectorDao.observeAll().map { lista ->
-            lista.map { it.toDomain() }
-        }
-    }
-
-    override suspend fun obtenerRecolectorPorId(id: String): Recolector? {
-        return recolectorDao.getById(id)?.toDomain()
-    }
-
-    override fun buscarRecolectoresPorNombre(nombre: String): Flow<List<Recolector>> {
-        return recolectorDao.searchByName(nombre).map { lista ->
-            lista.map { it.toDomain() }
-        }
-    }
 }

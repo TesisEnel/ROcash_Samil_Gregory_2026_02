@@ -17,12 +17,4 @@ interface RoCashRepository {
     suspend fun guardarEstacion(estacion: EstacionVentas)
 
     suspend fun observeAllEstaciones(): Flow<List<EstacionVentas>>
-
-    fun obtenerRecolectores(): Flow<List<Recolector>>
-
-    suspend fun insertarRecolector(recolector: Recolector)
-
-    suspend fun obtenerRecolectorPorId(id: String): Recolector?
-
-    fun buscarRecolectoresPorNombre(nombre: String): Flow<List<Recolector>>
 }

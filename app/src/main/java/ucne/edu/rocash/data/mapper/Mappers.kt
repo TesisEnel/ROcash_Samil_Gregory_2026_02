@@ -62,22 +62,3 @@ fun EstacionVentas.toEntity(): EstacionVentasEntity {
         agenteId = this.agenteId
     )
 }
-    fun Recolector.toEntity(): RecolectorEntity
-    {
-        return RecolectorEntity(
-            id = this.id,
-            nombre = this.nombre,
-            telefono = this.telefono,
-            estado = this.estado
-        )
-    }
-
-    fun RecolectorEntity.toDomain(): Recolector {
-        return Recolector(
-            id = this.id,
-            nombre = this.nombre,
-            telefono = this.telefono,
-            estado = this.estado
-        )
-    }
-
