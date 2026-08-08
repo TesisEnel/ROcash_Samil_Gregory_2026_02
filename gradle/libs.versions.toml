@@ -16,6 +16,7 @@ googleServices = "4.5.0"
 room = "2.8.4"
 kotlinxSerializationJson = "1.8.0"
 ksp = "2.3.11"
+robolectric = "4.13"
 turbine = "1.2.1"
 
 [libraries]
@@ -45,6 +46,7 @@ androidx-room-runtime = { group = "androidx.room", name = "room-runtime", versio
 androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
+robolectric = { group = "org.robolectric", name = "robolectric", version.ref = "robolectric" }
 turbine = { group = "app.cash.turbine", name = "turbine", version.ref = "turbine" }
 
 [plugins]

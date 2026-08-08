@@ -85,6 +85,8 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(libs.androidx.junit)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
+
+    testImplementation(libs.robolectric)
     debugImplementation(libs.androidx.compose.ui.tooling)
 
     testImplementation(libs.turbine)
