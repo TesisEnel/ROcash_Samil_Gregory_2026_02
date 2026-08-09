@@ -9,11 +9,16 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Map
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.MonetizationOn
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.People
+import androidx.compose.material.icons.filled.PersonSearch
+import androidx.compose.material.icons.filled.Route
+import androidx.compose.material.icons.filled.Store
 import androidx.compose.material.icons.filled.Storefront
 import androidx.compose.material.icons.filled.SupportAgent
 import androidx.compose.material3.*
@@ -31,15 +36,13 @@ import ucne.edu.rocash.domain.estacion.model.EstacionVentas
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
-    onEstacionClick: (String, String, String) -> Unit,
-    onNavigateToCrearEstacion: () -> Unit,
     onNavigateToCrearRuta: () -> Unit,
+    onNavigateToHistorial: () -> Unit,
     onNavigateToRecolectores: () -> Unit,
-    onNavigateToAgentes: () -> Unit
+    onNavigateToAgentes: () -> Unit,
+    onNavigateToEstaciones: () -> Unit
 ) {
     val state by viewModel.state.collectAsState()
-    var expandedMenu by remember { mutableStateOf(false) }
-
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
@@ -47,36 +50,28 @@ fun HomeScreen(
         drawerState = drawerState,
         drawerContent = {
             ModalDrawerSheet {
-                Spacer(modifier = Modifier.height(24.dp))
                 Text(
-                    text = "ROcash",
-                    modifier = Modifier.padding(horizontal = 28.dp, vertical = 16.dp),
+                    text = "Menú RoCash",
+                    modifier = Modifier.padding(16.dp),
                     style = MaterialTheme.typography.headlineMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary
+                    fontWeight = FontWeight.Bold
                 )
-                HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp))
+                HorizontalDivider()
 
                 NavigationDrawerItem(
-                    icon = { Icon(Icons.Default.Home, contentDescription = "Inicio") },
-                    label = { Text("Dashboard") },
-                    selected = true,
-                    onClick = { scope.launch { drawerState.close() } },
-                    modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
-                )
-                NavigationDrawerItem(
-                    icon = { Icon(Icons.Default.Add, contentDescription = "Estación") },
-                    label = { Text("Administrar Estaciones") },
+                    icon = { Icon(Icons.Default.PersonSearch, contentDescription = "Recolectores") },
+                    label = { Text("Recolectores") },
                     selected = false,
                     onClick = {
                         scope.launch { drawerState.close() }
-                        onNavigateToCrearEstacion()
+                        onNavigateToRecolectores()
                     },
                     modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
                 )
+
                 NavigationDrawerItem(
                     icon = { Icon(Icons.Default.SupportAgent, contentDescription = "Agentes") },
-                    label = { Text("Administrar Agentes") },
+                    label = { Text("Agentes de Ventas") },
                     selected = false,
                     onClick = {
                         scope.launch { drawerState.close() }
@@ -84,23 +79,14 @@ fun HomeScreen(
                     },
                     modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
                 )
+
                 NavigationDrawerItem(
-                    icon = { Icon(Icons.Default.Map, contentDescription = "Ruta") },
-                    label = { Text("Armar Nueva Ruta") },
+                    icon = { Icon(Icons.Default.Store, contentDescription = "Estaciones") },
+                    label = { Text("Estaciones (Bancas)") },
                     selected = false,
                     onClick = {
                         scope.launch { drawerState.close() }
-                        onNavigateToCrearRuta()
-                    },
-                    modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
-                )
-                NavigationDrawerItem(
-                    icon = { Icon(Icons.Default.People, contentDescription = "Recolectores") },
-                    label = { Text("Administrar Recolectores") },
-                    selected = false,
-                    onClick = {
-                        scope.launch { drawerState.close() }
-                        onNavigateToRecolectores()
+                        onNavigateToEstaciones()
                     },
                     modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
                 )
@@ -110,93 +96,112 @@ fun HomeScreen(
         Scaffold(
             topBar = {
                 TopAppBar(
-                    title = { Text("Dashboard de Recolección") },
+                    title = { Text("Dashboard") },
                     navigationIcon = {
                         IconButton(onClick = { scope.launch { drawerState.open() } }) {
-                            Icon(Icons.Default.Menu, contentDescription = "Abrir Menú")
+                            Icon(Icons.Default.Menu, contentDescription = "Menú")
                         }
                     },
-                    colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = MaterialTheme.colorScheme.primaryContainer,
-                        titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
-                    ),
                     actions = {
-                        IconButton(onClick = { expandedMenu = true }) {
-                            Icon(Icons.Filled.MoreVert, contentDescription = "Opciones")
+                        IconButton(onClick = onNavigateToHistorial) {
+                            Icon(Icons.Default.History, contentDescription = "Historial")
                         }
                     }
                 )
+            },
+            floatingActionButton = {
+                if (state.hojaRutaActiva == null && !state.isLoading) {
+                    FloatingActionButton(
+                        onClick = onNavigateToCrearRuta,
+                        containerColor = MaterialTheme.colorScheme.primary
+                    ) {
+                        Icon(Icons.Default.Add, contentDescription = "Nueva Ruta")
+                    }
+                }
             }
         ) { paddingValues ->
-            Box(
+            Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(paddingValues)
-                    .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f))
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                when {
-                    state.isLoading -> {
-                        CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-                    }
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    StatCard(
+                        modifier = Modifier.weight(1f),
+                        titulo = "Ingresos Totales",
+                        valor = "$${state.totalIngresos}",
+                        icono = Icons.Default.MonetizationOn
+                    )
+                    StatCard(
+                        modifier = Modifier.weight(1f),
+                        titulo = "Rutas Listas",
+                        valor = "${state.rutasCompletadas}",
+                        icono = Icons.Default.Route
+                    )
+                }
 
-                    state.errorMessage != null -> {
-                        Text(
-                            text = state.errorMessage!!,
-                            color = MaterialTheme.colorScheme.error,
-                            modifier = Modifier
-                                .align(Alignment.Center)
-                                .padding(16.dp)
-                        )
-                    }
+                HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
 
-                    state.hojaRutaActiva == null -> {
+                Text("Ruta en Progreso", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+
+                if (state.isLoading) {
+                    CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
+                } else if (state.hojaRutaActiva == null) {
+
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+                    ) {
                         Column(
-                            modifier = Modifier.align(Alignment.Center),
+                            modifier = Modifier
+                                .padding(24.dp)
+                                .fillMaxWidth(),
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
-                            Text(
-                                "No tienes ninguna hoja de ruta activa.",
-                                style = MaterialTheme.typography.bodyLarge,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            Icon(
+                                Icons.Default.Route,
+                                contentDescription = null,
+                                modifier = Modifier.size(48.dp),
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant
                             )
+                            Spacer(modifier = Modifier.height(16.dp))
+                            Text("No tienes ninguna ruta activa.", style = MaterialTheme.typography.bodyLarge)
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Button(onClick = onNavigateToCrearRuta) {
+                                Text("Iniciar Nueva Ruta")
+                            }
                         }
                     }
+                } else {
+                    val ruta = state.hojaRutaActiva!!
+                    ElevatedCard(modifier = Modifier.fillMaxWidth()) {
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            Text(
+                                text = "Ruta #${ruta.id}",
+                                style = MaterialTheme.typography.headlineSmall,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Text("Estaciones asignadas: ${ruta.estaciones.size}", style = MaterialTheme.typography.bodyMedium)
 
-                    else -> {
-                        LazyColumn(
-                            modifier = Modifier.fillMaxSize(),
-                            contentPadding = PaddingValues(16.dp),
-                            verticalArrangement = Arrangement.spacedBy(12.dp)
-                        ) {
-                            item {
-                                Column(modifier = Modifier.padding(bottom = 8.dp)) {
-                                    Text(
-                                        text = "Ruta Activa",
-                                        style = MaterialTheme.typography.labelLarge,
-                                        color = MaterialTheme.colorScheme.primary
-                                    )
-                                    Text(
-                                        text = "#${state.hojaRutaActiva?.id?.take(8)}...",
-                                        style = MaterialTheme.typography.headlineSmall,
-                                        fontWeight = FontWeight.Black
-                                    )
-                                    Spacer(modifier = Modifier.height(16.dp))
-                                    Text(
-                                        text = "ESTACIONES ASIGNADAS (${state.estaciones.size})",
-                                        style = MaterialTheme.typography.labelMedium,
-                                        fontWeight = FontWeight.Bold,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                            Spacer(modifier = Modifier.height(16.dp))
+
+                            LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                                items(ruta.estaciones) { estacion ->
+                                    ListItem(
+                                        headlineContent = { Text(estacion.nombre, fontWeight = FontWeight.SemiBold) },
+                                        supportingContent = { Text(estacion.direccion) },
+                                        colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.background),
+                                        tonalElevation = 2.dp,
+                                        shadowElevation = 1.dp
                                     )
                                 }
-                            }
-
-                            items(state.estaciones) { estacion ->
-                                EstacionItem(
-                                    estacion = estacion,
-                                    onClick = {
-                                        onEstacionClick(estacion.id, estacion.agenteId, estacion.nombre)
-                                    }
-                                )
                             }
                         }
                     }
@@ -207,64 +212,21 @@ fun HomeScreen(
 }
 
 @Composable
-fun EstacionItem(estacion: EstacionVentas, onClick: () -> Unit) {
-    ElevatedCard(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(MaterialTheme.shapes.medium)
-            .clickable { onClick() },
-        colors = CardDefaults.elevatedCardColors(
-            containerColor = MaterialTheme.colorScheme.surface,
-        ),
-        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 2.dp)
-    ) {
-        Row(
-            modifier = Modifier
-                .padding(16.dp)
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
+fun StatCard(modifier: Modifier = Modifier, titulo: String, valor: String, icono: androidx.compose.ui.graphics.vector.ImageVector) {
+    ElevatedCard(modifier = modifier) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            horizontalAlignment = Alignment.Start
         ) {
-            Box(
-                modifier = Modifier
-                    .size(48.dp)
-                    .background(MaterialTheme.colorScheme.primaryContainer, CircleShape),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Storefront,
-                    contentDescription = "Estación",
-                    tint = MaterialTheme.colorScheme.onPrimaryContainer
-                )
-            }
-
-            Spacer(modifier = Modifier.width(16.dp))
-
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = estacion.nombre,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-                Spacer(modifier = Modifier.height(2.dp))
-                Text(
-                    text = estacion.direccion,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = "Agente: ${estacion.agenteId}",
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.primary
-                )
-            }
-
             Icon(
-                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                contentDescription = "Ir a detalle",
-                tint = MaterialTheme.colorScheme.onSurfaceVariant
+                icono,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(32.dp)
             )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(text = titulo, style = MaterialTheme.typography.labelMedium)
+            Text(text = valor, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
         }
     }
 }
