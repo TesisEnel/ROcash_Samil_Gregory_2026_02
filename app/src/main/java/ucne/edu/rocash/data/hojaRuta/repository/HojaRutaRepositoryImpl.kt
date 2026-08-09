@@ -6,12 +6,12 @@ import ucne.edu.rocash.data.hojaRuta.local.HojaRutaDao
 import ucne.edu.rocash.data.hojaRuta.mapper.toDomain
 import ucne.edu.rocash.data.hojaRuta.mapper.toEntity
 import ucne.edu.rocash.domain.hojaRuta.model.HojaRuta
-import ucne.edu.rocash.domain.hojaRuta.repository.RutaRepository
+import ucne.edu.rocash.domain.hojaRuta.repository.HojaRutaRepository
 import javax.inject.Inject
 
-class RutaRepositoryImpl @Inject constructor(
+class HojaRutaRepositoryImpl @Inject constructor(
     private val dao: HojaRutaDao
-) : RutaRepository {
+) : HojaRutaRepository {
 
     override suspend fun insertarRuta(ruta: HojaRuta): Int {
         return dao.insertarRuta(ruta.toEntity()).toInt()

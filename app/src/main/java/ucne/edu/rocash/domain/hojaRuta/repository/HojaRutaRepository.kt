@@ -3,7 +3,7 @@ package ucne.edu.rocash.domain.hojaRuta.repository
 import kotlinx.coroutines.flow.Flow
 import ucne.edu.rocash.domain.hojaRuta.model.HojaRuta
 
-interface RutaRepository {
+interface HojaRutaRepository {
     suspend fun insertarRuta(ruta: HojaRuta): Int
     suspend fun actualizarRuta(ruta: HojaRuta)
 
