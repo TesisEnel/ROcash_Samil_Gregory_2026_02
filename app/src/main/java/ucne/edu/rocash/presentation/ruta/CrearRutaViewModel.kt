@@ -10,12 +10,11 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import ucne.edu.rocash.domain.estacion.usecase.AsignarRutaAEstacionUseCase
 import ucne.edu.rocash.domain.estacion.usecase.GetEstacionesUseCase
 import ucne.edu.rocash.domain.hojaRuta.model.EstadoRuta
 import ucne.edu.rocash.domain.hojaRuta.model.HojaRuta
-import ucne.edu.rocash.domain.repository.RoCashRepository
-import ucne.edu.rocash.domain.usecase.AsignarRutaAEstacionUseCase
-import ucne.edu.rocash.domain.usecase.CrearHojaRutaUseCase
+import ucne.edu.rocash.domain.hojaRuta.usecase.CrearHojaRutaUseCase
 import java.util.UUID
 import javax.inject.Inject
 
@@ -45,6 +44,7 @@ class CrearRutaViewModel @Inject constructor(
     private fun cargarEstaciones() {
         viewModelScope.launch {
             try {
+                // Filtramos para asegurar que solo se muestren estaciones sin ruta activa si es necesario
                 getEstacionesUseCase().collectLatest { lista ->
                     _state.update { it.copy(isLoading = false, estacionesDisponibles = lista) }
                 }
@@ -79,13 +79,16 @@ class CrearRutaViewModel @Inject constructor(
 
         viewModelScope.launch {
             try {
+                // Al no pasarle ID, toma el 0 por defecto y Room generará el Int secuencial
                 val nuevaRuta = HojaRuta(
                     recolectorId = recolectorId,
                     estado = EstadoRuta.EN_PROGRESO
                 )
 
+                // Capturamos el Int generado por Room
                 val nuevaRutaIdGenerado = crearHojaRutaUseCase(nuevaRuta)
 
+                // Asignamos el ID numérico a las estaciones seleccionadas
                 currentState.estacionesSeleccionadas.forEach { estacionId ->
                     asignarRutaAEstacionUseCase(estacionId, nuevaRutaIdGenerado)
                 }
