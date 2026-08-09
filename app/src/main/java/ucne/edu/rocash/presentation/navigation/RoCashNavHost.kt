@@ -40,26 +40,21 @@ fun RoCashNavHost() {
 
         composable<HomeRecolectorRoute> {
             HomeScreen(
-                onEstacionClick = { estacionId, agenteId, nombreEstacion ->
-                    navController.navigate(
-                        DetalleEstacionRoute(
-                            estacionId = estacionId,
-                            agenteId = agenteId,
-                            nombreEstacion = nombreEstacion
-                        )
-                    )
-                },
-                onNavigateToCrearEstacion = {
-                    navController.navigate(EstacionListRoute)
-                },
                 onNavigateToCrearRuta = {
                     navController.navigate(CrearRutaRoute)
+                },
+                onNavigateToHistorial = {
+                    // TODO: Navegar a la pantalla de Historial cuando la construyamos en el siguiente paso
+                    // navController.navigate(HistorialRutaRoute)
                 },
                 onNavigateToRecolectores = {
                     navController.navigate(ListaRecolectoresRoute)
                 },
                 onNavigateToAgentes = {
                     navController.navigate(AgenteListRoute)
+                },
+                onNavigateToEstaciones = {
+                    navController.navigate(EstacionListRoute)
                 }
             )
         }
@@ -81,7 +76,6 @@ fun RoCashNavHost() {
             // TODO: Pantalla de Cierre
         }
 
-
         composable<EstacionListRoute> {
             EstacionListScreen(
                 onNavigateBack = {
@@ -95,8 +89,8 @@ fun RoCashNavHost() {
 
         composable<EstacionFormRoute> {
             EstacionFormScreen(
-                    onNavigateBack = { navController.popBackStack() }
-                )
+                onNavigateBack = { navController.popBackStack() }
+            )
         }
 
         composable<CrearRutaRoute> {
