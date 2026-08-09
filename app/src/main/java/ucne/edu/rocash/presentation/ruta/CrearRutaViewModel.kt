@@ -11,8 +11,8 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import ucne.edu.rocash.domain.estacion.usecase.GetEstacionesUseCase
-import ucne.edu.rocash.domain.model.EstadoRuta
-import ucne.edu.rocash.domain.model.HojaRuta
+import ucne.edu.rocash.domain.hojaRuta.model.EstadoRuta
+import ucne.edu.rocash.domain.hojaRuta.model.HojaRuta
 import ucne.edu.rocash.domain.repository.RoCashRepository
 import ucne.edu.rocash.domain.usecase.AsignarRutaAEstacionUseCase
 import ucne.edu.rocash.domain.usecase.CrearHojaRutaUseCase
@@ -79,18 +79,15 @@ class CrearRutaViewModel @Inject constructor(
 
         viewModelScope.launch {
             try {
-                val nuevaRutaId = UUID.randomUUID().toString()
-
                 val nuevaRuta = HojaRuta(
-                    id = nuevaRutaId,
                     recolectorId = recolectorId,
                     estado = EstadoRuta.EN_PROGRESO
                 )
 
-                crearHojaRutaUseCase(nuevaRuta)
+                val nuevaRutaIdGenerado = crearHojaRutaUseCase(nuevaRuta)
 
                 currentState.estacionesSeleccionadas.forEach { estacionId ->
-                    asignarRutaAEstacionUseCase(estacionId, nuevaRutaId)
+                    asignarRutaAEstacionUseCase(estacionId, nuevaRutaIdGenerado)
                 }
 
                 _state.update { it.copy(isLoading = false, isSuccess = true) }

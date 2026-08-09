@@ -11,6 +11,8 @@ import ucne.edu.rocash.data.agenteVentas.local.AgenteVentasDao
 import ucne.edu.rocash.data.agenteVentas.repository.AgenteVentasRepositoryImpl
 import ucne.edu.rocash.data.estacion.local.EstacionVentasDao
 import ucne.edu.rocash.data.estacion.repository.EstacionRepositoryImpl
+import ucne.edu.rocash.data.hojaRuta.local.HojaRutaDao
+import ucne.edu.rocash.data.hojaRuta.repository.RutaRepositoryImpl
 import ucne.edu.rocash.data.local.dao.RoCashDao
 import ucne.edu.rocash.data.local.database.RoCashDatabase
 import ucne.edu.rocash.data.recolector.local.RecolectorDao
@@ -18,6 +20,7 @@ import ucne.edu.rocash.data.recolector.repository.RecolectorRepositoryImpl
 import ucne.edu.rocash.data.repository.RoCashRepositoryImpl
 import ucne.edu.rocash.domain.agenteVentas.repository.AgenteVentasRepository
 import ucne.edu.rocash.domain.estacion.repository.EstacionRepository
+import ucne.edu.rocash.domain.hojaRuta.repository.RutaRepository
 import ucne.edu.rocash.domain.recolector.repository.RecolectorRepository
 import ucne.edu.rocash.domain.repository.RoCashRepository
 import javax.inject.Singleton
@@ -91,5 +94,19 @@ object DatabaseModule {
         dao: EstacionVentasDao
     ): EstacionRepository {
         return EstacionRepositoryImpl(dao)
+    }
+
+    @Provides
+    @Singleton
+    fun provideHojaRutaDao(database: RoCashDatabase): HojaRutaDao{
+        return database.hojaRutaDao()
+    }
+
+    @Provides
+    @Singleton
+    fun providesHojaRutaRepository(
+        dao: HojaRutaDao
+    ): RutaRepository{
+        return RutaRepositoryImpl(dao)
     }
 }
