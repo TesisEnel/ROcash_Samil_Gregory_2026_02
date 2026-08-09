@@ -28,4 +28,8 @@ class EstacionRepositoryImpl @Inject constructor(
     override fun buscarEstaciones(query: String): Flow<List<EstacionVentas>> {
         return dao.search(query).map { lista -> lista.map { it.toDomain() } }
     }
+
+    override suspend fun asignarRuta(estacionId: String, rutaId: Int) {
+        dao.asignarRuta(estacionId, rutaId)
+    }
 }

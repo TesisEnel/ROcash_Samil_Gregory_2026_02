@@ -28,11 +28,6 @@ class RoCashRepositoryImpl @Inject constructor(
         }
     }
 
-
-    override suspend fun asignarRutaAEstacion(estacionId: String, rutaId: String) {
-        dao.asignarRutaAEstacion(estacionId, rutaId)
-    }
-
     override suspend fun guardarRegistroRecoleccion(registro: RegistroRecoleccion) {
         dao.insertarRegistroRecoleccion(registro.toEntity())
     }
