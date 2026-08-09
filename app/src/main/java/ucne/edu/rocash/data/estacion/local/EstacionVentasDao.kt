@@ -18,4 +18,7 @@ interface EstacionVentasDao {
 
     @Query("SELECT * FROM estacion_ventas WHERE nombre LIKE '%' || :query || '%' OR direccion LIKE '%' || :query || '%'")
     fun search(query: String): Flow<List<EstacionVentasEntity>>
+
+    @Query("UPDATE estacion_ventas SET hojaRutaId = :rutaId WHERE id = :estacionId")
+    suspend fun asignarRuta(estacionId: String, rutaId: Int)
 }
