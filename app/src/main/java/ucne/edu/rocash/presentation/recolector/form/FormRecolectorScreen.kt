@@ -14,10 +14,15 @@ import androidx.hilt.navigation.compose.hiltViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FormRecolectorScreen(
+    recolectorId: String? = null,
     viewModel: FormRecolectorViewModel = hiltViewModel(),
     onNavigateBack: () -> Unit
 ) {
     val state by viewModel.state.collectAsState()
+
+    LaunchedEffect(recolectorId) {
+        viewModel.processIntent(FormRecolectorUiEvent.Inicializar(recolectorId))
+    }
 
     LaunchedEffect(state.isSuccess) {
         if (state.isSuccess) {
@@ -25,7 +30,7 @@ fun FormRecolectorScreen(
             onNavigateBack()
         }
     }
-
+    val titulo = if (state.recolectorId == null) "Nuevo Recolector" else "Editar Recolector"
     Scaffold(
         topBar = {
             TopAppBar(
@@ -65,6 +70,15 @@ fun FormRecolectorScreen(
                 value = state.telefono,
                 onValueChange = { viewModel.processIntent(FormRecolectorUiEvent.OnTelefonoChange(it)) },
                 label = { Text("Número de Teléfono") },
+                modifier = Modifier.fillMaxWidth(),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
+                singleLine = true
+            )
+
+            OutlinedTextField(
+                value = state.cedula,
+                onValueChange = { viewModel.processIntent(FormRecolectorUiEvent.OnCedulaChange(it)) },
+                label = { Text("Cedula") },
                 modifier = Modifier.fillMaxWidth(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
                 singleLine = true
