@@ -9,6 +9,7 @@ fun Recolector.toEntity(): RecolectorEntity
         id = this.id,
         nombre = this.nombre,
         telefono = this.telefono,
+        cedula = this.cedula,
         estado = this.estado
     )
 }
@@ -18,6 +19,7 @@ fun RecolectorEntity.toDomain(): Recolector {
         id = this.id,
         nombre = this.nombre,
         telefono = this.telefono,
+        cedula = this.cedula,
         estado = this.estado
     )
 }

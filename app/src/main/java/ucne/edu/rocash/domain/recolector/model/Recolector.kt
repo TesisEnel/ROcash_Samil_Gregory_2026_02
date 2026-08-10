@@ -8,4 +8,3 @@ data class Recolector(
     val estado: Boolean = true
 
 )
-//Semana dos: Agregar propiedad cedula al recolector
