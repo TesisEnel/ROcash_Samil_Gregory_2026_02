@@ -16,6 +16,7 @@ import ucne.edu.rocash.presentation.estacion.list.EstacionListScreen
 import ucne.edu.rocash.presentation.recolector.form.FormRecolectorScreen
 import ucne.edu.rocash.presentation.recolector.list.ListRecolectorScreen
 import ucne.edu.rocash.presentation.ruta.CrearRutaScreen
+import ucne.edu.rocash.presentation.ruta.historial.HistorialRutasScreen
 
 @Composable
 fun RoCashNavHost() {
@@ -44,8 +45,7 @@ fun RoCashNavHost() {
                     navController.navigate(CrearRutaRoute)
                 },
                 onNavigateToHistorial = {
-                    // TODO: Navegar a la pantalla de Historial cuando la construyamos en el siguiente paso
-                    // navController.navigate(HistorialRutaRoute)
+                    navController.navigate(HistorialRutaRoute)
                 },
                 onNavigateToRecolectores = {
                     navController.navigate(ListaRecolectoresRoute)
@@ -130,6 +130,14 @@ fun RoCashNavHost() {
         composable<AgenteFormRoute> {
             AgenteFormScreen(
                 onNavigateBack = { navController.popBackStack() }
+            )
+        }
+
+        composable<HistorialRutaRoute> {
+            HistorialRutasScreen(
+                onNavigateBack = {
+                    navController.popBackStack()
+                }
             )
         }
     }
