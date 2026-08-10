@@ -29,10 +29,8 @@ object CrearRutaRoute
 
 @Serializable
 object ListaRecolectoresRoute
-
 @Serializable
-object FormRecolectorRoute
-
+data class FormRecolectorRoute(val recolectorId: String? = null)
 @Serializable
 object AgenteListRoute
 

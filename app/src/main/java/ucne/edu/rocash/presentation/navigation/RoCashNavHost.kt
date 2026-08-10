@@ -23,7 +23,7 @@ fun RoCashNavHost() {
     val navController = rememberNavController()
 
     val usuarioActual = FirebaseAuth.getInstance().currentUser
-    val rutaInicial = if (usuarioActual != null) HomeRecolectorRoute else AuthRoute
+    val rutaInicial = if (usuarioActual != null) HomeRecolectorRoute else HomeRecolectorRoute
 
     NavHost(
         navController = navController,
@@ -107,13 +107,20 @@ fun RoCashNavHost() {
                     navController.popBackStack()
                 },
                 onNavigateToCrear = {
-                    navController.navigate(FormRecolectorRoute)
+                    navController.navigate(FormRecolectorRoute())
+                },
+                onNavigateToEditar = { id ->
+                    navController.navigate(FormRecolectorRoute(recolectorId = id))
                 }
             )
         }
 
-        composable<FormRecolectorRoute> {
+        composable<FormRecolectorRoute> { backStackEntry ->
+
+            val argumentos = backStackEntry.toRoute<FormRecolectorRoute>()
+
             FormRecolectorScreen(
+                recolectorId = argumentos.recolectorId,
                 onNavigateBack = {
                     navController.popBackStack()
                 }
