@@ -8,4 +8,6 @@ interface EstacionRepository {
     fun obtenerEstaciones(): Flow<List<EstacionVentas>>
     suspend fun obtenerEstacionPorId(id: String): EstacionVentas?
     fun buscarEstaciones(query: String): Flow<List<EstacionVentas>>
+
+    suspend fun asignarRuta(estacionId: String, rutaId: Int)
 }

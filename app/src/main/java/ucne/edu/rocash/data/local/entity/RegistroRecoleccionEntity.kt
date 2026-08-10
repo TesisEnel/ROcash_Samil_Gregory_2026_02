@@ -5,6 +5,7 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import ucne.edu.rocash.data.estacion.local.EstacionVentasEntity
+import ucne.edu.rocash.data.hojaRuta.local.HojaRutaEntity
 
 @Entity(
     tableName = "registro_recoleccion",

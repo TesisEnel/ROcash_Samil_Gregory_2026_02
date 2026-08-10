@@ -38,3 +38,6 @@ object AgenteListRoute
 
 @Serializable
 object AgenteFormRoute
+
+@Serializable
+object HistorialRutaRoute

@@ -1,23 +1,12 @@
 package ucne.edu.rocash.data.mapper
 
 import ucne.edu.rocash.data.estacion.local.EstacionVentasEntity
-import ucne.edu.rocash.data.local.entity.HojaRutaEntity
 import ucne.edu.rocash.data.local.entity.RegistroRecoleccionEntity
 import ucne.edu.rocash.data.recolector.local.RecolectorEntity
 import ucne.edu.rocash.domain.estacion.model.EstacionVentas
-import ucne.edu.rocash.domain.model.EstadoRuta
-import ucne.edu.rocash.domain.model.HojaRuta
 import ucne.edu.rocash.domain.model.RegistroRecoleccion
 import ucne.edu.rocash.domain.recolector.model.Recolector
 
-fun HojaRutaEntity.toDomain(): HojaRuta {
-    return HojaRuta(
-        id = this.id,
-        recolectorId = this.recolectorId,
-        fechaCreacion = this.fechaCreacion,
-        estado = EstadoRuta.valueOf(this.estado)
-    )
-}
 fun RegistroRecoleccion.toEntity(): RegistroRecoleccionEntity {
     return RegistroRecoleccionEntity(
         id = this.id,
@@ -30,14 +19,5 @@ fun RegistroRecoleccion.toEntity(): RegistroRecoleccionEntity {
         montoDeuda = this.montoDeuda,
         estadoVisita = this.estadoVisita.name,
         notaIncidencia = this.notaIncidencia
-    )
-}
-
-fun HojaRuta.toEntity(): HojaRutaEntity {
-    return HojaRutaEntity(
-        id = this.id,
-        recolectorId = this.recolectorId,
-        fechaCreacion = this.fechaCreacion,
-        estado = this.estado.name
     )
 }
