@@ -9,13 +9,15 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import ucne.edu.rocash.domain.recolector.model.Recolector
+import ucne.edu.rocash.domain.recolector.repository.RecolectorRepository
 import ucne.edu.rocash.domain.recolector.usecase.SaveRecolectorUseCase
 import java.util.UUID
 import javax.inject.Inject
 
 @HiltViewModel
 class FormRecolectorViewModel @Inject constructor(
-    private val saveRecolectorUseCase: SaveRecolectorUseCase
+    private val saveRecolectorUseCase: SaveRecolectorUseCase,
+    private val repository: RecolectorRepository
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(FormRecolectorUiState())
@@ -23,14 +25,20 @@ class FormRecolectorViewModel @Inject constructor(
 
     fun processIntent(intent: FormRecolectorUiEvent) {
         when (intent) {
+            is FormRecolectorUiEvent.Inicializar -> {
+                cargarRecolector(intent.id)
+            }
             is FormRecolectorUiEvent.OnNombreChange -> {
-                _state.update { it.copy(nombre = intent.nombre) }
+                _state.update { it.copy(nombre = intent.nombre, nombreError = null) }
             }
             is FormRecolectorUiEvent.OnTelefonoChange -> {
-                _state.update { it.copy(telefono = intent.telefono) }
+                _state.update { it.copy(telefono = intent.telefono, telefonoError = null) }
+            }
+            is FormRecolectorUiEvent.OnCedulaChange ->{
+                _state.update { it.copy(cedula = intent.cedula, cedulaError = null) }
             }
             is FormRecolectorUiEvent.GuardarRecolector -> {
-                guardar()
+                validarYGuardar()
             }
             is FormRecolectorUiEvent.ResetSuccessState -> {
                 _state.update { it.copy(isSuccess = false) }
@@ -38,11 +46,48 @@ class FormRecolectorViewModel @Inject constructor(
         }
     }
 
-    private fun guardar() {
+    private fun cargarRecolector(id: String?) {
+        if (id == null) return // Si es null, es una creación nueva.
+
+        _state.update { it.copy(isLoading = true, recolectorId = id) }
+
+        viewModelScope.launch {
+            try {
+                val recolector = repository.obtenerRecolectorPorId(id)
+                if (recolector != null) {
+                    _state.update {
+                        it.copy(
+                            isLoading = false,
+                            nombre = recolector.nombre,
+                            telefono = recolector.telefono,
+                            cedula = recolector.cedula
+                        )
+                    }
+                } else {
+                    _state.update { it.copy(isLoading = false, errorMessage = "Recolector no encontrado") }
+                }
+            } catch (e: Exception) {
+                _state.update { it.copy(isLoading = false, errorMessage = e.localizedMessage) }
+            }
+        }
+    }
+
+    private fun validarYGuardar() {
         val currentState = _state.value
 
-        if (currentState.nombre.isBlank() || currentState.telefono.isBlank()) {
-            _state.update { it.copy(errorMessage = "Todos los campos son obligatorios") }
+        // 1. Validaciones
+        val nombreError = if (currentState.nombre.isBlank()) "El nombre es obligatorio" else null
+        val telefonoError = if (currentState.telefono.length < 10) "Debe tener al menos 10 dígitos" else null
+        val cedulaError = if (currentState.cedula.length != 11) "La cédula debe tener exactamente 11 dígitos" else null
+
+        if (nombreError != null || telefonoError != null || cedulaError != null) {
+            _state.update {
+                it.copy(
+                    nombreError = nombreError,
+                    telefonoError = telefonoError,
+                    cedulaError = cedulaError
+                )
+            }
             return
         }
 
@@ -50,14 +95,17 @@ class FormRecolectorViewModel @Inject constructor(
 
         viewModelScope.launch {
             try {
-                val nuevo = Recolector(
-                    id = UUID.randomUUID().toString(),
+                val idGuardar = currentState.recolectorId ?: UUID.randomUUID().toString()
+
+                val recolector = Recolector(
+                    id = idGuardar,
                     nombre = currentState.nombre,
                     telefono = currentState.telefono,
+                    cedula = currentState.cedula,
                     estado = true
                 )
 
-                saveRecolectorUseCase(nuevo)
+                saveRecolectorUseCase(recolector)
 
                 _state.update { it.copy(isLoading = false, isSuccess = true) }
             } catch (e: Exception) {

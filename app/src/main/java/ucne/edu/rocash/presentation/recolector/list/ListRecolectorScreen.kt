@@ -1,5 +1,6 @@
 package ucne.edu.rocash.presentation.recolector.list
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -22,7 +23,8 @@ import ucne.edu.rocash.domain.recolector.model.Recolector
 fun ListRecolectorScreen(
     viewModel: ListRecolectorViewModel = hiltViewModel(),
     onNavigateBack: () -> Unit,
-    onNavigateToCrear: () -> Unit
+    onNavigateToCrear: () -> Unit,
+    onNavigateToEditar: (String) -> Unit
 ) {
     val state by viewModel.state.collectAsState()
 
@@ -92,6 +94,9 @@ fun ListRecolectorScreen(
                                 recolector = recolector,
                                 onToggleEstado = {
                                     viewModel.processIntent(ListRecolectorUiEvent.ToggleEstadoRecolector(it))
+                                },
+                                onClick = {
+                                    onNavigateToEditar(recolector.id)
                                 }
                             )
                         }
@@ -103,8 +108,16 @@ fun ListRecolectorScreen(
 }
 
 @Composable
-fun RecolectorItem(recolector: Recolector, onToggleEstado: (Recolector) -> Unit) {
-    ElevatedCard(modifier = Modifier.fillMaxWidth()) {
+fun RecolectorItem(
+    recolector: Recolector,
+    onToggleEstado: (Recolector) -> Unit,
+    onClick: () -> Unit
+) {
+    ElevatedCard(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() }
+    ) {
         Row(
             modifier = Modifier.padding(16.dp).fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
@@ -122,6 +135,7 @@ fun RecolectorItem(recolector: Recolector, onToggleEstado: (Recolector) -> Unit)
             }
             Switch(
                 checked = recolector.estado,
+
                 onCheckedChange = { onToggleEstado(recolector) }
             )
         }
