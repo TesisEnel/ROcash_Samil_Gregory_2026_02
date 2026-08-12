@@ -6,19 +6,21 @@ import ucne.edu.rocash.domain.estacion.model.EstacionVentas
 fun EstacionVentasEntity.toDomain(): EstacionVentas {
     return EstacionVentas(
         id = this.id,
-        hojaRutaId = hojaRutaId,
+        hojaRutaId = this.hojaRutaId,
         nombre = this.nombre,
         direccion = this.direccion,
-        agenteId = this.agenteId
+        agenteId = this.agenteId,
+        agenteId2 = this.agenteId2
     )
 }
 
 fun EstacionVentas.toEntity(): EstacionVentasEntity {
     return EstacionVentasEntity(
         id = this.id,
-        hojaRutaId = hojaRutaId,
+        hojaRutaId = this.hojaRutaId,
         nombre = this.nombre,
         direccion = this.direccion,
-        agenteId = this.agenteId
+        agenteId = this.agenteId,
+        agenteId2 = this.agenteId2
     )
 }

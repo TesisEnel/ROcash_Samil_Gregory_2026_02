@@ -20,8 +20,12 @@ class RoCashRepositoryImpl @Inject constructor(
         dao.insertarRegistroRecoleccion(registro.toEntity())
     }
 
-    override suspend fun cerrarHojaRuta(hojaRutaId: String) {
+    override suspend fun cerrarHojaRuta(hojaRutaId: Int) {
         dao.cerrarHojaRuta(hojaRutaId)
+    }
+
+    override suspend fun sumarDeudaAgente(agenteId: String, nuevaDeuda: Double) {
+        dao.sumarDeudaAgente(agenteId, nuevaDeuda)
     }
 
 }

@@ -13,6 +13,7 @@ object HojaRutaCierreRoute
 
 @Serializable
 data class DetalleEstacionRoute(
+    val hojaRutaId: Int,
     val estacionId: String,
     val agenteId: String,
     val nombreEstacion: String

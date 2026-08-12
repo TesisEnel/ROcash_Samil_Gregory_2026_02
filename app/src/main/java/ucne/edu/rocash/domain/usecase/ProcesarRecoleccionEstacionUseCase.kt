@@ -10,24 +10,23 @@ class ProcesarRecoleccionEstacionUseCase @Inject constructor(
     private val repository: RoCashRepository
 ) {
     suspend operator fun invoke(
-        hojaRutaId: String,
+        hojaRutaId: Int,
         estacionId: String,
-        agenteId: String,
+        agenteId1: String,
+        agenteId2: String?,
         ventaBruta: Double,
-        porcentajeCliente: Double,
+        comisionCliente: Double,
         montoRecolectado: Double
     ) {
-        val montoEsperado = ventaBruta - porcentajeCliente
-        val deudaGenerada = if (montoRecolectado < montoEsperado) {
-            montoEsperado - montoRecolectado
-        } else 0.0
+        val montoEsperado = ventaBruta - comisionCliente
+        val deudaGenerada = if (montoRecolectado < montoEsperado) montoEsperado - montoRecolectado else 0.0
 
         val registro = RegistroRecoleccion(
             id = UUID.randomUUID().toString(),
             hojaRutaId = hojaRutaId,
             estacionId = estacionId,
             ventaBruta = ventaBruta,
-            porcentajeCliente = porcentajeCliente,
+            comisionCliente = comisionCliente,
             montoRecolectado = montoRecolectado,
             montoEsperado = montoEsperado,
             montoDeuda = deudaGenerada,
@@ -35,5 +34,16 @@ class ProcesarRecoleccionEstacionUseCase @Inject constructor(
         )
 
         repository.guardarRegistroRecoleccion(registro)
+
+        if (deudaGenerada > 0) {
+            if (agenteId2 != null) {
+                val deudaMitad = deudaGenerada / 2
+                repository.sumarDeudaAgente(agenteId1, deudaMitad)
+                repository.sumarDeudaAgente(agenteId2, deudaMitad)
+            } else {
+                repository.sumarDeudaAgente(agenteId1, deudaGenerada)
+            }
+        }
+
     }
 }

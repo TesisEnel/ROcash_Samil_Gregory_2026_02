@@ -11,7 +11,7 @@ data class HojaRutaEntity(
     val fechaCreacion: Long,
     val estado: String,
     val totalVentaBruta: Double,
-    val totalPorcentajeClientes: Double,
+    val totalComisionClientes: Double,
     val totalRecaudado: Double,
     val totalDeudas: Double
 )

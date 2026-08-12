@@ -24,6 +24,7 @@ class DetalleViewModel @Inject constructor(
             is DetalleUIEvent.Inicializar -> {
                 _state.update {
                     it.copy(
+                        hojaRutaId = intent.hojaRutaId,
                         estacionId = intent.estacionId,
                         agenteId = intent.agenteId,
                         nombreEstacion = intent.nombre
@@ -31,7 +32,7 @@ class DetalleViewModel @Inject constructor(
                 }
             }
             is DetalleUIEvent.OnVentaBrutaChange -> actualizarValores(ventaBruta = intent.value)
-            is DetalleUIEvent.OnPorcentajeChange -> actualizarValores(porcentaje = intent.value)
+            is DetalleUIEvent.OnPorcentajeChange -> actualizarValores(comision = intent.value)
             is DetalleUIEvent.OnMontoRecolectadoChange -> actualizarValores(recolectado = intent.value)
             is DetalleUIEvent.ProcesarRecoleccion -> guardarRecoleccion()
         }
@@ -39,25 +40,26 @@ class DetalleViewModel @Inject constructor(
 
     private fun actualizarValores(
         ventaBruta: String? = null,
-        porcentaje: String? = null,
+        comision: String? = null,
         recolectado: String? = null
     ) {
         _state.update { currentState ->
             val newVentaBruta = ventaBruta ?: currentState.ventaBruta
-            val newPorcentaje = porcentaje ?: currentState.porcentajeCliente
+            val newComision = comision ?: currentState.comisionCliente // Usando el nuevo nombre
             val newRecolectado = recolectado ?: currentState.montoRecolectado
 
             // Convertimos a Double seguro
             val vb = newVentaBruta.toDoubleOrNull() ?: 0.0
-            val pc = newPorcentaje.toDoubleOrNull() ?: 0.0
+            val cc = newComision.toDoubleOrNull() ?: 0.0
             val rec = newRecolectado.toDoubleOrNull() ?: 0.0
 
-            val esperado = vb - pc
+            // Cálculo con monto fijo de comisión
+            val esperado = vb - cc
             val deuda = if (rec < esperado) esperado - rec else 0.0
 
             currentState.copy(
                 ventaBruta = newVentaBruta,
-                porcentajeCliente = newPorcentaje,
+                comisionCliente = newComision, // Actualizado
                 montoRecolectado = newRecolectado,
                 montoEsperado = esperado,
                 deudaGenerada = deuda
@@ -77,11 +79,12 @@ class DetalleViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 procesarRecoleccionUseCase(
-                    hojaRutaId = "RUTA-ACTIVA-ID",
+                    hojaRutaId = currentState.hojaRutaId,
                     estacionId = currentState.estacionId,
-                    agenteId = currentState.agenteId,
+                    agenteId1 = currentState.agenteId,
+                    agenteId2 = null,
                     ventaBruta = currentState.ventaBruta.toDoubleOrNull() ?: 0.0,
-                    porcentajeCliente = currentState.porcentajeCliente.toDoubleOrNull() ?: 0.0,
+                    comisionCliente = currentState.comisionCliente.toDoubleOrNull() ?: 0.0,
                     montoRecolectado = currentState.montoRecolectado.toDoubleOrNull() ?: 0.0
                 )
 

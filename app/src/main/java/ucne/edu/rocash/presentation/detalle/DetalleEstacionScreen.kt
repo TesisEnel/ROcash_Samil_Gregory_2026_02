@@ -19,6 +19,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DetalleEstacionScreen(
+    hojaRutaId: Int,
     estacionId: String,
     agenteId: String,
     nombreEstacion: String,
@@ -26,9 +27,11 @@ fun DetalleEstacionScreen(
     onNavigateBack: () -> Unit
 ) {
     val state by viewModel.state.collectAsState()
+
     LaunchedEffect(Unit) {
-        viewModel.processIntent(DetalleUIEvent.Inicializar(estacionId, agenteId, nombreEstacion))
+        viewModel.processIntent(DetalleUIEvent.Inicializar(hojaRutaId, estacionId, agenteId, nombreEstacion))
     }
+
     LaunchedEffect(state.isSuccess) {
         if (state.isSuccess) {
             onNavigateBack()
@@ -75,9 +78,9 @@ fun DetalleEstacionScreen(
             )
 
             OutlinedTextField(
-                value = state.porcentajeCliente,
+                value = state.comisionCliente, // ⚠️ CORREGIDO: Ahora usa la nueva variable
                 onValueChange = { viewModel.processIntent(DetalleUIEvent.OnPorcentajeChange(it)) },
-                label = { Text("Porcentaje Devuelto a Clientes ($)") },
+                label = { Text("Comisión del Cliente ($)") }, // ⚠️ CORREGIDO: Actualizado visualmente
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                 modifier = Modifier.fillMaxWidth()
             )

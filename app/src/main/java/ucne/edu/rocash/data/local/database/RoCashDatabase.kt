@@ -21,7 +21,7 @@ import ucne.edu.rocash.data.recolector.local.RecolectorEntity
         RegistroRecoleccionEntity::class,
         RecolectorEntity::class
     ],
-    version = 6,
+    version = 8,
     exportSchema = false
 )
 abstract class RoCashDatabase : RoomDatabase() {

@@ -13,7 +13,13 @@ import ucne.edu.rocash.data.agenteVentas.local.AgenteVentasEntity
             entity = AgenteVentasEntity::class,
             parentColumns = ["id"],
             childColumns = ["agenteId"],
-            onDelete = ForeignKey.Companion.RESTRICT
+            onDelete = ForeignKey.RESTRICT
+        ),
+        ForeignKey(
+            entity = AgenteVentasEntity::class,
+            parentColumns = ["id"],
+            childColumns = ["agenteId2"],
+            onDelete = ForeignKey.SET_NULL
         )
     ]
 )
@@ -22,5 +28,6 @@ data class EstacionVentasEntity(
     val hojaRutaId: Int? = null,
     val nombre: String,
     val direccion: String,
-    @ColumnInfo(index = true) val agenteId: String
+    @ColumnInfo(index = true) val agenteId: String,
+    @ColumnInfo(index = true) val agenteId2: String? = null
 )

@@ -18,4 +18,7 @@ interface AgenteVentasDao {
 
     @Query("SELECT * FROM agentes_ventas WHERE nombre LIKE '%' || :nombre || '%'")
     fun searchByName(nombre: String): Flow<List<AgenteVentasEntity>>
+
+    @Query("UPDATE agentes_ventas SET deudaAcumulada = deudaAcumulada + :monto WHERE id = :id")
+    suspend fun sumarDeuda(id: String, monto: Double)
 }
