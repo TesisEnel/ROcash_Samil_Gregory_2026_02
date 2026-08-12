@@ -42,4 +42,11 @@ interface RoCashDao {
 
     @Query("SELECT * FROM estacion_ventas")
     fun observeAllEstaciones(): Flow<List<EstacionVentasEntity>>
+
+    @Query("UPDATE agentes_ventas SET deudaAcumulada = deudaAcumulada + :nuevaDeuda WHERE id = :agenteId")
+    suspend fun sumarDeudaAgente(agenteId: String, nuevaDeuda: Double)
+
+    // Cerrar la hoja de ruta (recuerda que cambiamos el ID a Int)
+    @Query("UPDATE hoja_ruta SET estado = 'CERRADA' WHERE id = :hojaRutaId")
+    suspend fun cerrarHojaRuta(hojaRutaId: Int)
 }

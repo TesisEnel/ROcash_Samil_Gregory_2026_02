@@ -6,6 +6,8 @@ import ucne.edu.rocash.domain.recolector.model.Recolector
 
 interface RoCashRepository {
     suspend fun guardarRegistroRecoleccion(registro: RegistroRecoleccion)
-    suspend fun cerrarHojaRuta(hojaRutaId: String)
+    suspend fun cerrarHojaRuta(hojaRutaId: Int)
+
+    suspend fun sumarDeudaAgente(agenteId: String, nuevaDeuda: Double) // NUEVO
 
 }

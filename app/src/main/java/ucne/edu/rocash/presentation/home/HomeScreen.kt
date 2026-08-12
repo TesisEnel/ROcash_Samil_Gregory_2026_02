@@ -40,7 +40,8 @@ fun HomeScreen(
     onNavigateToHistorial: () -> Unit,
     onNavigateToRecolectores: () -> Unit,
     onNavigateToAgentes: () -> Unit,
-    onNavigateToEstaciones: () -> Unit
+    onNavigateToEstaciones: () -> Unit,
+    onNavigateToDetalleEstacion: (Int, String, String, String) -> Unit
 ) {
     val state by viewModel.state.collectAsState()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -195,9 +196,25 @@ fun HomeScreen(
                             LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                                 items(ruta.estaciones) { estacion ->
                                     ListItem(
+                                        modifier = Modifier
+                                            .clip(MaterialTheme.shapes.medium)
+                                            .clickable {
+                                                onNavigateToDetalleEstacion(
+                                                    ruta.id,
+                                                    estacion.id,
+                                                    estacion.agenteId,
+                                                    estacion.nombre
+                                                )
+                                            },
                                         headlineContent = { Text(estacion.nombre, fontWeight = FontWeight.SemiBold) },
                                         supportingContent = { Text(estacion.direccion) },
-                                        colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.background),
+                                        trailingContent = {
+                                            Icon(
+                                                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                                                contentDescription = "Ir a cobrar"
+                                            )
+                                        },
+                                        colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
                                         tonalElevation = 2.dp,
                                         shadowElevation = 1.dp
                                     )

@@ -10,20 +10,16 @@ import ucne.edu.rocash.data.hojaRuta.local.HojaRutaEntity
 @Entity(
     tableName = "registro_recoleccion",
     foreignKeys = [
-        ForeignKey(
-            entity = HojaRutaEntity::class,
-            parentColumns = ["id"],
-            childColumns = ["hojaRutaId"]
-        ),
+        ForeignKey(entity = HojaRutaEntity::class, parentColumns = ["id"], childColumns = ["hojaRutaId"]),
         ForeignKey(entity = EstacionVentasEntity::class, parentColumns = ["id"], childColumns = ["estacionId"])
     ]
 )
 data class RegistroRecoleccionEntity(
     @PrimaryKey val id: String,
-    @ColumnInfo(index = true) val hojaRutaId: String,
+    @ColumnInfo(index = true) val hojaRutaId: Int, // Int para integridad referencial
     @ColumnInfo(index = true) val estacionId: String,
     val ventaBruta: Double,
-    val porcentajeCliente: Double,
+    val comisionCliente: Double, // Actualizado
     val montoEsperado: Double,
     val montoRecolectado: Double,
     val montoDeuda: Double,

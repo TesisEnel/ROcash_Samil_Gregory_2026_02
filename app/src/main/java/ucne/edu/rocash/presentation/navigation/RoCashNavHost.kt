@@ -21,7 +21,6 @@ import ucne.edu.rocash.presentation.ruta.historial.HistorialRutasScreen
 @Composable
 fun RoCashNavHost() {
     val navController = rememberNavController()
-
     val usuarioActual = FirebaseAuth.getInstance().currentUser
     val rutaInicial = if (usuarioActual != null) HomeRecolectorRoute else HomeRecolectorRoute
 
@@ -55,6 +54,16 @@ fun RoCashNavHost() {
                 },
                 onNavigateToEstaciones = {
                     navController.navigate(EstacionListRoute)
+                },
+                onNavigateToDetalleEstacion = { rutaId, estacionId, agenteId, nombre -> // ⚠️ Recibimos rutaId
+                    navController.navigate(
+                        DetalleEstacionRoute(
+                            hojaRutaId = rutaId,
+                            estacionId = estacionId,
+                            agenteId = agenteId,
+                            nombreEstacion = nombre
+                        )
+                    )
                 }
             )
         }
@@ -63,6 +72,7 @@ fun RoCashNavHost() {
             val argumentos = backStackEntry.toRoute<DetalleEstacionRoute>()
 
             DetalleEstacionScreen(
+                hojaRutaId = argumentos.hojaRutaId,
                 estacionId = argumentos.estacionId,
                 agenteId = argumentos.agenteId,
                 nombreEstacion = argumentos.nombreEstacion,
@@ -116,7 +126,6 @@ fun RoCashNavHost() {
         }
 
         composable<FormRecolectorRoute> { backStackEntry ->
-
             val argumentos = backStackEntry.toRoute<FormRecolectorRoute>()
 
             FormRecolectorScreen(

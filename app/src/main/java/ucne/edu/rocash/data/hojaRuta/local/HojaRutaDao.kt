@@ -29,4 +29,7 @@ interface HojaRutaDao {
 
     @Query("SELECT COUNT(*) FROM hoja_ruta WHERE recolectorId = :recolectorId AND estado = 'CERRADA'")
     fun obtenerTotalRutasCompletadas(recolectorId: String): Flow<Int>
+
+    @Query("UPDATE hoja_ruta SET estado = 'CERRADA' WHERE id = :id")
+    suspend fun cerrarRuta(id: Int)
 }

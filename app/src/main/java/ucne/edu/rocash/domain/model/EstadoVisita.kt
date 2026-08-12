@@ -4,13 +4,13 @@ enum class EstadoVisita { COMPLETADA, OMITIDA }
 
 data class RegistroRecoleccion(
     val id: String,
-    val hojaRutaId: String,
+    val hojaRutaId: Int, // Cambiado a Int para coincidir con HojaRuta
     val estacionId: String,
     val ventaBruta: Double,
-    val porcentajeCliente: Double,
+    val comisionCliente: Double,
+    val montoEsperado: Double = ventaBruta - comisionCliente,
     val montoRecolectado: Double,
-    val montoEsperado: Double = ventaBruta - porcentajeCliente,
-    val montoDeuda: Double = montoEsperado - montoRecolectado,
+    val montoDeuda: Double = if (montoRecolectado < montoEsperado) montoEsperado - montoRecolectado else 0.0,
     val estadoVisita: EstadoVisita,
     val notaIncidencia: String? = null
 )

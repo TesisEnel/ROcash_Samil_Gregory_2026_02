@@ -13,7 +13,7 @@ fun RegistroRecoleccion.toEntity(): RegistroRecoleccionEntity {
         hojaRutaId = this.hojaRutaId,
         estacionId = this.estacionId,
         ventaBruta = this.ventaBruta,
-        porcentajeCliente = this.porcentajeCliente,
+        comisionCliente = this.comisionCliente,
         montoEsperado = this.montoEsperado,
         montoRecolectado = this.montoRecolectado,
         montoDeuda = this.montoDeuda,

@@ -13,7 +13,7 @@ fun HojaRuta.toEntity(): HojaRutaEntity {
         fechaCreacion = this.fechaCreacion,
         estado = this.estado.name,
         totalVentaBruta = this.totalVentaBruta,
-        totalPorcentajeClientes = this.totalPorcentajeClientes,
+        totalComisionClientes = this.totalComisionClientes,
         totalRecaudado = this.totalRecaudado,
         totalDeudas = this.totalDeudas
     )
@@ -26,7 +26,7 @@ fun HojaRutaEntity.toDomain(): HojaRuta {
         fechaCreacion = this.fechaCreacion,
         estado = EstadoRuta.valueOf(this.estado),
         totalVentaBruta = this.totalVentaBruta,
-        totalPorcentajeClientes = this.totalPorcentajeClientes,
+        totalComisionClientes = this.totalComisionClientes,
         totalRecaudado = this.totalRecaudado,
         totalDeudas = this.totalDeudas,
         estaciones = emptyList()
