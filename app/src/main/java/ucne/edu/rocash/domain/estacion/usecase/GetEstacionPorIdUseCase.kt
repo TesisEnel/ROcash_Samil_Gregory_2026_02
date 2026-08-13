@@ -4,8 +4,8 @@ import ucne.edu.rocash.domain.estacion.model.EstacionVentas
 import ucne.edu.rocash.domain.estacion.repository.EstacionRepository
 import javax.inject.Inject
 
-class GetEstacionPorIdUseCase @Inject constructor(
+class GetEstacionUseCase @Inject constructor(
     private val repository: EstacionRepository
 ) {
-    suspend operator fun invoke(id: String): EstacionVentas? = repository.obtenerEstacionPorId(id)
+    suspend operator fun invoke(id: Int): EstacionVentas? = repository.getEstacion(id)
 }

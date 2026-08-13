@@ -1,9 +1,16 @@
 package ucne.edu.rocash.presentation.detalle
 
-sealed class DetalleUIEvent {
-    data class Inicializar(val hojaRutaId: Int, val estacionId: String, val agenteId: String, val nombre: String) : DetalleUIEvent()
-    data class OnVentaBrutaChange(val value: String) : DetalleUIEvent()
-    data class OnPorcentajeChange(val value: String) : DetalleUIEvent()
-    data class OnMontoRecolectadoChange(val value: String) : DetalleUIEvent()
-    object ProcesarRecoleccion : DetalleUIEvent()
+sealed interface DetalleUiEvent {
+    data class Load(
+        val hojaRutaId: Int,
+        val estacionId: Int,
+        val agenteId: Int,
+        val nombre: String
+    ) : DetalleUiEvent
+
+    data class VentaBrutaChanged(val value: String) : DetalleUiEvent
+    data class ComisionChanged(val value: String) : DetalleUiEvent
+    data class MontoRecolectadoChanged(val value: String) : DetalleUiEvent
+
+    data object Save : DetalleUiEvent
 }

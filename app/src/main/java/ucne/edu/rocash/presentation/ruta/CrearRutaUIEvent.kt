@@ -1,7 +1,7 @@
 package ucne.edu.rocash.presentation.ruta
 
-sealed class CrearRutaUIEvent {
-    object CargarEstaciones : CrearRutaUIEvent()
-    data class ToggleEstacionSeleccionada(val estacionId: String) : CrearRutaUIEvent()
-    object GenerarHojaRuta : CrearRutaUIEvent()
+sealed interface CrearRutaUIEvent {
+    data object Load : CrearRutaUIEvent
+    data class ToggleEstacionSeleccionada(val id: Int) : CrearRutaUIEvent
+    data object GenerarHojaRuta : CrearRutaUIEvent
 }

@@ -1,8 +1,9 @@
 package ucne.edu.rocash.presentation.agenteVentas.form
 
 sealed interface AgenteFormUiEvent {
-    data class OnNombreChange(val nombre: String) : AgenteFormUiEvent
-    data class OnTelefonoChange(val telefono: String) : AgenteFormUiEvent
-    object GuardarAgente : AgenteFormUiEvent
-    object ResetSuccessState : AgenteFormUiEvent
+    data class Load(val id: Int?) : AgenteFormUiEvent
+    data class NombreChanged(val value: String) : AgenteFormUiEvent
+    data class TelefonoChanged(val value: String) : AgenteFormUiEvent
+    data object Save : AgenteFormUiEvent
+    data object Delete : AgenteFormUiEvent
 }

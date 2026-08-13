@@ -14,8 +14,8 @@ object HojaRutaCierreRoute
 @Serializable
 data class DetalleEstacionRoute(
     val hojaRutaId: Int,
-    val estacionId: String,
-    val agenteId: String,
+    val estacionId: Int,
+    val agenteId: Int,
     val nombreEstacion: String
 )
 
@@ -23,20 +23,22 @@ data class DetalleEstacionRoute(
 object EstacionListRoute
 
 @Serializable
-object EstacionFormRoute
+data class EstacionFormRoute(val estacionId: Int? = null)
 
 @Serializable
 object CrearRutaRoute
 
 @Serializable
 object ListaRecolectoresRoute
+
 @Serializable
 data class FormRecolectorRoute(val recolectorId: String? = null)
+
 @Serializable
 object AgenteListRoute
 
 @Serializable
-object AgenteFormRoute
+data class AgenteFormRoute(val agenteId: Int? = null)
 
 @Serializable
 object HistorialRutaRoute

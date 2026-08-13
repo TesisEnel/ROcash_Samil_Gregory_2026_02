@@ -22,7 +22,7 @@ import ucne.edu.rocash.presentation.ruta.historial.HistorialRutasScreen
 fun RoCashNavHost() {
     val navController = rememberNavController()
     val usuarioActual = FirebaseAuth.getInstance().currentUser
-    val rutaInicial = if (usuarioActual != null) HomeRecolectorRoute else HomeRecolectorRoute
+    val rutaInicial = if (usuarioActual != null) HomeRecolectorRoute else AuthRoute
 
     NavHost(
         navController = navController,
@@ -40,22 +40,12 @@ fun RoCashNavHost() {
 
         composable<HomeRecolectorRoute> {
             HomeScreen(
-                onNavigateToCrearRuta = {
-                    navController.navigate(CrearRutaRoute)
-                },
-                onNavigateToHistorial = {
-                    navController.navigate(HistorialRutaRoute)
-                },
-                onNavigateToRecolectores = {
-                    navController.navigate(ListaRecolectoresRoute)
-                },
-                onNavigateToAgentes = {
-                    navController.navigate(AgenteListRoute)
-                },
-                onNavigateToEstaciones = {
-                    navController.navigate(EstacionListRoute)
-                },
-                onNavigateToDetalleEstacion = { rutaId, estacionId, agenteId, nombre -> // ⚠️ Recibimos rutaId
+                onNavigateToCrearRuta = { navController.navigate(CrearRutaRoute) },
+                onNavigateToHistorial = { navController.navigate(HistorialRutaRoute) },
+                onNavigateToRecolectores = { navController.navigate(ListaRecolectoresRoute) },
+                onNavigateToAgentes = { navController.navigate(AgenteListRoute) },
+                onNavigateToEstaciones = { navController.navigate(EstacionListRoute) },
+                onNavigateToDetalleEstacion = { rutaId, estacionId, agenteId, nombre ->
                     navController.navigate(
                         DetalleEstacionRoute(
                             hojaRutaId = rutaId,
@@ -76,9 +66,7 @@ fun RoCashNavHost() {
                 estacionId = argumentos.estacionId,
                 agenteId = argumentos.agenteId,
                 nombreEstacion = argumentos.nombreEstacion,
-                onNavigateBack = {
-                    navController.popBackStack()
-                }
+                onNavigateBack = { navController.popBackStack() }
             )
         }
 
@@ -88,11 +76,10 @@ fun RoCashNavHost() {
 
         composable<EstacionListRoute> {
             EstacionListScreen(
-                onNavigateBack = {
-                    navController.popBackStack()
-                },
-                onNavigateToCrear = {
-                    navController.navigate(EstacionFormRoute)
+                onNavigateBack = { navController.popBackStack() },
+                onNavigateToCrear = { navController.navigate(EstacionFormRoute()) },
+                onNavigateToEditar = { id ->
+                    navController.navigate(EstacionFormRoute(estacionId = id))
                 }
             )
         }
@@ -105,20 +92,14 @@ fun RoCashNavHost() {
 
         composable<CrearRutaRoute> {
             CrearRutaScreen(
-                onNavigateBack = {
-                    navController.popBackStack()
-                }
+                onNavigateBack = { navController.popBackStack() }
             )
         }
 
         composable<ListaRecolectoresRoute> {
             ListRecolectorScreen(
-                onNavigateBack = {
-                    navController.popBackStack()
-                },
-                onNavigateToCrear = {
-                    navController.navigate(FormRecolectorRoute())
-                },
+                onNavigateBack = { navController.popBackStack() },
+                onNavigateToCrear = { navController.navigate(FormRecolectorRoute()) },
                 onNavigateToEditar = { id ->
                     navController.navigate(FormRecolectorRoute(recolectorId = id))
                 }
@@ -130,30 +111,29 @@ fun RoCashNavHost() {
 
             FormRecolectorScreen(
                 recolectorId = argumentos.recolectorId,
-                onNavigateBack = {
-                    navController.popBackStack()
-                }
+                onNavigateBack = { navController.popBackStack() }
             )
         }
 
         composable<AgenteListRoute> {
             AgenteListScreen(
                 onNavigateBack = { navController.popBackStack() },
-                onNavigateToCrear = { navController.navigate(AgenteFormRoute) }
+                onNavigateToCrear = { navController.navigate(AgenteFormRoute()) },
+                onNavigateToEditar = { id ->
+                    navController.navigate(AgenteFormRoute(agenteId = id))
+                }
             )
         }
 
         composable<AgenteFormRoute> {
             AgenteFormScreen(
-                onNavigateBack = { navController.popBackStack() }
+                onBack = { navController.popBackStack() }
             )
         }
 
         composable<HistorialRutaRoute> {
             HistorialRutasScreen(
-                onNavigateBack = {
-                    navController.popBackStack()
-                }
+                onNavigateBack = { navController.popBackStack() }
             )
         }
     }

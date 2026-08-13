@@ -8,7 +8,7 @@ import androidx.room.Upsert
 import kotlinx.coroutines.flow.Flow
 import ucne.edu.rocash.data.estacion.local.EstacionVentasEntity
 import ucne.edu.rocash.data.hojaRuta.local.HojaRutaEntity
-import ucne.edu.rocash.data.local.entity.RegistroRecoleccionEntity
+import ucne.edu.rocash.data.registroRecoleccion.local.RegistroRecoleccionEntity
 
 @Dao
 interface RoCashDao {
@@ -24,7 +24,7 @@ interface RoCashDao {
     fun obtenerTodasLasEstaciones(): Flow<List<EstacionVentasEntity>>
 
     // NUEVO: Para asignar las estaciones a una ruta
-    @Query("UPDATE estacion_ventas SET hojaRutaId = :rutaId WHERE id = :estacionId")
+    @Query("UPDATE estacion_ventas SET hojaRutaId = :rutaId WHERE estacionId = :estacionId")
     suspend fun asignarRutaAEstacion(estacionId: String, rutaId: String)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -43,8 +43,8 @@ interface RoCashDao {
     @Query("SELECT * FROM estacion_ventas")
     fun observeAllEstaciones(): Flow<List<EstacionVentasEntity>>
 
-    @Query("UPDATE agentes_ventas SET deudaAcumulada = deudaAcumulada + :nuevaDeuda WHERE id = :agenteId")
-    suspend fun sumarDeudaAgente(agenteId: String, nuevaDeuda: Double)
+    @Query("UPDATE agentes_ventas SET deudaAcumulada = deudaAcumulada + :nuevaDeuda WHERE agenteId = :agenteId")
+    suspend fun sumarDeudaAgente(agenteId: Int, nuevaDeuda: Double)
 
     // Cerrar la hoja de ruta (recuerda que cambiamos el ID a Int)
     @Query("UPDATE hoja_ruta SET estado = 'CERRADA' WHERE id = :hojaRutaId")

@@ -10,26 +10,35 @@ import ucne.edu.rocash.domain.estacion.repository.EstacionRepository
 import javax.inject.Inject
 
 class EstacionRepositoryImpl @Inject constructor(
-    private val dao: EstacionVentasDao
+    private val localDataSource: EstacionVentasDao
 ) : EstacionRepository {
 
-    override suspend fun insertarEstacion(estacion: EstacionVentas) {
-        dao.upsert(estacion.toEntity())
+    override fun observeEstaciones(): Flow<List<EstacionVentas>> {
+        return localDataSource.observeAll().map { entities -> entities.map { it.toDomain() } }
     }
 
-    override fun obtenerEstaciones(): Flow<List<EstacionVentas>> {
-        return dao.observeAll().map { lista -> lista.map { it.toDomain() } }
+    override suspend fun getEstacion(id: Int): EstacionVentas? {
+        return localDataSource.getById(id)?.toDomain()
     }
 
-    override suspend fun obtenerEstacionPorId(id: String): EstacionVentas? {
-        return dao.getById(id)?.toDomain()
+    override suspend fun upsert(estacion: EstacionVentas): Int {
+        localDataSource.upsert(estacion.toEntity())
+        return estacion.estacionId
+    }
+
+    override suspend fun delete(id: Int) {
+        localDataSource.deleteById(id)
+    }
+
+    override suspend fun exists(id: Int): Boolean {
+        return localDataSource.exists(id)
     }
 
     override fun buscarEstaciones(query: String): Flow<List<EstacionVentas>> {
-        return dao.search(query).map { lista -> lista.map { it.toDomain() } }
+        return localDataSource.search(query).map { lista -> lista.map { it.toDomain() } }
     }
 
-    override suspend fun asignarRuta(estacionId: String, rutaId: Int) {
-        dao.asignarRuta(estacionId, rutaId)
+    override suspend fun asignarRuta(estacionId: Int, rutaId: Int) {
+        localDataSource.asignarRuta(estacionId, rutaId)
     }
 }

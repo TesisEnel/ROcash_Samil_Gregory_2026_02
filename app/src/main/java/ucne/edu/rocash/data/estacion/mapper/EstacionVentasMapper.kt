@@ -3,24 +3,20 @@ package ucne.edu.rocash.data.estacion.mapper
 import ucne.edu.rocash.data.estacion.local.EstacionVentasEntity
 import ucne.edu.rocash.domain.estacion.model.EstacionVentas
 
-fun EstacionVentasEntity.toDomain(): EstacionVentas {
-    return EstacionVentas(
-        id = this.id,
-        hojaRutaId = this.hojaRutaId,
-        nombre = this.nombre,
-        direccion = this.direccion,
-        agenteId = this.agenteId,
-        agenteId2 = this.agenteId2
-    )
-}
+fun EstacionVentasEntity.toDomain(): EstacionVentas = EstacionVentas(
+    estacionId = estacionId,
+    hojaRutaId = hojaRutaId,
+    nombre = nombre,
+    direccion = direccion,
+    agenteId = agenteId,
+    agenteId2 = agenteId2
+)
 
-fun EstacionVentas.toEntity(): EstacionVentasEntity {
-    return EstacionVentasEntity(
-        id = this.id,
-        hojaRutaId = this.hojaRutaId,
-        nombre = this.nombre,
-        direccion = this.direccion,
-        agenteId = this.agenteId,
-        agenteId2 = this.agenteId2
-    )
-}
+fun EstacionVentas.toEntity(): EstacionVentasEntity = EstacionVentasEntity(
+    estacionId = estacionId,
+    hojaRutaId = hojaRutaId,
+    nombre = nombre,
+    direccion = direccion,
+    agenteId = agenteId,
+    agenteId2 = agenteId2
+)

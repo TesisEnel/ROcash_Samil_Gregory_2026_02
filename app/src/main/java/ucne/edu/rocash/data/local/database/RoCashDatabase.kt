@@ -9,9 +9,10 @@ import ucne.edu.rocash.data.estacion.local.EstacionVentasDao
 import ucne.edu.rocash.data.estacion.local.EstacionVentasEntity
 import ucne.edu.rocash.data.hojaRuta.local.HojaRutaDao
 import ucne.edu.rocash.data.hojaRuta.local.HojaRutaEntity
-import ucne.edu.rocash.data.local.entity.RegistroRecoleccionEntity
 import ucne.edu.rocash.data.recolector.local.RecolectorDao
 import ucne.edu.rocash.data.recolector.local.RecolectorEntity
+import ucne.edu.rocash.data.registroRecoleccion.local.RegistroRecoleccionDao
+import ucne.edu.rocash.data.registroRecoleccion.local.RegistroRecoleccionEntity
 
 @Database(
     entities = [
@@ -21,7 +22,7 @@ import ucne.edu.rocash.data.recolector.local.RecolectorEntity
         RegistroRecoleccionEntity::class,
         RecolectorEntity::class
     ],
-    version = 8,
+    version =11,
     exportSchema = false
 )
 abstract class RoCashDatabase : RoomDatabase() {
@@ -34,6 +35,8 @@ abstract class RoCashDatabase : RoomDatabase() {
     abstract fun estacionVentasDao(): EstacionVentasDao
 
     abstract fun hojaRutaDao(): HojaRutaDao
+
+    abstract fun registroRecoleccionDao(): RegistroRecoleccionDao
 
     companion object {
         const val DATABASE_NAME = "rocash_db"

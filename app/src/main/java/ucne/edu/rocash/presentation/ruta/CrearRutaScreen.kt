@@ -13,23 +13,38 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import ucne.edu.rocash.domain.estacion.model.EstacionVentas
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CrearRutaScreen(
     viewModel: CrearRutaViewModel = hiltViewModel(),
     onNavigateBack: () -> Unit
 ) {
-    val state by viewModel.state.collectAsState()
+    val state by viewModel.state.collectAsStateWithLifecycle()
 
     LaunchedEffect(state.isSuccess) {
-        if (state.isSuccess) {
-            onNavigateBack() // Regresa al Home cuando se crea exitosamente
-        }
+        if (state.isSuccess) onNavigateBack()
     }
 
+    CrearRutaBody(
+        state = state,
+        onEvent = viewModel::onEvent,
+        onNavigateBack = onNavigateBack
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun CrearRutaBody(
+    state: CrearRutaUIState,
+    onEvent: (CrearRutaUIEvent) -> Unit,
+    onNavigateBack: () -> Unit
+) {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -47,12 +62,15 @@ fun CrearRutaScreen(
                 contentPadding = PaddingValues(16.dp)
             ) {
                 Button(
-                    onClick = { viewModel.processIntent(CrearRutaUIEvent.GenerarHojaRuta) },
-                    modifier = Modifier.fillMaxWidth().height(50.dp),
-                    enabled = !state.isLoading && state.estacionesSeleccionadas.isNotEmpty()
+                    onClick = { onEvent(CrearRutaUIEvent.GenerarHojaRuta) },
+                    modifier = Modifier.fillMaxWidth().height(50.dp).testTag("btn_generar_ruta"),
+                    enabled = !state.isSaving && state.estacionesSeleccionadas.isNotEmpty()
                 ) {
-                    if (state.isLoading) {
-                        CircularProgressIndicator(color = MaterialTheme.colorScheme.onPrimary, modifier = Modifier.size(24.dp))
+                    if (state.isSaving) {
+                        CircularProgressIndicator(
+                            color = MaterialTheme.colorScheme.onPrimary,
+                            modifier = Modifier.size(24.dp)
+                        )
                     } else {
                         Text("Generar Ruta con ${state.estacionesSeleccionadas.size} Bancas")
                     }
@@ -61,12 +79,12 @@ fun CrearRutaScreen(
         }
     ) { paddingValues ->
         Box(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
-            if (state.isLoading && state.estacionesDisponibles.isEmpty()) {
-                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+            if (state.isLoading) {
+                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center).testTag("loading"))
             } else if (state.estacionesDisponibles.isEmpty()) {
                 Text(
                     text = "No hay estaciones registradas en el sistema.",
-                    modifier = Modifier.align(Alignment.Center)
+                    modifier = Modifier.align(Alignment.Center).testTag("empty_message")
                 )
             } else {
                 LazyColumn(
@@ -77,22 +95,29 @@ fun CrearRutaScreen(
                     item {
                         if (state.errorMessage != null) {
                             Text(
-                                text = state.errorMessage!!,
+                                text = state.errorMessage,
                                 color = MaterialTheme.colorScheme.error,
                                 modifier = Modifier.padding(bottom = 8.dp)
                             )
                         }
                     }
 
-                    items(state.estacionesDisponibles) { estacion ->
-                        val isSelected = state.estacionesSeleccionadas.contains(estacion.id)
+                    items(
+                        items = state.estacionesDisponibles,
+                        key = { it.estacionId }
+                    ) { estacion ->
+
+                        val isSelected = state.estacionesSeleccionadas.contains(estacion.estacionId)
+
                         ElevatedCard(
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .testTag("estacion_item_${estacion.estacionId}")
                         ) {
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .clickable { viewModel.processIntent(CrearRutaUIEvent.ToggleEstacionSeleccionada(estacion.id)) }
+                                    .clickable { onEvent(CrearRutaUIEvent.ToggleEstacionSeleccionada(estacion.estacionId)) }
                                     .padding(16.dp),
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.SpaceBetween
@@ -103,7 +128,8 @@ fun CrearRutaScreen(
                                 }
                                 Checkbox(
                                     checked = isSelected,
-                                    onCheckedChange = { viewModel.processIntent(CrearRutaUIEvent.ToggleEstacionSeleccionada(estacion.id)) }
+                                    onCheckedChange = { onEvent(CrearRutaUIEvent.ToggleEstacionSeleccionada(estacion.estacionId)) },
+                                    modifier = Modifier.testTag("checkbox_${estacion.estacionId}")
                                 )
                             }
                         }
@@ -111,5 +137,24 @@ fun CrearRutaScreen(
                 }
             }
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun CrearRutaBodyPreview() {
+    MaterialTheme {
+        CrearRutaBody(
+            state = CrearRutaUIState(
+                isLoading = false,
+                estacionesDisponibles = listOf(
+                    EstacionVentas(estacionId = 1, nombre = "Banca Norte", direccion = "Av. Principal", agenteId = 1),
+                    EstacionVentas(estacionId = 2, nombre = "Banca Sur", direccion = "Calle 8", agenteId = 2)
+                ),
+                estacionesSeleccionadas = setOf(1)
+            ),
+            onEvent = {},
+            onNavigateBack = {}
+        )
     }
 }

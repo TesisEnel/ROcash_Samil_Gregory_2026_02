@@ -41,7 +41,7 @@ fun HomeScreen(
     onNavigateToRecolectores: () -> Unit,
     onNavigateToAgentes: () -> Unit,
     onNavigateToEstaciones: () -> Unit,
-    onNavigateToDetalleEstacion: (Int, String, String, String) -> Unit
+    onNavigateToDetalleEstacion: (Int, Int, Int, String) -> Unit
 ) {
     val state by viewModel.state.collectAsState()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -201,7 +201,7 @@ fun HomeScreen(
                                             .clickable {
                                                 onNavigateToDetalleEstacion(
                                                     ruta.id,
-                                                    estacion.id,
+                                                    estacion.estacionId,
                                                     estacion.agenteId,
                                                     estacion.nombre
                                                 )

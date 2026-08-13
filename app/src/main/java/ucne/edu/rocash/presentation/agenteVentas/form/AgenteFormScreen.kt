@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -29,57 +30,86 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AgenteFormScreen(
     viewModel: AgenteFormViewModel = hiltViewModel(),
-    onNavigateBack: () -> Unit
+    onBack: () -> Unit
 ) {
-    val state by viewModel.state.collectAsState()
+    val state by viewModel.state.collectAsStateWithLifecycle()
 
-    LaunchedEffect(state.isSuccess) {
-        if (state.isSuccess) {
-            viewModel.processIntent(AgenteFormUiEvent.ResetSuccessState)
-            onNavigateBack()
+    LaunchedEffect(state.saved) {
+        if (state.saved) {
+            onBack()
+        }
+    }
+
+    LaunchedEffect(state.deleted) {
+        if (state.deleted) {
+            onBack()
         }
     }
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Nuevo Agente") },
-                navigationIcon = { IconButton (onClick = onNavigateBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Cancelar") } }
+                title = { Text(if (state.isNew) "Nuevo Agente" else "Editar Agente") },
+                navigationIcon = {
+                    IconButton(onClick = onBack) {
+                        Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Atras")
+                    }
+                }
             )
         }
-    ) { paddingValues ->
-        Column(modifier = Modifier.fillMaxSize().padding(paddingValues).padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-            if (state.errorMessage != null) Text(text = state.errorMessage!!, color = MaterialTheme.colorScheme.error)
+    ) { padding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
 
             OutlinedTextField(
                 value = state.nombre,
-                onValueChange = { viewModel.processIntent(AgenteFormUiEvent.OnNombreChange(it)) },
+                onValueChange = { viewModel.onEvent(AgenteFormUiEvent.NombreChanged(it)) },
                 label = { Text("Nombre Completo") },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                isError = state.nombreError != null,
+                supportingText = state.nombreError?.let { { Text(it) } },
+                singleLine = true
             )
 
             OutlinedTextField(
                 value = state.telefono,
-                onValueChange = { viewModel.processIntent(AgenteFormUiEvent.OnTelefonoChange(it)) },
+                onValueChange = { viewModel.onEvent(AgenteFormUiEvent.TelefonoChanged(it)) },
                 label = { Text("Número de Teléfono") },
+                modifier = Modifier.fillMaxWidth(),
+                isError = state.telefonoError != null,
+                supportingText = state.telefonoError?.let { { Text(it) } },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
-                modifier = Modifier.fillMaxWidth()
+                singleLine = true
             )
 
             Spacer(modifier = Modifier.weight(1f))
 
             Button(
-                onClick = { viewModel.processIntent(AgenteFormUiEvent.GuardarAgente) },
-                modifier = Modifier.fillMaxWidth().height(50.dp),
-                enabled = state.nombre.isNotBlank() && state.telefono.isNotBlank() && !state.isLoading
+                onClick = { viewModel.onEvent(AgenteFormUiEvent.Save) },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp),
+                enabled = !state.isSaving
             ) {
-                if (state.isLoading) CircularProgressIndicator(modifier = Modifier.size(24.dp))
-                else Text("Guardar Agente")
+                if (state.isSaving) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(24.dp),
+                        color = MaterialTheme.colorScheme.onPrimary
+                    )
+                } else {
+                    Text("Guardar Agente")
+                }
             }
         }
     }

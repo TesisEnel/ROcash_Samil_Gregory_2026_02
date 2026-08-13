@@ -11,91 +11,97 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import ucne.edu.rocash.domain.estacion.usecase.AsignarRutaAEstacionUseCase
-import ucne.edu.rocash.domain.estacion.usecase.GetEstacionesUseCase
+import ucne.edu.rocash.domain.estacion.usecase.ObserveEstacionesUseCase
 import ucne.edu.rocash.domain.hojaRuta.model.EstadoRuta
 import ucne.edu.rocash.domain.hojaRuta.model.HojaRuta
 import ucne.edu.rocash.domain.hojaRuta.usecase.CrearHojaRutaUseCase
-import java.util.UUID
 import javax.inject.Inject
 
 @HiltViewModel
 class CrearRutaViewModel @Inject constructor(
-    private val getEstacionesUseCase: GetEstacionesUseCase,
+    private val observeEstacionesUseCase: ObserveEstacionesUseCase,
     private val crearHojaRutaUseCase: CrearHojaRutaUseCase,
     private val asignarRutaAEstacionUseCase: AsignarRutaAEstacionUseCase,
     private val auth: FirebaseAuth
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow(CrearRutaUIState())
+    private val _state = MutableStateFlow(CrearRutaUIState(isLoading = true))
     val state: StateFlow<CrearRutaUIState> = _state.asStateFlow()
 
     init {
-        processIntent(CrearRutaUIEvent.CargarEstaciones)
+        onEvent(CrearRutaUIEvent.Load)
     }
 
-    fun processIntent(intent: CrearRutaUIEvent) {
-        when (intent) {
-            is CrearRutaUIEvent.CargarEstaciones -> cargarEstaciones()
-            is CrearRutaUIEvent.ToggleEstacionSeleccionada -> toggleSeleccion(intent.estacionId)
-            is CrearRutaUIEvent.GenerarHojaRuta -> guardarRuta()
+    fun onEvent(event: CrearRutaUIEvent) {
+        when (event) {
+            CrearRutaUIEvent.Load -> cargarEstaciones()
+            is CrearRutaUIEvent.ToggleEstacionSeleccionada -> toggleEstacion(event.id)
+            CrearRutaUIEvent.GenerarHojaRuta -> generarRuta()
         }
     }
 
     private fun cargarEstaciones() {
         viewModelScope.launch {
-            try {
-                // Filtramos para asegurar que solo se muestren estaciones sin ruta activa si es necesario
-                getEstacionesUseCase().collectLatest { lista ->
-                    _state.update { it.copy(isLoading = false, estacionesDisponibles = lista) }
+            observeEstacionesUseCase().collectLatest { lista ->
+                _state.update {
+                    it.copy(
+                        estacionesDisponibles = lista,
+                        isLoading = false
+                    )
                 }
-            } catch (e: Exception) {
-                _state.update { it.copy(isLoading = false, errorMessage = e.localizedMessage) }
             }
         }
     }
 
-    private fun toggleSeleccion(estacionId: String) {
+    private fun toggleEstacion(id: Int) {
         _state.update { currentState ->
             val seleccionadas = currentState.estacionesSeleccionadas.toMutableSet()
-            if (seleccionadas.contains(estacionId)) {
-                seleccionadas.remove(estacionId)
+            if (seleccionadas.contains(id)) {
+                seleccionadas.remove(id)
             } else {
-                seleccionadas.add(estacionId)
+                seleccionadas.add(id)
             }
             currentState.copy(estacionesSeleccionadas = seleccionadas)
         }
     }
 
-    private fun guardarRuta() {
-        val currentState = _state.value
+    private fun generarRuta() {
+        val currentState = state.value
+        val recolectorId = auth.currentUser?.uid
+
+        if (recolectorId == null) {
+            _state.update { it.copy(errorMessage = "Error: Usuario no autenticado") }
+            return
+        }
+
         if (currentState.estacionesSeleccionadas.isEmpty()) {
             _state.update { it.copy(errorMessage = "Debe seleccionar al menos una estación") }
             return
         }
 
-        val recolectorId = auth.currentUser?.uid ?: "DEV-USER-123"
-
-        _state.update { it.copy(isLoading = true, errorMessage = null) }
+        _state.update { it.copy(isSaving = true, errorMessage = null) }
 
         viewModelScope.launch {
             try {
-                // Al no pasarle ID, toma el 0 por defecto y Room generará el Int secuencial
-                val nuevaRuta = HojaRuta(
+                val nuevaHojaRuta = HojaRuta(
                     recolectorId = recolectorId,
-                    estado = EstadoRuta.EN_PROGRESO
+                    fechaCreacion = System.currentTimeMillis(),
+                    estado = EstadoRuta.PENDIENTE,
+                    totalVentaBruta = 0.0,
+                    totalComisionClientes = 0.0,
+                    totalRecaudado = 0.0,
+                    totalDeudas = 0.0
                 )
 
-                // Capturamos el Int generado por Room
-                val nuevaRutaIdGenerado = crearHojaRutaUseCase(nuevaRuta)
+                val rutaId = crearHojaRutaUseCase(nuevaHojaRuta)
 
-                // Asignamos el ID numérico a las estaciones seleccionadas
                 currentState.estacionesSeleccionadas.forEach { estacionId ->
-                    asignarRutaAEstacionUseCase(estacionId, nuevaRutaIdGenerado)
+                    asignarRutaAEstacionUseCase(estacionId, rutaId)
                 }
 
-                _state.update { it.copy(isLoading = false, isSuccess = true) }
+                _state.update { it.copy(isSaving = false, isSuccess = true) }
             } catch (e: Exception) {
-                _state.update { it.copy(isLoading = false, errorMessage = e.localizedMessage) }
+                _state.update { it.copy(isSaving = false, errorMessage = e.localizedMessage) }
             }
         }
     }
