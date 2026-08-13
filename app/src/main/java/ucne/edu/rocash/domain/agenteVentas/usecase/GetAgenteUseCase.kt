@@ -5,8 +5,8 @@ import ucne.edu.rocash.domain.agenteVentas.model.AgenteVentas
 import ucne.edu.rocash.domain.agenteVentas.repository.AgenteVentasRepository
 import javax.inject.Inject
 
-class GetAgentesUseCase @Inject constructor(
+class GetAgenteUseCase @Inject constructor(
     private val repository: AgenteVentasRepository
 ) {
-    operator fun invoke(): Flow<List<AgenteVentas>> = repository.obtenerAgentes()
+    suspend operator fun invoke(id: Int): AgenteVentas? = repository.getAgente(id)
 }
