@@ -10,25 +10,34 @@ import ucne.edu.rocash.domain.agenteVentas.repository.AgenteVentasRepository
 import javax.inject.Inject
 
 class AgenteVentasRepositoryImpl @Inject constructor(
-    private val dao: AgenteVentasDao
+    private val localDataSource: AgenteVentasDao
 ) : AgenteVentasRepository {
 
-    override suspend fun insertarAgente(agente: AgenteVentas) {
-        dao.upsert(agente.toEntity())
-    }
-
-    override fun obtenerAgentes(): Flow<List<AgenteVentas>> {
-        return dao.observeAll().map { lista ->
-            lista.map { it.toDomain() }
+    override fun observeAgentes(): Flow<List<AgenteVentas>> {
+        return localDataSource.observeAll().map { entities ->
+            entities.map { it.toDomain() }
         }
     }
 
-    override suspend fun obtenerAgentePorId(id: String): AgenteVentas? {
-        return dao.getById(id)?.toDomain()
+    override suspend fun getAgente(id: Int): AgenteVentas? {
+        return localDataSource.getById(id)?.toDomain()
+    }
+
+    override suspend fun upsert(agente: AgenteVentas): Int {
+        localDataSource.upsert(agente.toEntity())
+        return agente.agenteId
+    }
+
+    override suspend fun delete(id: Int) {
+        localDataSource.deleteById(id)
+    }
+
+    override suspend fun exists(id: Int): Boolean {
+        return localDataSource.exists(id)
     }
 
     override fun buscarAgentesPorNombre(nombre: String): Flow<List<AgenteVentas>> {
-        return dao.searchByName(nombre).map { lista ->
+        return localDataSource.searchByName(nombre).map { lista ->
             lista.map { it.toDomain() }
         }
     }

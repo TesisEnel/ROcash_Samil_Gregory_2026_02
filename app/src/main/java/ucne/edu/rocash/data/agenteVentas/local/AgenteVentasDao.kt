@@ -8,8 +8,6 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface AgenteVentasDao {
-    @Dao
-    interface AgenteVentasDao {
         @Upsert
         suspend fun upsert(entity: AgenteVentasEntity)
 
@@ -33,5 +31,4 @@ interface AgenteVentasDao {
 
         @Query("UPDATE agentes_ventas SET deudaAcumulada = deudaAcumulada + :monto WHERE agenteId = :id")
         suspend fun sumarDeuda(id: Int, monto: Double)
-    }
 }
