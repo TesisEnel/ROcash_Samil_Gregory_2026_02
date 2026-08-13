@@ -1,5 +1,6 @@
 package ucne.edu.rocash.presentation.estacion.form
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -9,91 +10,123 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import ucne.edu.rocash.domain.agenteVentas.usecase.GetAgentesUseCase
+import ucne.edu.rocash.domain.agenteVentas.usecase.ObserveAgentesUseCase
 import ucne.edu.rocash.domain.estacion.model.EstacionVentas
-import ucne.edu.rocash.domain.estacion.usecase.GetEstacionPorIdUseCase
-import ucne.edu.rocash.domain.estacion.usecase.SaveEstacionUseCase
-import java.util.UUID
+import ucne.edu.rocash.domain.estacion.usecase.DeleteEstacionUseCase
+import ucne.edu.rocash.domain.estacion.usecase.GetEstacionUseCase
+import ucne.edu.rocash.domain.estacion.usecase.UpsertEstacionUseCase
+import ucne.edu.rocash.domain.estacion.usecase.validateAgenteAsignado
+import ucne.edu.rocash.domain.estacion.usecase.validateEstacionDireccion
+import ucne.edu.rocash.domain.estacion.usecase.validateEstacionNombre
 import javax.inject.Inject
 
 @HiltViewModel
 class EstacionFormViewModel @Inject constructor(
-    private val saveEstacionUseCase: SaveEstacionUseCase,
-    private val getEstacionPorIdUseCase: GetEstacionPorIdUseCase,
-    private val getAgentesUseCase: GetAgentesUseCase
+    private val upsertEstacionUseCase: UpsertEstacionUseCase,
+    private val getEstacionUseCase: GetEstacionUseCase,
+    private val deleteEstacionUseCase: DeleteEstacionUseCase,
+    private val observeAgentesUseCase: ObserveAgentesUseCase,
+    savedStateHandle: SavedStateHandle
 ) : ViewModel() {
+    private val navEstacionId: Int = savedStateHandle.get<Int>("estacionId") ?: 0
 
     private val _state = MutableStateFlow(EstacionFormUiState())
     val state: StateFlow<EstacionFormUiState> = _state.asStateFlow()
 
     init {
         viewModelScope.launch {
-            getAgentesUseCase().collectLatest { listaAgentes ->
-                _state.update { it.copy(agentesDisponibles = listaAgentes.filter { agente -> agente.estado }) }
+            observeAgentesUseCase().collectLatest { listaAgentes ->
+                val activos = listaAgentes.filter { it.estado }
+                _state.update { it.copy(agentesDisponibles = activos) }
 
                 val currentAgenteId = _state.value.agenteId
-                if (currentAgenteId.isNotBlank()) {
-                    val nombre = listaAgentes.find { it.id == currentAgenteId }?.nombre ?: ""
+                if (currentAgenteId != null && currentAgenteId != 0) {
+                    val nombre = activos.find { it.agenteId == currentAgenteId }?.nombre ?: ""
                     _state.update { it.copy(agenteNombreSeleccionado = nombre) }
                 }
             }
         }
+        loadEstacion(navEstacionId)
     }
 
-    fun inicializar(estacionId: String?) {
-        if (estacionId != null && _state.value.id == null) {
-            viewModelScope.launch {
-                val estacion = getEstacionPorIdUseCase(estacionId)
-                if (estacion != null) {
-                    _state.update {
-                        it.copy(
-                            id = estacion.id,
-                            nombre = estacion.nombre,
-                            direccion = estacion.direccion,
-                            agenteId = estacion.agenteId
-                        )
-                    }
+    fun onEvent(event: EstacionFormUiEvent) {
+        when (event) {
+            is EstacionFormUiEvent.Load -> loadEstacion(event.id)
+            is EstacionFormUiEvent.NombreChanged -> _state.update { it.copy(nombre = event.value, nombreError = null) }
+            is EstacionFormUiEvent.DireccionChanged -> _state.update { it.copy(direccion = event.value, direccionError = null) }
+            is EstacionFormUiEvent.AgenteSeleccionado -> _state.update {
+                it.copy(agenteId = event.id, agenteNombreSeleccionado = event.nombre, agenteError = null)
+            }
+            EstacionFormUiEvent.Save -> onSave()
+            EstacionFormUiEvent.Delete -> onDelete()
+        }
+    }
+
+    private fun loadEstacion(id: Int?) {
+        if (id == null || id == 0) {
+            _state.update { it.copy(isNew = true, estacionId = null) }
+            return
+        }
+
+        viewModelScope.launch {
+            val estacion = getEstacionUseCase(id)
+            if (estacion != null) {
+                _state.update {
+                    it.copy(
+                        isNew = false,
+                        estacionId = estacion.estacionId,
+                        nombre = estacion.nombre,
+                        direccion = estacion.direccion,
+                        agenteId = estacion.agenteId
+                    )
                 }
             }
         }
     }
 
-    fun processIntent(intent: EstacionFormUiEvent) {
-        when (intent) {
-            is EstacionFormUiEvent.OnNombreChange -> _state.update { it.copy(nombre = intent.value) }
-            is EstacionFormUiEvent.OnDireccionChange -> _state.update { it.copy(direccion = intent.value) }
-            is EstacionFormUiEvent.OnAgenteSeleccionado -> _state.update {
-                it.copy(agenteId = intent.id, agenteNombreSeleccionado = intent.nombre)
-            }
-            is EstacionFormUiEvent.ResetSuccessState -> _state.update { it.copy(isSuccess = false) }
-            is EstacionFormUiEvent.GuardarEstacion -> guardar()
-        }
-    }
+    private fun onSave() {
+        val currentState = state.value
 
-    private fun guardar() {
-        val currentState = _state.value
-        if (currentState.nombre.isBlank() || currentState.direccion.isBlank() || currentState.agenteId.isBlank()) {
-            _state.update { it.copy(errorMessage = "Todos los campos son obligatorios") }
+        val nombreValidation = validateEstacionNombre(currentState.nombre)
+        val direccionValidation = validateEstacionDireccion(currentState.direccion)
+        val agenteValidation = validateAgenteAsignado(currentState.agenteId)
+
+        if (!nombreValidation.isValid || !direccionValidation.isValid || !agenteValidation.isValid) {
+            _state.update {
+                it.copy(
+                    nombreError = nombreValidation.error,
+                    direccionError = direccionValidation.error,
+                    agenteError = agenteValidation.error
+                )
+            }
             return
         }
 
-        _state.update { it.copy(isLoading = true, errorMessage = null) }
-
         viewModelScope.launch {
-            try {
-                val estacion = EstacionVentas(
-                    id = currentState.id ?: UUID.randomUUID().toString(),
-                    nombre = currentState.nombre,
-                    direccion = currentState.direccion,
-                    agenteId = currentState.agenteId
-                )
+            _state.update { it.copy(isSaving = true) }
 
-                saveEstacionUseCase(estacion)
+            val estacion = EstacionVentas(
+                estacionId = currentState.estacionId ?: 0,
+                nombre = currentState.nombre,
+                direccion = currentState.direccion,
+                agenteId = currentState.agenteId!!
+            )
 
-                _state.update { it.copy(isLoading = false, isSuccess = true) }
-            } catch (e: Exception) {
-                _state.update { it.copy(isLoading = false, errorMessage = e.localizedMessage) }
+            val result = upsertEstacionUseCase(estacion)
+            result.onSuccess { newId ->
+                _state.update { it.copy(isSaving = false, saved = true, estacionId = newId, isNew = false) }
+            }.onFailure {
+                _state.update { it.copy(isSaving = false) }
             }
+        }
+    }
+
+    private fun onDelete() {
+        val id = state.value.estacionId ?: return
+        viewModelScope.launch {
+            _state.update { it.copy(isDeleting = true) }
+            deleteEstacionUseCase(id)
+            _state.update { it.copy(isDeleting = false, deleted = true) }
         }
     }
 }

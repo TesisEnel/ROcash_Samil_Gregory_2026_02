@@ -5,8 +5,8 @@ import ucne.edu.rocash.domain.estacion.model.EstacionVentas
 import ucne.edu.rocash.domain.estacion.repository.EstacionRepository
 import javax.inject.Inject
 
-class GetEstacionesUseCase @Inject constructor(
+class ObserveEstacionesUseCase @Inject constructor(
     private val repository: EstacionRepository
 ) {
-    operator fun invoke(): Flow<List<EstacionVentas>> = repository.obtenerEstaciones()
+    operator fun invoke(): Flow<List<EstacionVentas>> = repository.observeEstaciones()
 }

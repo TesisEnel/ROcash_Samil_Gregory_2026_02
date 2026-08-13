@@ -17,12 +17,13 @@ import ucne.edu.rocash.data.local.dao.RoCashDao
 import ucne.edu.rocash.data.local.database.RoCashDatabase
 import ucne.edu.rocash.data.recolector.local.RecolectorDao
 import ucne.edu.rocash.data.recolector.repository.RecolectorRepositoryImpl
-import ucne.edu.rocash.data.repository.RoCashRepositoryImpl
+import ucne.edu.rocash.data.registroRecoleccion.local.RegistroRecoleccionDao
+import ucne.edu.rocash.data.registroRecoleccion.repository.RegistroRecoleccionRepositoryImpl
 import ucne.edu.rocash.domain.agenteVentas.repository.AgenteVentasRepository
 import ucne.edu.rocash.domain.estacion.repository.EstacionRepository
 import ucne.edu.rocash.domain.hojaRuta.repository.HojaRutaRepository
 import ucne.edu.rocash.domain.recolector.repository.RecolectorRepository
-import ucne.edu.rocash.domain.repository.RoCashRepository
+import ucne.edu.rocash.domain.registroRecoleccion.repository.RegistroRecoleccionRepository
 import javax.inject.Singleton
 
 @Module
@@ -38,20 +39,6 @@ object DatabaseModule {
             RoCashDatabase.DATABASE_NAME
         ).fallbackToDestructiveMigration()
             .build()
-    }
-
-    @Provides
-    @Singleton
-    fun provideRoCashDao(database: RoCashDatabase): RoCashDao {
-        return database.roCashDao
-    }
-
-    @Provides
-    @Singleton
-    fun provideRoCashRepository(
-        dao: RoCashDao
-    ): RoCashRepository {
-        return RoCashRepositoryImpl(dao)
     }
 
     @Provides
@@ -108,5 +95,19 @@ object DatabaseModule {
         dao: HojaRutaDao
     ): HojaRutaRepository{
         return HojaRutaRepositoryImpl(dao)
+    }
+
+    @Provides
+    @Singleton
+    fun provideRegistroRecoleccionDao(database: RoCashDatabase): RegistroRecoleccionDao {
+        return database.registroRecoleccionDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideRegistroRecoleccionRepository(
+        dao: RegistroRecoleccionDao
+    ): RegistroRecoleccionRepository {
+        return RegistroRecoleccionRepositoryImpl(dao)
     }
 }
