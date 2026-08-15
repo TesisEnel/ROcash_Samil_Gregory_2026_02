@@ -10,5 +10,4 @@ interface EstacionRepository {
     suspend fun delete(id: Int)
     suspend fun exists(id: Int): Boolean
     fun buscarEstaciones(query: String): Flow<List<EstacionVentas>>
-    suspend fun asignarRuta(estacionId: Int, rutaId: Int)
 }

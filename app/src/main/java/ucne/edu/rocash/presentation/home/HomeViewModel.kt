@@ -12,7 +12,6 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import ucne.edu.rocash.domain.hojaRuta.usecase.GetRutaActivaUseCase
 import ucne.edu.rocash.domain.hojaRuta.usecase.GetTotalIngresosUseCase
 import ucne.edu.rocash.domain.hojaRuta.usecase.GetTotalRutasCompletadasUseCase
 
