@@ -1,40 +1,54 @@
 package ucne.edu.rocash.data.hojaRuta.mapper
 
-import ucne.edu.rocash.data.estacion.local.HojaRutaConEstaciones
 import ucne.edu.rocash.data.estacion.mapper.toDomain
+import ucne.edu.rocash.data.hojaRuta.local.EstacionDeRutaEntity
+import ucne.edu.rocash.data.hojaRuta.local.HojaRutaConEstaciones
 import ucne.edu.rocash.data.hojaRuta.local.HojaRutaEntity
+import ucne.edu.rocash.domain.hojaRuta.model.EstacionEnRuta
 import ucne.edu.rocash.domain.hojaRuta.model.EstadoRuta
+import ucne.edu.rocash.domain.hojaRuta.model.EstadoVisitaEstacion
 import ucne.edu.rocash.domain.hojaRuta.model.HojaRuta
 
-fun HojaRuta.toEntity(): HojaRutaEntity {
-    return HojaRutaEntity(
-        id = this.id,
-        recolectorId = this.recolectorId,
-        fechaCreacion = this.fechaCreacion,
-        estado = this.estado.name,
-        totalVentaBruta = this.totalVentaBruta,
-        totalComisionClientes = this.totalComisionClientes,
-        totalRecaudado = this.totalRecaudado,
-        totalDeudas = this.totalDeudas
-    )
-}
+fun HojaRuta.toEntity(): HojaRutaEntity = HojaRutaEntity(
+    id = id,
+    recolectorId = recolectorId,
+    fechaCreacion = fechaCreacion,
+    fechaCierre = fechaCierre,
+    estado = estado.name,
+    totalVentaBruta = totalVentaBruta,
+    totalComisionClientes = totalComisionClientes,
+    totalRecaudado = totalRecaudado,
+    totalDeudas = totalDeudas
+)
 
-fun HojaRutaEntity.toDomain(): HojaRuta {
-    return HojaRuta(
-        id = this.id,
-        recolectorId = this.recolectorId,
-        fechaCreacion = this.fechaCreacion,
-        estado = EstadoRuta.valueOf(this.estado),
-        totalVentaBruta = this.totalVentaBruta,
-        totalComisionClientes = this.totalComisionClientes,
-        totalRecaudado = this.totalRecaudado,
-        totalDeudas = this.totalDeudas,
-        estaciones = emptyList()
-    )
-}
+fun HojaRutaEntity.toDomain(): HojaRuta = HojaRuta(
+    id = id,
+    recolectorId = recolectorId,
+    fechaCreacion = fechaCreacion,
+    fechaCierre = fechaCierre,
+    estado = estado.toEstadoRuta(),
+    totalVentaBruta = totalVentaBruta,
+    totalComisionClientes = totalComisionClientes,
+    totalRecaudado = totalRecaudado,
+    totalDeudas = totalDeudas,
+    estaciones = emptyList()
+)
 
-fun HojaRutaConEstaciones.toDomain(): HojaRuta {
-    return this.ruta.toDomain().copy(
-        estaciones = this.estaciones.map { it.toDomain() }
-    )
-}
+fun HojaRutaConEstaciones.toDomain(): HojaRuta = ruta.toDomain().copy(
+    estaciones = estaciones
+        .sortedBy { it.cruce.orden }
+        .map { it.toDomain() }
+)
+
+fun EstacionDeRutaEntity.toDomain(): EstacionEnRuta = EstacionEnRuta(
+    estacion = estacion.toDomain(),
+    orden = cruce.orden,
+    estado = cruce.estadoVisita.toEstadoVisitaEstacion()
+)
+
+private fun String.toEstadoRuta(): EstadoRuta =
+    runCatching { EstadoRuta.valueOf(this) }.getOrDefault(EstadoRuta.PENDIENTE)
+
+private fun String.toEstadoVisitaEstacion(): EstadoVisitaEstacion =
+    runCatching { EstadoVisitaEstacion.valueOf(this) }
+        .getOrDefault(EstadoVisitaEstacion.PENDIENTE)
