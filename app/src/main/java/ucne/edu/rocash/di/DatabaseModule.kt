@@ -13,7 +13,6 @@ import ucne.edu.rocash.data.estacion.local.EstacionVentasDao
 import ucne.edu.rocash.data.estacion.repository.EstacionRepositoryImpl
 import ucne.edu.rocash.data.hojaRuta.local.HojaRutaDao
 import ucne.edu.rocash.data.hojaRuta.repository.HojaRutaRepositoryImpl
-import ucne.edu.rocash.data.local.dao.RoCashDao
 import ucne.edu.rocash.data.local.database.RoCashDatabase
 import ucne.edu.rocash.data.recolector.local.RecolectorDao
 import ucne.edu.rocash.data.recolector.repository.RecolectorRepositoryImpl
