@@ -18,7 +18,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 @Composable
 fun AuthScreen(
     viewModel: AuthViewModel = hiltViewModel(),
-    onLoginSuccess: () -> Unit
+    onLoginSuccess: () -> Unit,
+    onNavigateToSignUp: () -> Unit
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
@@ -38,14 +39,16 @@ fun AuthScreen(
             } else {
                 viewModel.onEvent(event)
             }
-        }
+        },
+        onNavigateToSignUp = onNavigateToSignUp
     )
 }
 
 @Composable
 fun AuthBody(
     state: AuthUiState,
-    onEvent: (AuthUiEvent) -> Unit
+    onEvent: (AuthUiEvent) -> Unit,
+    onNavigateToSignUp: () -> Unit
 ) {
     val context = LocalContext.current
 
@@ -127,6 +130,15 @@ fun AuthBody(
                         Text("Continuar con Google")
                     }
 
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    TextButton(
+                        onClick = onNavigateToSignUp,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text("¿No tienes cuenta? Regístrate aquí")
+                    }
+
                     if (state.errorMessage != null) {
                         Spacer(modifier = Modifier.height(16.dp))
                         Text(
@@ -148,7 +160,8 @@ private fun AuthBodyPreview() {
     MaterialTheme {
         AuthBody(
             state = AuthUiState(),
-            onEvent = {}
+            onEvent = {},
+            onNavigateToSignUp = {}
         )
     }
 }
@@ -163,7 +176,8 @@ private fun AuthBodyErrorPreview() {
                 emailError = "El formato del correo es inválido",
                 errorMessage = "Correo o contraseña incorrectos"
             ),
-            onEvent = {}
+            onEvent = {},
+            onNavigateToSignUp = {}
         )
     }
 }
