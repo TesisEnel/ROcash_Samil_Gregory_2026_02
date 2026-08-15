@@ -8,6 +8,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Home
@@ -27,12 +28,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.launch
 import ucne.edu.rocash.domain.estacion.model.EstacionVentas
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
@@ -41,9 +43,35 @@ fun HomeScreen(
     onNavigateToRecolectores: () -> Unit,
     onNavigateToAgentes: () -> Unit,
     onNavigateToEstaciones: () -> Unit,
-    onNavigateToDetalleEstacion: (Int, Int, Int, String) -> Unit
+    onNavigateToDetalleEstacion: (Int, Int, Int, String) -> Unit,
+    onNavigateToProfile: () -> Unit
 ) {
-    val state by viewModel.state.collectAsState()
+    val state by viewModel.state.collectAsStateWithLifecycle()
+
+    HomeBody(
+        state = state,
+        onNavigateToCrearRuta = onNavigateToCrearRuta,
+        onNavigateToHistorial = onNavigateToHistorial,
+        onNavigateToRecolectores = onNavigateToRecolectores,
+        onNavigateToAgentes = onNavigateToAgentes,
+        onNavigateToEstaciones = onNavigateToEstaciones,
+        onNavigateToDetalleEstacion = onNavigateToDetalleEstacion,
+        onNavigateToProfile = onNavigateToProfile
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun HomeBody(
+    state: HomeUIState,
+    onNavigateToCrearRuta: () -> Unit,
+    onNavigateToHistorial: () -> Unit,
+    onNavigateToRecolectores: () -> Unit,
+    onNavigateToAgentes: () -> Unit,
+    onNavigateToEstaciones: () -> Unit,
+    onNavigateToDetalleEstacion: (Int, Int, Int, String) -> Unit,
+    onNavigateToProfile: () -> Unit
+) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
@@ -107,6 +135,13 @@ fun HomeScreen(
                         IconButton(onClick = onNavigateToHistorial) {
                             Icon(Icons.Default.History, contentDescription = "Historial")
                         }
+                        IconButton(onClick = onNavigateToProfile) {
+                            Icon(
+                                imageVector = Icons.Default.AccountCircle,
+                                contentDescription = "Mi Perfil",
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                        }
                     }
                 )
             },
@@ -153,7 +188,6 @@ fun HomeScreen(
                 if (state.isLoading) {
                     CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
                 } else if (state.hojaRutaActiva == null) {
-
                     Card(
                         modifier = Modifier.fillMaxWidth(),
                         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
@@ -179,7 +213,7 @@ fun HomeScreen(
                         }
                     }
                 } else {
-                    val ruta = state.hojaRutaActiva!!
+                    val ruta = state.hojaRutaActiva
                     ElevatedCard(modifier = Modifier.fillMaxWidth()) {
                         Column(modifier = Modifier.padding(16.dp)) {
                             Text(
@@ -245,5 +279,27 @@ fun StatCard(modifier: Modifier = Modifier, titulo: String, valor: String, icono
             Text(text = titulo, style = MaterialTheme.typography.labelMedium)
             Text(text = valor, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun HomeBodyPreview() {
+    MaterialTheme {
+        HomeBody(
+            state = HomeUIState(
+                isLoading = false,
+                totalIngresos = 0.0,
+                rutasCompletadas = 0,
+                hojaRutaActiva = null
+            ),
+            onNavigateToCrearRuta = {},
+            onNavigateToHistorial = {},
+            onNavigateToRecolectores = {},
+            onNavigateToAgentes = {},
+            onNavigateToEstaciones = {},
+            onNavigateToDetalleEstacion = { _, _, _, _ -> },
+            onNavigateToProfile = {}
+        )
     }
 }

@@ -9,10 +9,12 @@ import com.google.firebase.auth.FirebaseAuth
 import ucne.edu.rocash.presentation.agenteVentas.form.AgenteFormScreen
 import ucne.edu.rocash.presentation.agenteVentas.list.AgenteListScreen
 import ucne.edu.rocash.presentation.auth.AuthScreen
+import ucne.edu.rocash.presentation.auth.signup.SignUpScreen
 import ucne.edu.rocash.presentation.home.HomeScreen
 import ucne.edu.rocash.presentation.detalle.DetalleEstacionScreen
 import ucne.edu.rocash.presentation.estacion.form.EstacionFormScreen
 import ucne.edu.rocash.presentation.estacion.list.EstacionListScreen
+import ucne.edu.rocash.presentation.profile.ProfileScreen
 import ucne.edu.rocash.presentation.recolector.form.FormRecolectorScreen
 import ucne.edu.rocash.presentation.recolector.list.ListRecolectorScreen
 import ucne.edu.rocash.presentation.ruta.CrearRutaScreen
@@ -28,15 +30,42 @@ fun RoCashNavHost() {
         navController = navController,
         startDestination = rutaInicial
     ) {
+
         composable<AuthRoute> {
             AuthScreen(
                 onLoginSuccess = {
                     navController.navigate(HomeRecolectorRoute) {
                         popUpTo(AuthRoute) { inclusive = true }
                     }
+                },
+                onNavigateToSignUp = {
+                    navController.navigate(SignUpRoute)
                 }
             )
         }
+
+        composable<SignUpRoute> {
+            SignUpScreen(
+                onNavigateBack = { navController.popBackStack() },
+                onSignUpSuccess = {
+                    navController.navigate(HomeRecolectorRoute) {
+                        popUpTo(AuthRoute) { inclusive = true }
+                    }
+                }
+            )
+        }
+
+        composable<ProfileRoute> {
+            ProfileScreen(
+                onNavigateBack = { navController.popBackStack() },
+                onSignOutSuccess = {
+                    navController.navigate(AuthRoute) {
+                        popUpTo(0)
+                    }
+                }
+            )
+        }
+
 
         composable<HomeRecolectorRoute> {
             HomeScreen(
@@ -54,7 +83,8 @@ fun RoCashNavHost() {
                             nombreEstacion = nombre
                         )
                     )
-                }
+                },
+                onNavigateToProfile = { navController.navigate(ProfileRoute) }
             )
         }
 

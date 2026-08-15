@@ -1,14 +1,11 @@
-package ucne.edu.rocash.presentation.auth
+package ucne.edu.rocash.presentation.auth.signup
 
-import com.google.firebase.auth.FirebaseUser
-
-data class AuthUiState(
-    val isLoading: Boolean = false,
-    val user: FirebaseUser? = null,
+data class SignUpUiState(
     val email: String = "",
     val password: String = "",
     val emailError: String? = null,
     val passwordError: String? = null,
     val errorMessage: String? = null,
+    val isLoading: Boolean = false,
     val isSuccess: Boolean = false
 )
