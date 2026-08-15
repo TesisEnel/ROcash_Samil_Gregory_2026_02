@@ -8,7 +8,6 @@ import javax.inject.Inject
 class GetHistorialRutasUseCase @Inject constructor(
     private val repository: HojaRutaRepository
 ) {
-    operator fun invoke(recolectorId: String): Flow<List<HojaRuta>> {
-        return repository.obtenerHistorialRutas(recolectorId)
-    }
+    operator fun invoke(recolectorId: String): Flow<List<HojaRuta>> =
+        repository.observarHistorial(recolectorId)
 }
