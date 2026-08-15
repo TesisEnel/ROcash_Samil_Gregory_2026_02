@@ -1,15 +1,14 @@
-package ucne.edu.rocash.data.estacion.local
-
+package ucne.edu.rocash.data.hojaRuta.local
 import androidx.room.Embedded
 import androidx.room.Relation
-import ucne.edu.rocash.data.hojaRuta.local.HojaRutaEntity
 
 data class HojaRutaConEstaciones(
     @Embedded val ruta: HojaRutaEntity,
 
     @Relation(
+        entity = HojaRutaEstacionEntity::class,
         parentColumn = "id",
         entityColumn = "hojaRutaId"
     )
-    val estaciones: List<EstacionVentasEntity>
+    val estaciones: List<EstacionDeRutaEntity>
 )
