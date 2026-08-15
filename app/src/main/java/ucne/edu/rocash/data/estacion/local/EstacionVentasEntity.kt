@@ -26,7 +26,6 @@ import ucne.edu.rocash.data.agenteVentas.local.AgenteVentasEntity
 data class EstacionVentasEntity(
     @PrimaryKey(autoGenerate = true)
     val estacionId: Int = 0,
-    val hojaRutaId: Int? = null,
     val nombre: String,
     val direccion: String,
     @ColumnInfo(index = true) val agenteId: Int,
