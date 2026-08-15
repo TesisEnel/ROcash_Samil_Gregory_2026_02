@@ -2,65 +2,69 @@ package ucne.edu.rocash.presentation.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import javax.inject.Inject
+import ucne.edu.rocash.domain.auth.session.SesionRecolector
 import ucne.edu.rocash.domain.hojaRuta.usecase.GetTotalIngresosUseCase
 import ucne.edu.rocash.domain.hojaRuta.usecase.GetTotalRutasCompletadasUseCase
+import ucne.edu.rocash.domain.hojaRuta.usecase.ObserveRutasAbiertasUseCase
+import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val getRutaActivaUseCase: GetRutaActivaUseCase,
+    private val observeRutasAbiertasUseCase: ObserveRutasAbiertasUseCase,
     private val getTotalIngresosUseCase: GetTotalIngresosUseCase,
     private val getTotalRutasCompletadasUseCase: GetTotalRutasCompletadasUseCase,
-    private val auth: FirebaseAuth
+    private val sesion: SesionRecolector
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow(HomeUIState())
-    val state: StateFlow<HomeUIState> = _state.asStateFlow()
+    private val _state = MutableStateFlow(HomeUiState())
+    val state: StateFlow<HomeUiState> = _state.asStateFlow()
 
     init {
-        processIntent(HomeUIEvent.CargarDatos)
+        onEvent(HomeUiEvent.CargarDatos)
     }
 
-    fun processIntent(intent: HomeUIEvent) {
-        when (intent) {
-            is HomeUIEvent.CargarDatos -> cargarDatosRecolector()
+    fun onEvent(event: HomeUiEvent) {
+        when (event) {
+            HomeUiEvent.CargarDatos -> cargarDatos()
+            HomeUiEvent.ErrorMostrado -> _state.update { it.copy(errorMessage = null) }
         }
     }
 
-    private fun cargarDatosRecolector() {
-        val userId = auth.currentUser?.uid ?: "DEV-USER-123"
+    private fun cargarDatos() {
+        val recolectorId = sesion.recolectorIdOrNull()
+
+        if (recolectorId == null) {
+            _state.update { it.copy(isLoading = false, sinSesion = true) }
+            return
+        }
 
         viewModelScope.launch {
-            try {
-                _state.update { it.copy(isLoading = true, errorMessage = null) }
-
-                combine(
-                    getRutaActivaUseCase(userId),
-                    getTotalIngresosUseCase(userId),
-                    getTotalRutasCompletadasUseCase(userId)
-                ) { rutaActiva, ingresos, completadas ->
-                    HomeUIState(
-                        isLoading = false,
-                        hojaRutaActiva = rutaActiva,
-                        totalIngresos = ingresos,
-                        rutasCompletadas = completadas,
-                        errorMessage = null
-                    )
-                }.collectLatest { newState ->
-                    _state.value = newState
-                }
-            } catch (e: Exception) {
-                _state.update { it.copy(isLoading = false, errorMessage = e.localizedMessage) }
+            combine(
+                observeRutasAbiertasUseCase(recolectorId),
+                getTotalIngresosUseCase(recolectorId),
+                getTotalRutasCompletadasUseCase(recolectorId)
+            ) { rutas, ingresos, completadas ->
+                HomeUiState(
+                    isLoading = false,
+                    rutasAbiertas = rutas,
+                    totalIngresos = ingresos,
+                    rutasCompletadas = completadas
+                )
             }
+                .catch { error ->
+                    _state.update {
+                        it.copy(isLoading = false, errorMessage = error.localizedMessage)
+                    }
+                }
+                .collect { nuevoEstado -> _state.value = nuevoEstado }
         }
     }
 }
