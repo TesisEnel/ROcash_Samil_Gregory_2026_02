@@ -13,32 +13,21 @@ class EstacionRepositoryImpl @Inject constructor(
     private val localDataSource: EstacionVentasDao
 ) : EstacionRepository {
 
-    override fun observeEstaciones(): Flow<List<EstacionVentas>> {
-        return localDataSource.observeAll().map { entities -> entities.map { it.toDomain() } }
-    }
+    override fun observeEstaciones(): Flow<List<EstacionVentas>> =
+        localDataSource.observeAll().map { entities -> entities.map { it.toDomain() } }
 
-    override suspend fun getEstacion(id: Int): EstacionVentas? {
-        return localDataSource.getById(id)?.toDomain()
-    }
+    override suspend fun getEstacion(id: Int): EstacionVentas? =
+        localDataSource.getById(id)?.toDomain()
 
     override suspend fun upsert(estacion: EstacionVentas): Int {
         localDataSource.upsert(estacion.toEntity())
         return estacion.estacionId
     }
 
-    override suspend fun delete(id: Int) {
-        localDataSource.deleteById(id)
-    }
+    override suspend fun delete(id: Int) = localDataSource.deleteById(id)
 
-    override suspend fun exists(id: Int): Boolean {
-        return localDataSource.exists(id)
-    }
+    override suspend fun exists(id: Int): Boolean = localDataSource.exists(id)
 
-    override fun buscarEstaciones(query: String): Flow<List<EstacionVentas>> {
-        return localDataSource.search(query).map { lista -> lista.map { it.toDomain() } }
-    }
-
-    override suspend fun asignarRuta(estacionId: Int, rutaId: Int) {
-        localDataSource.asignarRuta(estacionId, rutaId)
-    }
+    override fun buscarEstaciones(query: String): Flow<List<EstacionVentas>> =
+        localDataSource.search(query).map { lista -> lista.map { it.toDomain() } }
 }
