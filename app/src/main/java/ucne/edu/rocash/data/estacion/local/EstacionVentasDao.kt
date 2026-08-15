@@ -35,6 +35,4 @@ interface EstacionVentasDao {
     )
     fun search(query: String): Flow<List<EstacionVentasEntity>>
 
-    // `asignarRuta` se elimino: la pertenencia a una ruta ahora la maneja
-    // HojaRutaDao a traves de la tabla puente hoja_ruta_estacion.
 }
