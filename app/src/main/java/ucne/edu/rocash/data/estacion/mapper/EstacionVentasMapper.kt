@@ -5,7 +5,6 @@ import ucne.edu.rocash.domain.estacion.model.EstacionVentas
 
 fun EstacionVentasEntity.toDomain(): EstacionVentas = EstacionVentas(
     estacionId = estacionId,
-    hojaRutaId = hojaRutaId,
     nombre = nombre,
     direccion = direccion,
     agenteId = agenteId,
@@ -14,7 +13,6 @@ fun EstacionVentasEntity.toDomain(): EstacionVentas = EstacionVentas(
 
 fun EstacionVentas.toEntity(): EstacionVentasEntity = EstacionVentasEntity(
     estacionId = estacionId,
-    hojaRutaId = hojaRutaId,
     nombre = nombre,
     direccion = direccion,
     agenteId = agenteId,

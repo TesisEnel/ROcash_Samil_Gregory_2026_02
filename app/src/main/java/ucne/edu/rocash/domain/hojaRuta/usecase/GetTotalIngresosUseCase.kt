@@ -7,7 +7,6 @@ import javax.inject.Inject
 class GetTotalIngresosUseCase @Inject constructor(
     private val repository: HojaRutaRepository
 ) {
-    operator fun invoke(recolectorId: String): Flow<Double> {
-        return repository.obtenerTotalIngresos(recolectorId)
-    }
+    operator fun invoke(recolectorId: String): Flow<Double> =
+        repository.observarTotalIngresos(recolectorId)
 }

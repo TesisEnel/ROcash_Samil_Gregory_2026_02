@@ -2,34 +2,150 @@ package ucne.edu.rocash.data.hojaRuta.local
 
 import androidx.room.Dao
 import androidx.room.Insert
-import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
+import androidx.room.Upsert
 import kotlinx.coroutines.flow.Flow
-import ucne.edu.rocash.data.estacion.local.HojaRutaConEstaciones
 
 @Dao
 interface HojaRutaDao {
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertarRuta(ruta: HojaRutaEntity): Long
+
+    @Insert
+    suspend fun insertar(ruta: HojaRutaEntity): Long
 
     @Update
-    suspend fun actualizarRuta(ruta: HojaRutaEntity)
+    suspend fun actualizar(ruta: HojaRutaEntity)
+
+    @Upsert
+    suspend fun upsertEstacionesDeRuta(cruces: List<HojaRutaEstacionEntity>)
+
+    @Query("DELETE FROM hoja_ruta_estacion WHERE hojaRutaId = :rutaId")
+    suspend fun borrarEstacionesDeRuta(rutaId: Int)
 
     @Transaction
-    @Query("SELECT * FROM hoja_ruta WHERE recolectorId = :recolectorId AND estado = 'EN_PROGRESO' LIMIT 1")
-    fun obtenerRutaActiva(recolectorId: String): Flow<HojaRutaConEstaciones?>
+    suspend fun crearRutaConEstaciones(
+        ruta: HojaRutaEntity,
+        estacionIds: List<Int>,
+        estadoInicialEstacion: String
+    ): Int {
+        val nuevoId = insertar(ruta).toInt()
+        val cruces = estacionIds.mapIndexed { indice, estacionId ->
+            HojaRutaEstacionEntity(
+                hojaRutaId = nuevoId,
+                estacionId = estacionId,
+                orden = indice,
+                estadoVisita = estadoInicialEstacion
+            )
+        }
+        upsertEstacionesDeRuta(cruces)
+        return nuevoId
+    }
 
-    @Query("SELECT * FROM hoja_ruta WHERE recolectorId = :recolectorId AND estado = 'CERRADA' ORDER BY fechaCreacion DESC")
-    fun obtenerHistorial(recolectorId: String): Flow<List<HojaRutaEntity>>
+    @Query(
+        """
+        UPDATE hoja_ruta_estacion
+        SET estadoVisita = :estado
+        WHERE hojaRutaId = :rutaId AND estacionId = :estacionId
+        """
+    )
+    suspend fun marcarEstadoEstacion(rutaId: Int, estacionId: Int, estado: String)
 
-    @Query("SELECT SUM(totalRecaudado) FROM hoja_ruta WHERE recolectorId = :recolectorId AND estado = 'CERRADA'")
-    fun obtenerTotalIngresos(recolectorId: String): Flow<Double?> // Puede ser null si no hay rutas
+    @Query("UPDATE hoja_ruta SET estado = :estado WHERE id = :rutaId")
+    suspend fun cambiarEstado(rutaId: Int, estado: String)
 
-    @Query("SELECT COUNT(*) FROM hoja_ruta WHERE recolectorId = :recolectorId AND estado = 'CERRADA'")
-    fun obtenerTotalRutasCompletadas(recolectorId: String): Flow<Int>
+    @Query(
+        """
+        UPDATE hoja_ruta
+        SET estado = :estadoCerrada,
+            fechaCierre = :fechaCierre,
+            totalVentaBruta = :totalVentaBruta,
+            totalComisionClientes = :totalComisionClientes,
+            totalRecaudado = :totalRecaudado,
+            totalDeudas = :totalDeudas
+        WHERE id = :rutaId
+        """
+    )
+    suspend fun cerrarConTotales(
+        rutaId: Int,
+        estadoCerrada: String,
+        fechaCierre: Long,
+        totalVentaBruta: Double,
+        totalComisionClientes: Double,
+        totalRecaudado: Double,
+        totalDeudas: Double
+    )
 
-    @Query("UPDATE hoja_ruta SET estado = 'CERRADA' WHERE id = :id")
-    suspend fun cerrarRuta(id: Int)
+
+    @Transaction
+    @Query("SELECT * FROM hoja_ruta WHERE id = :rutaId")
+    fun observarRutaConEstaciones(rutaId: Int): Flow<HojaRutaConEstaciones?>
+
+    @Transaction
+    @Query("SELECT * FROM hoja_ruta WHERE id = :rutaId")
+    suspend fun obtenerRutaConEstaciones(rutaId: Int): HojaRutaConEstaciones?
+
+    @Transaction
+    @Query(
+        """
+        SELECT * FROM hoja_ruta
+        WHERE recolectorId = :recolectorId AND estado IN (:estadosAbiertos)
+        ORDER BY fechaCreacion DESC
+        """
+    )
+    fun observarRutasAbiertas(
+        recolectorId: String,
+        estadosAbiertos: List<String>
+    ): Flow<List<HojaRutaConEstaciones>>
+
+    @Query(
+        """
+        SELECT * FROM hoja_ruta
+        WHERE recolectorId = :recolectorId AND estado = :estadoCerrada
+        ORDER BY fechaCierre DESC, fechaCreacion DESC
+        """
+    )
+    fun observarHistorial(
+        recolectorId: String,
+        estadoCerrada: String
+    ): Flow<List<HojaRutaEntity>>
+
+    @Query(
+        """
+        SELECT COALESCE(SUM(totalRecaudado), 0.0) FROM hoja_ruta
+        WHERE recolectorId = :recolectorId AND estado = :estadoCerrada
+        """
+    )
+    fun observarTotalIngresos(recolectorId: String, estadoCerrada: String): Flow<Double>
+
+    @Query(
+        """
+        SELECT COUNT(*) FROM hoja_ruta
+        WHERE recolectorId = :recolectorId AND estado = :estadoCerrada
+        """
+    )
+    fun observarTotalRutasCompletadas(recolectorId: String, estadoCerrada: String): Flow<Int>
+
+    @Query(
+        """
+        SELECT hre.estacionId
+        FROM hoja_ruta_estacion hre
+        INNER JOIN hoja_ruta hr ON hr.id = hre.hojaRutaId
+        WHERE hr.estado IN (:estadosAbiertos) AND hre.estacionId IN (:estacionIds)
+        """
+    )
+    suspend fun estacionesYaComprometidas(
+        estacionIds: List<Int>,
+        estadosAbiertos: List<String>
+    ): List<Int>
+
+    @Query(
+        """
+        SELECT hre.estacionId
+        FROM hoja_ruta_estacion hre
+        INNER JOIN hoja_ruta hr ON hr.id = hre.hojaRutaId
+        WHERE hr.estado IN (:estadosAbiertos)
+        """
+    )
+    fun observarEstacionesComprometidas(estadosAbiertos: List<String>): Flow<List<Int>>
 }

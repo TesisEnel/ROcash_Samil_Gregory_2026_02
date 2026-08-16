@@ -10,15 +10,16 @@ import ucne.edu.rocash.presentation.agenteVentas.form.AgenteFormScreen
 import ucne.edu.rocash.presentation.agenteVentas.list.AgenteListScreen
 import ucne.edu.rocash.presentation.auth.AuthScreen
 import ucne.edu.rocash.presentation.auth.signup.SignUpScreen
-import ucne.edu.rocash.presentation.home.HomeScreen
-import ucne.edu.rocash.presentation.detalle.DetalleEstacionScreen
 import ucne.edu.rocash.presentation.estacion.form.EstacionFormScreen
 import ucne.edu.rocash.presentation.estacion.list.EstacionListScreen
+import ucne.edu.rocash.presentation.hojaRuta.crear.CrearRutaScreen
+import ucne.edu.rocash.presentation.hojaRuta.cuadre.CuadreScreen
+import ucne.edu.rocash.presentation.hojaRuta.detalle.DetalleRutaScreen
+import ucne.edu.rocash.presentation.hojaRuta.historial.HistorialRutasScreen
+import ucne.edu.rocash.presentation.home.HomeScreen
 import ucne.edu.rocash.presentation.profile.ProfileScreen
 import ucne.edu.rocash.presentation.recolector.form.FormRecolectorScreen
 import ucne.edu.rocash.presentation.recolector.list.ListRecolectorScreen
-import ucne.edu.rocash.presentation.ruta.CrearRutaScreen
-import ucne.edu.rocash.presentation.ruta.historial.HistorialRutasScreen
 
 @Composable
 fun RoCashNavHost() {
@@ -31,6 +32,8 @@ fun RoCashNavHost() {
         startDestination = rutaInicial
     ) {
 
+        // ---------- Autenticación ----------
+
         composable<AuthRoute> {
             AuthScreen(
                 onLoginSuccess = {
@@ -38,9 +41,7 @@ fun RoCashNavHost() {
                         popUpTo(AuthRoute) { inclusive = true }
                     }
                 },
-                onNavigateToSignUp = {
-                    navController.navigate(SignUpRoute)
-                }
+                onNavigateToSignUp = { navController.navigate(SignUpRoute) }
             )
         }
 
@@ -59,24 +60,49 @@ fun RoCashNavHost() {
             ProfileScreen(
                 onNavigateBack = { navController.popBackStack() },
                 onSignOutSuccess = {
-                    navController.navigate(AuthRoute) {
-                        popUpTo(0)
-                    }
+                    navController.navigate(AuthRoute) { popUpTo(0) }
                 }
             )
         }
 
+        // ---------- Hoja de ruta ----------
 
         composable<HomeRecolectorRoute> {
             HomeScreen(
                 onNavigateToCrearRuta = { navController.navigate(CrearRutaRoute) },
+                onNavigateToDetalleRuta = { rutaId ->
+                    navController.navigate(DetalleRutaRoute(rutaId))
+                },
                 onNavigateToHistorial = { navController.navigate(HistorialRutaRoute) },
                 onNavigateToRecolectores = { navController.navigate(ListaRecolectoresRoute) },
                 onNavigateToAgentes = { navController.navigate(AgenteListRoute) },
                 onNavigateToEstaciones = { navController.navigate(EstacionListRoute) },
-                onNavigateToDetalleEstacion = { rutaId, estacionId, agenteId, nombre ->
+                onNavigateToProfile = { navController.navigate(ProfileRoute) }
+            )
+        }
+
+        composable<CrearRutaRoute> {
+            CrearRutaScreen(
+                // Al crear la ruta se entra directo a su detalle, y se saca
+                // CrearRuta del back stack para que el boton atras vuelva al
+                // Home y no al formulario que ya se completo.
+                onRutaCreada = { rutaId ->
+                    navController.navigate(DetalleRutaRoute(rutaId)) {
+                        popUpTo(CrearRutaRoute) { inclusive = true }
+                    }
+                },
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+
+        composable<DetalleRutaRoute> { backStackEntry ->
+            val argumentos = backStackEntry.toRoute<DetalleRutaRoute>()
+
+            DetalleRutaScreen(
+                rutaId = argumentos.rutaId,
+                onNavigateToCuadre = { rutaId, estacionId, agenteId, nombre ->
                     navController.navigate(
-                        DetalleEstacionRoute(
+                        CuadreEstacionRoute(
                             hojaRutaId = rutaId,
                             estacionId = estacionId,
                             agenteId = agenteId,
@@ -84,14 +110,19 @@ fun RoCashNavHost() {
                         )
                     )
                 },
-                onNavigateToProfile = { navController.navigate(ProfileRoute) }
+                onRutaCerrada = {
+                    navController.navigate(HomeRecolectorRoute) {
+                        popUpTo(HomeRecolectorRoute) { inclusive = true }
+                    }
+                },
+                onNavigateBack = { navController.popBackStack() }
             )
         }
 
-        composable<DetalleEstacionRoute> { backStackEntry ->
-            val argumentos = backStackEntry.toRoute<DetalleEstacionRoute>()
+        composable<CuadreEstacionRoute> { backStackEntry ->
+            val argumentos = backStackEntry.toRoute<CuadreEstacionRoute>()
 
-            DetalleEstacionScreen(
+            CuadreScreen(
                 hojaRutaId = argumentos.hojaRutaId,
                 estacionId = argumentos.estacionId,
                 agenteId = argumentos.agenteId,
@@ -100,9 +131,16 @@ fun RoCashNavHost() {
             )
         }
 
-        composable<HojaRutaCierreRoute> {
-            // TODO: Pantalla de Cierre
+        composable<HistorialRutaRoute> {
+            HistorialRutasScreen(
+                onNavigateToDetalleRuta = { rutaId ->
+                    navController.navigate(DetalleRutaRoute(rutaId))
+                },
+                onNavigateBack = { navController.popBackStack() }
+            )
         }
+
+        // ---------- Catálogos ----------
 
         composable<EstacionListRoute> {
             EstacionListScreen(
@@ -115,15 +153,7 @@ fun RoCashNavHost() {
         }
 
         composable<EstacionFormRoute> {
-            EstacionFormScreen(
-                onNavigateBack = { navController.popBackStack() }
-            )
-        }
-
-        composable<CrearRutaRoute> {
-            CrearRutaScreen(
-                onNavigateBack = { navController.popBackStack() }
-            )
+            EstacionFormScreen(onNavigateBack = { navController.popBackStack() })
         }
 
         composable<ListaRecolectoresRoute> {
@@ -156,15 +186,7 @@ fun RoCashNavHost() {
         }
 
         composable<AgenteFormRoute> {
-            AgenteFormScreen(
-                onBack = { navController.popBackStack() }
-            )
-        }
-
-        composable<HistorialRutaRoute> {
-            HistorialRutasScreen(
-                onNavigateBack = { navController.popBackStack() }
-            )
+            AgenteFormScreen(onBack = { navController.popBackStack() })
         }
     }
 }

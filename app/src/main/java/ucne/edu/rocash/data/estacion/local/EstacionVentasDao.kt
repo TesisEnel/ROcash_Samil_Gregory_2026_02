@@ -14,7 +14,7 @@ interface EstacionVentasDao {
     @Delete
     suspend fun delete(entity: EstacionVentasEntity)
 
-    @Query("SELECT * FROM estacion_ventas ORDER BY estacionId DESC")
+    @Query("SELECT * FROM estacion_ventas ORDER BY nombre ASC")
     fun observeAll(): Flow<List<EstacionVentasEntity>>
 
     @Query("SELECT * FROM estacion_ventas WHERE estacionId = :id")
@@ -26,9 +26,13 @@ interface EstacionVentasDao {
     @Query("SELECT EXISTS(SELECT 1 FROM estacion_ventas WHERE estacionId = :id)")
     suspend fun exists(id: Int): Boolean
 
-    @Query("SELECT * FROM estacion_ventas WHERE nombre LIKE '%' || :query || '%' OR direccion LIKE '%' || :query || '%'")
+    @Query(
+        """
+        SELECT * FROM estacion_ventas
+        WHERE nombre LIKE '%' || :query || '%' OR direccion LIKE '%' || :query || '%'
+        ORDER BY nombre ASC
+        """
+    )
     fun search(query: String): Flow<List<EstacionVentasEntity>>
 
-    @Query("UPDATE estacion_ventas SET hojaRutaId = :rutaId WHERE estacionId = :id")
-    suspend fun asignarRuta(id: Int, rutaId: Int)
 }

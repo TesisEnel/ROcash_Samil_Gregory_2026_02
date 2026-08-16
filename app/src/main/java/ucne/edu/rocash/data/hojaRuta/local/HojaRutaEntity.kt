@@ -1,5 +1,6 @@
 package ucne.edu.rocash.data.hojaRuta.local
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
@@ -7,11 +8,16 @@ import androidx.room.PrimaryKey
 data class HojaRutaEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
-    val recolectorId: String,
+
+    @ColumnInfo(index = true) val recolectorId: String,
+
     val fechaCreacion: Long,
-    val estado: String,
-    val totalVentaBruta: Double,
-    val totalComisionClientes: Double,
-    val totalRecaudado: Double,
-    val totalDeudas: Double
+    val fechaCierre: Long? = null,
+
+    @ColumnInfo(index = true) val estado: String,
+
+    val totalVentaBruta: Double = 0.0,
+    val totalComisionClientes: Double = 0.0,
+    val totalRecaudado: Double = 0.0,
+    val totalDeudas: Double = 0.0
 )

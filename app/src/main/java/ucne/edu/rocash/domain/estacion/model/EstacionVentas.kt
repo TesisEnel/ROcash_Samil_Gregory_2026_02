@@ -2,7 +2,6 @@ package ucne.edu.rocash.domain.estacion.model
 
 data class EstacionVentas(
     val estacionId: Int = 0,
-    val hojaRutaId: Int? = null,
     val nombre: String,
     val direccion: String,
     val agenteId: Int,

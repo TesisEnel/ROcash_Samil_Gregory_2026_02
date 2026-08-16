@@ -10,4 +10,5 @@ interface AgenteVentasRepository {
     suspend fun delete(id: Int)
     suspend fun exists(id: Int): Boolean
     fun buscarAgentesPorNombre(nombre: String): Flow<List<AgenteVentas>>
+    suspend fun sumarDeuda(agenteId: Int, monto: Double)
 }
