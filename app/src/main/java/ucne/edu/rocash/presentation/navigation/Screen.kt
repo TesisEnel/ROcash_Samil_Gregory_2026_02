@@ -18,6 +18,13 @@ object ProfileRoute
 @Serializable
 object HomeRecolectorRoute
 
+
+@Serializable
+object CrearRutaRoute
+
+@Serializable
+object HistorialRutaRoute
+
 @Serializable
 object CrearRutaRoute
 
@@ -39,6 +46,7 @@ data class CuadreEstacionRoute(
     val nombreEstacion: String
 )
 
+
 @Serializable
 object HistorialRutaRoute
 
@@ -56,11 +64,9 @@ object ListaRecolectoresRoute
 @Serializable
 data class FormRecolectorRoute(val recolectorId: String? = null)
 
-@Serializable
-object AgenteListRoute
 
 @Serializable
-data class AgenteFormRoute(val agenteId: Int? = null)
+object AgenteListRoute
 
 // HojaRutaCierreRoute se elimino: el cierre no es una pantalla aparte, es una
 // accion dentro de DetalleRutaRoute. En el NavHost estaba declarada con el

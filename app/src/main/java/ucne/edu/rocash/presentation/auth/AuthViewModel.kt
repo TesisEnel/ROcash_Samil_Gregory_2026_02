@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import ucne.edu.rocash.domain.auth.repository.AuthRepository
 import ucne.edu.rocash.domain.auth.usecase.CheckSessionUseCase
 import ucne.edu.rocash.domain.auth.usecase.SignInWithEmailUseCase
 import ucne.edu.rocash.domain.auth.usecase.SignInWithGoogleUseCase
