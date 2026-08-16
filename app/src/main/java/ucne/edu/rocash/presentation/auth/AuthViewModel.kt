@@ -9,68 +9,88 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import ucne.edu.rocash.domain.auth.repository.AuthRepository
+import ucne.edu.rocash.domain.auth.usecase.CheckSessionUseCase
+import ucne.edu.rocash.domain.auth.usecase.SignInWithEmailUseCase
+import ucne.edu.rocash.domain.auth.usecase.SignInWithGoogleUseCase
+import ucne.edu.rocash.domain.auth.usecase.validateEmail
+import ucne.edu.rocash.domain.auth.usecase.validatePassword
 import javax.inject.Inject
 
 @HiltViewModel
 class AuthViewModel @Inject constructor(
-    private val authRepository: AuthRepository
+    private val signInWithEmailUseCase: SignInWithEmailUseCase,
+    private val signInWithGoogleUseCase: SignInWithGoogleUseCase,
+    private val checkSessionUseCase: CheckSessionUseCase
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow(AuthState())
-    val state: StateFlow<AuthState> = _state.asStateFlow()
+    private val _state = MutableStateFlow(AuthUiState())
+    val state: StateFlow<AuthUiState> = _state.asStateFlow()
 
     init {
         checkSession()
     }
 
     private fun checkSession() {
-        authRepository.getCurrentUser()?.let { user ->
-            _state.update { it.copy(user = user) }
+        val user = checkSessionUseCase()
+        if (user != null) {
+            _state.update { it.copy(user = user, isSuccess = true) }
         }
     }
 
-    fun processIntent(intent: AuthIntent) {
-        when (intent) {
-            is AuthIntent.SignInWithGoogle -> signIn(intent.context)
-            is AuthIntent.SignInWithEmail -> signInEmail(intent.email, intent.password)
-            is AuthIntent.SignOut -> signOut()
+    fun onEvent(event: AuthUiEvent) {
+        when (event) {
+            is AuthUiEvent.EmailChanged -> _state.update { it.copy(email = event.value, emailError = null, errorMessage = null) }
+            is AuthUiEvent.PasswordChanged -> _state.update { it.copy(password = event.value, passwordError = null, errorMessage = null) }
+            is AuthUiEvent.SignInWithEmail -> signInEmail()
+            is AuthUiEvent.SignInWithGoogle -> signInGoogle(event.context)
         }
     }
 
-    private fun signIn(context: Context) {
-        viewModelScope.launch {
-            _state.update { it.copy(isLoading = true, errorMessage = null) }
-            val result = authRepository.signInWithGoogle(context)
+    private fun signInEmail() {
+        val currentState = _state.value
 
-            result.fold(
-                onSuccess = { user -> _state.update { it.copy(isLoading = false, user = user) } },
-                onFailure = { e -> _state.update { it.copy(isLoading = false, errorMessage = e.message) } }
-            )
-        }
-    }
+        val emailValidation = validateEmail(currentState.email)
+        val passwordValidation = validatePassword(currentState.password)
 
-    private fun signInEmail(email: String, password: String) {
-        if (email.isBlank() || password.isBlank()) {
-            _state.update { it.copy(errorMessage = "Llena todos los campos") }
+        if (!emailValidation.isValid || !passwordValidation.isValid) {
+            _state.update {
+                it.copy(
+                    emailError = emailValidation.error,
+                    passwordError = passwordValidation.error
+                )
+            }
             return
         }
 
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, errorMessage = null) }
-            val result = authRepository.signInWithEmail(email, password)
 
-            result.fold(
-                onSuccess = { user -> _state.update { it.copy(isLoading = false, user = user) } },
-                onFailure = { e -> _state.update { it.copy(isLoading = false, errorMessage = e.localizedMessage) } }
-            )
+            val result = signInWithEmailUseCase(currentState.email, currentState.password)
+
+            result.onSuccess { user ->
+                _state.update { it.copy(isLoading = false, user = user, isSuccess = true) }
+            }.onFailure { e ->
+                val msg = if (e.message?.contains("INVALID_LOGIN_CREDENTIALS") == true) {
+                    "Correo o contraseña incorrectos"
+                } else {
+                    e.localizedMessage ?: "Error desconocido"
+                }
+                _state.update { it.copy(isLoading = false, errorMessage = msg) }
+            }
         }
     }
 
-    private fun signOut() {
+    private fun signInGoogle(context: Context) {
         viewModelScope.launch {
-            authRepository.signOut()
-            _state.update { it.copy(user = null) }
+            _state.update { it.copy(isLoading = true, errorMessage = null) }
+
+            val result = signInWithGoogleUseCase(context)
+
+            result.onSuccess { user ->
+                _state.update { it.copy(isLoading = false, user = user, isSuccess = true) }
+            }.onFailure { e ->
+                _state.update { it.copy(isLoading = false, errorMessage = e.localizedMessage) }
+            }
         }
     }
 }

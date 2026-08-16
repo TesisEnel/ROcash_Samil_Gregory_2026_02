@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Add
@@ -79,7 +80,8 @@ fun HomeScreen(
     onNavigateToHistorial: () -> Unit,
     onNavigateToRecolectores: () -> Unit,
     onNavigateToAgentes: () -> Unit,
-    onNavigateToEstaciones: () -> Unit
+    onNavigateToEstaciones: () -> Unit,
+    onNavigateToProfile: () -> Unit
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -138,7 +140,8 @@ fun HomeScreen(
             onAbrirMenu = { scope.launch { drawerState.open() } },
             onNavigateToCrearRuta = onNavigateToCrearRuta,
             onNavigateToDetalleRuta = onNavigateToDetalleRuta,
-            onNavigateToHistorial = onNavigateToHistorial
+            onNavigateToHistorial = onNavigateToHistorial,
+            onNavigateToProfile = onNavigateToProfile
         )
     }
 }
@@ -151,7 +154,8 @@ fun HomeBody(
     onAbrirMenu: () -> Unit,
     onNavigateToCrearRuta: () -> Unit,
     onNavigateToDetalleRuta: (Int) -> Unit,
-    onNavigateToHistorial: () -> Unit
+    onNavigateToHistorial: () -> Unit,
+    onNavigateToProfile: () -> Unit
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -179,6 +183,17 @@ fun HomeBody(
                     ) {
                         Icon(Icons.Default.History, contentDescription = "Historial")
                     }
+                    IconButton(
+                        onClick = onNavigateToProfile,
+                        modifier = Modifier.testTag("btn_perfil")
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.AccountCircle,
+                            contentDescription = "Mi perfil",
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
+
                 }
             )
         },
@@ -441,7 +456,8 @@ private fun HomeBodyPreview() {
             onAbrirMenu = {},
             onNavigateToCrearRuta = {},
             onNavigateToDetalleRuta = {},
-            onNavigateToHistorial = {}
+            onNavigateToHistorial = {},
+            onNavigateToProfile = {}
         )
     }
 }
@@ -456,7 +472,8 @@ private fun HomeBodyVacioPreview() {
             onAbrirMenu = {},
             onNavigateToCrearRuta = {},
             onNavigateToDetalleRuta = {},
-            onNavigateToHistorial = {}
+            onNavigateToHistorial = {},
+            onNavigateToProfile = {}
         )
     }
 }
