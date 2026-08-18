@@ -12,6 +12,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
+import ucne.edu.rocash.presentation.agenteVentas.deuda.GestionDeudaScreen
 import ucne.edu.rocash.presentation.agenteVentas.form.AgenteFormScreen
 import ucne.edu.rocash.presentation.agenteVentas.list.AgenteListScreen
 import ucne.edu.rocash.presentation.auth.AuthScreen
@@ -24,8 +25,6 @@ import ucne.edu.rocash.presentation.hojaRuta.detalle.DetalleRutaScreen
 import ucne.edu.rocash.presentation.hojaRuta.historial.HistorialRutasScreen
 import ucne.edu.rocash.presentation.home.HomeScreen
 import ucne.edu.rocash.presentation.profile.ProfileScreen
-import ucne.edu.rocash.presentation.recolector.form.FormRecolectorScreen
-import ucne.edu.rocash.presentation.recolector.list.ListRecolectorScreen
 
 @Composable
 fun RoCashNavHost() {
@@ -49,10 +48,6 @@ fun RoCashNavHost() {
             navController.navigate(HomeRecolectorRoute) {
                 popUpTo(HomeRecolectorRoute) { inclusive = true }
             }
-        },
-        onNavigateToRecolectores = {
-            scope.launch { drawerState.close() }
-            navController.navigate(ListaRecolectoresRoute)
         },
         onNavigateToAgentes = {
             scope.launch { drawerState.close() }
@@ -107,7 +102,6 @@ fun RoCashNavHost() {
                         navController.navigate(DetalleRutaRoute(rutaId))
                     },
                     onNavigateToHistorial = { navController.navigate(HistorialRutaRoute) },
-                    onNavigateToRecolectores = { navController.navigate(ListaRecolectoresRoute) },
                     onNavigateToAgentes = { navController.navigate(AgenteListRoute) },
                     onNavigateToEstaciones = { navController.navigate(EstacionListRoute) },
                     onNavigateToProfile = { navController.navigate(ProfileRoute) }
@@ -182,28 +176,21 @@ fun RoCashNavHost() {
                 EstacionFormScreen(onNavigateBack = { navController.popBackStack() })
             }
 
-            composable<ListaRecolectoresRoute> {
-                ListRecolectorScreen(
-                    onAbrirMenu = { scope.launch { drawerState.open() } },
-                    onNavigateToCrear = { navController.navigate(FormRecolectorRoute()) },
-                    onNavigateToEditar = { id -> navController.navigate(FormRecolectorRoute(recolectorId = id)) }
-                )
-            }
-
-            composable<FormRecolectorRoute> { backStackEntry ->
-                val argumentos = backStackEntry.toRoute<FormRecolectorRoute>()
-
-                FormRecolectorScreen(
-                    recolectorId = argumentos.recolectorId,
-                    onNavigateBack = { navController.popBackStack() }
-                )
-            }
-
             composable<AgenteListRoute> {
                 AgenteListScreen(
                     onAbrirMenu = { scope.launch { drawerState.open() } },
                     onNavigateToCrear = { navController.navigate(AgenteFormRoute()) },
-                    onNavigateToEditar = { id -> navController.navigate(AgenteFormRoute(agenteId = id)) }
+                    onNavigateToEditar = { id -> navController.navigate(AgenteFormRoute(agenteId = id)) },
+                    onNavigateToDeuda = { id -> navController.navigate(GestionDeudaRoute(agenteId = id)) }
+                )
+            }
+
+            composable<GestionDeudaRoute> { backStackEntry ->
+                val argumentos = backStackEntry.toRoute<GestionDeudaRoute>()
+
+                GestionDeudaScreen(
+                    agenteId = argumentos.agenteId,
+                    onNavigateBack = { navController.popBackStack() }
                 )
             }
 

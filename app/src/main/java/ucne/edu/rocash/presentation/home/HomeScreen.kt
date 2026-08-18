@@ -58,6 +58,7 @@ import ucne.edu.rocash.domain.hojaRuta.model.HojaRuta
 import ucne.edu.rocash.presentation.common.EstadoRutaChip
 import ucne.edu.rocash.presentation.common.aFechaLegible
 import ucne.edu.rocash.presentation.common.aMoneda
+import ucne.edu.rocash.ui.theme.coloresAccion
 
 @Composable
 fun HomeScreen(
@@ -66,7 +67,6 @@ fun HomeScreen(
     onNavigateToCrearRuta: () -> Unit,
     onNavigateToDetalleRuta: (Int) -> Unit,
     onNavigateToHistorial: () -> Unit,
-    onNavigateToRecolectores: () -> Unit,
     onNavigateToAgentes: () -> Unit,
     onNavigateToEstaciones: () -> Unit,
     onNavigateToProfile: () -> Unit
@@ -138,6 +138,8 @@ fun HomeBody(
             if (state.mostrarAccionNuevaRuta) {
                 FloatingActionButton(
                     onClick = onNavigateToCrearRuta,
+                    containerColor = MaterialTheme.colorScheme.tertiary,
+                    contentColor = MaterialTheme.colorScheme.onTertiary,
                     modifier = Modifier.testTag("fab_nueva_ruta")
                 ) {
                     Icon(Icons.Default.Add, contentDescription = "Nueva ruta")
@@ -307,6 +309,7 @@ private fun RutasVaciasCard(
                 modifier = Modifier.padding(top = 16.dp)
             )
             Button(
+                colors = coloresAccion(),
                 onClick = onNavigateToCrearRuta,
                 modifier = Modifier
                     .padding(top = 8.dp)

@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface EstacionVentasDao {
     @Upsert
-    suspend fun upsert(entity: EstacionVentasEntity)
+    suspend fun upsert(entity: EstacionVentasEntity): Long
 
     @Delete
     suspend fun delete(entity: EstacionVentasEntity)

@@ -70,6 +70,19 @@ class AgenteVentasRepositoryImplTest {
     // ---------- CRUD ----------
 
     @Test
+    fun `upsert de un agente nuevo devuelve el id generado por Room`() = runTest {
+        // Un agente nuevo llega con agenteId = 0; el id real lo genera SQLite y
+        // solo se conoce por el rowId que devuelve el DAO.
+        coEvery { dao.upsert(any()) } returns 17L
+
+        val id = repository.upsert(
+            AgenteVentas(agenteId = 0, nombre = "Nuevo", telefono = "8090000000")
+        )
+
+        assertEquals(17, id)
+    }
+
+    @Test
     fun `upsert convierte a entity y devuelve el id del agente`() = runTest {
         val agente = AgenteVentas(
             agenteId = 9,

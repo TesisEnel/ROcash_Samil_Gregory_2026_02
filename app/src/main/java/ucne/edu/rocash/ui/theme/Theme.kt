@@ -1,57 +1,95 @@
 package ucne.edu.rocash.ui.theme
 
-import android.app.Activity
-import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.dynamicDarkColorScheme
-import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.graphics.Color
 
-private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80
+/**
+ * Tema de RoCash.
+ *
+ * `dynamicColor` quedó fuera a propósito. Con el color dinámico de Android 12+
+ * la app tomaba los colores del fondo de pantalla de cada usuario, así que no
+ * se veía igual en dos teléfonos y la marca no aparecía en ninguno.
+ *
+ * Los roles cargan significado, no decoración:
+ *
+ *  - `primary` es el verde del logo. Marca, dinero y estados completados: lo
+ *    que la app INFORMA.
+ *  - `tertiary` es el azul. Botones y FAB: lo que el usuario PUEDE TOCAR.
+ *    Separarlos evita la ambigüedad de que un total y un botón compartan color.
+ *  - `error` es ladrillo, y es el mismo color de las deudas. Si aparece rojo en
+ *    pantalla siempre significa dinero pendiente.
+ */
+private val EsquemaClaro = lightColorScheme(
+    primary = VerdeROcash,
+    onPrimary = Color.White,
+    primaryContainer = VerdeContenedor,
+    onPrimaryContainer = VerdeContenedorOscuro,
+
+    secondary = VerdeROcash,
+    onSecondary = Color.White,
+    secondaryContainer = VerdeContenedor,
+    onSecondaryContainer = VerdeContenedorOscuro,
+
+    tertiary = AzulAccion,
+    onTertiary = Color.White,
+    tertiaryContainer = AzulContenedor,
+    onTertiaryContainer = AzulContenedorOscuro,
+
+    error = Ladrillo,
+    onError = Color.White,
+    errorContainer = LadrilloContenedor,
+    onErrorContainer = LadrilloContenedorOscuro,
+
+    background = FondoClaro,
+    onBackground = TintaClara,
+    surface = SuperficieClara,
+    onSurface = TintaClara,
+    surfaceVariant = SuperficieVarianteClara,
+    onSurfaceVariant = TintaTenueClara,
+    outline = Color(0xFF737B70)
 )
 
-private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40
+private val EsquemaOscuro = darkColorScheme(
+    primary = VerdeROcashClaro,
+    onPrimary = VerdeContenedorOscuro,
+    primaryContainer = VerdeContenedorOscuro,
+    onPrimaryContainer = VerdeContenedor,
 
-    /* Other default colors to override
-    background = Color(0xFFFFFBFE),
-    surface = Color(0xFFFFFBFE),
-    onPrimary = Color.White,
-    onSecondary = Color.White,
-    onTertiary = Color.White,
-    onBackground = Color(0xFF1C1B1F),
-    onSurface = Color(0xFF1C1B1F),
-    */
+    secondary = VerdeROcashClaro,
+    onSecondary = VerdeContenedorOscuro,
+    secondaryContainer = VerdeContenedorOscuro,
+    onSecondaryContainer = VerdeContenedor,
+
+    tertiary = AzulAccionClaro,
+    onTertiary = AzulContenedorOscuro,
+    tertiaryContainer = AzulContenedorOscuro,
+    onTertiaryContainer = AzulContenedor,
+
+    error = LadrilloClaro,
+    onError = LadrilloContenedorOscuro,
+    errorContainer = LadrilloContenedorOscuro,
+    onErrorContainer = LadrilloContenedor,
+
+    background = FondoOscuro,
+    onBackground = TintaOscura,
+    surface = SuperficieOscura,
+    onSurface = TintaOscura,
+    surfaceVariant = SuperficieVarianteOscura,
+    onSurfaceVariant = TintaTenueOscura,
+    outline = Color(0xFF8C948A)
 )
 
 @Composable
 fun ROcashTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
     content: @Composable () -> Unit
 ) {
-    val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-        }
-
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
-    }
-
     MaterialTheme(
-        colorScheme = colorScheme,
+        colorScheme = if (darkTheme) EsquemaOscuro else EsquemaClaro,
         typography = Typography,
         content = content
     )

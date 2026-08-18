@@ -42,6 +42,10 @@ class EstacionListViewModel @Inject constructor(
             EstacionListUiEvent.ClearMessage -> _state.update { it.copy(message = null) }
             EstacionListUiEvent.CreateNew -> _state.update { it.copy(navigateToCreate = true) }
             is EstacionListUiEvent.Edit -> _state.update { it.copy(navigateToEditId = event.id) }
+
+            EstacionListUiEvent.NavegacionConsumida -> _state.update {
+                it.copy(navigateToCreate = false, navigateToEditId = null)
+            }
             is EstacionListUiEvent.SearchQueryChanged -> _state.update { it.copy(searchQuery = event.query) }
         }
     }

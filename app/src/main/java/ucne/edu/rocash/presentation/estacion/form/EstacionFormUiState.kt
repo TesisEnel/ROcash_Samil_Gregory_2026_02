@@ -18,5 +18,6 @@ data class EstacionFormUiState(
     val isDeleting: Boolean = false,
     val isNew: Boolean = true,
     val saved: Boolean = false,
-    val deleted: Boolean = false
+    val deleted: Boolean = false,
+    val errorMessage: String? = null
 )

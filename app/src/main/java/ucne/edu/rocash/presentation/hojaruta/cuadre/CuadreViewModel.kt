@@ -57,6 +57,11 @@ class CuadreViewModel @Inject constructor(
             is CuadreUiEvent.NotaChanged ->
                 _state.update { it.copy(notaIncidencia = event.value) }
 
+            CuadreUiEvent.PedirConfirmacion -> pedirConfirmacion()
+
+            CuadreUiEvent.CancelarConfirmacion ->
+                _state.update { it.copy(mostrarDialogoConfirmacion = false) }
+
             CuadreUiEvent.Save -> guardar()
 
             CuadreUiEvent.ErrorMostrado ->
@@ -143,7 +148,12 @@ class CuadreViewModel @Inject constructor(
         }
     }
 
-    private fun guardar() {
+    /**
+     * Valida antes de abrir el diálogo. Si los montos están mal, se muestran los
+     * errores en los campos y no se abre nada: no tiene sentido pedirle al
+     * usuario que confirme cifras que ni siquiera son números.
+     */
+    private fun pedirConfirmacion() {
         val actual = _state.value
         if (actual.isSaving) return
 
@@ -156,14 +166,26 @@ class CuadreViewModel @Inject constructor(
                 it.copy(
                     ventaBrutaError = vbResult.error,
                     comisionError = ccResult.error,
-                    montoRecolectadoError = mrResult.error
+                    montoRecolectadoError = mrResult.error,
+                    mostrarDialogoConfirmacion = false
                 ).conDerivadosResueltos()
             }
             return
         }
 
+        _state.update { it.copy(mostrarDialogoConfirmacion = true) }
+    }
+
+    private fun guardar() {
+        val actual = _state.value
+        if (actual.isSaving) return
+
         _state.update {
-            it.copy(isSaving = true, errorMessage = null).conDerivadosResueltos()
+            it.copy(
+                isSaving = true,
+                errorMessage = null,
+                mostrarDialogoConfirmacion = false
+            ).conDerivadosResueltos()
         }
 
         viewModelScope.launch {

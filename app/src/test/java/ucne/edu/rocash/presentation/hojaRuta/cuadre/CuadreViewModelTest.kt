@@ -1,6 +1,7 @@
 package ucne.edu.rocash.presentation.hojaRuta.cuadre
 
 import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -135,18 +136,52 @@ class CuadreViewModelTest {
     }
 
     @Test
-    fun `guardar con montos invalidos no llama al caso de uso y marca los errores`() = runTest {
+    fun `montos invalidos marcan los errores y no abren el dialogo`() = runTest {
         cargarFormulario()
         advanceUntilIdle()
 
         llenarMontos(ventaBruta = "abc", comision = "1000", recolectado = "4000")
-        viewModel.onEvent(CuadreUiEvent.Save)
+        viewModel.onEvent(CuadreUiEvent.PedirConfirmacion)
         advanceUntilIdle()
 
         val state = viewModel.state.value
         assertEquals("El valor debe ser numérico", state.ventaBrutaError)
+        assertFalse(state.mostrarDialogoConfirmacion)
         assertFalse(state.saved)
         assertFalse(state.isSaving)
+    }
+
+    @Test
+    fun `con montos validos se pide confirmacion en vez de guardar`() = runTest {
+        cargarFormulario()
+        advanceUntilIdle()
+
+        llenarMontos()
+        viewModel.onEvent(CuadreUiEvent.PedirConfirmacion)
+        advanceUntilIdle()
+
+        assertTrue(viewModel.state.value.mostrarDialogoConfirmacion)
+        assertFalse(viewModel.state.value.saved)
+        coVerify(exactly = 0) {
+            procesarRecoleccionUseCase(any(), any(), any(), any(), any(), any(), any(), any())
+        }
+    }
+
+    @Test
+    fun `cancelar la confirmacion cierra el dialogo sin guardar`() = runTest {
+        cargarFormulario()
+        advanceUntilIdle()
+
+        llenarMontos()
+        viewModel.onEvent(CuadreUiEvent.PedirConfirmacion)
+        viewModel.onEvent(CuadreUiEvent.CancelarConfirmacion)
+        advanceUntilIdle()
+
+        assertFalse(viewModel.state.value.mostrarDialogoConfirmacion)
+        assertFalse(viewModel.state.value.saved)
+        coVerify(exactly = 0) {
+            procesarRecoleccionUseCase(any(), any(), any(), any(), any(), any(), any(), any())
+        }
     }
 
     @Test
@@ -155,7 +190,7 @@ class CuadreViewModelTest {
         advanceUntilIdle()
 
         llenarMontos(ventaBruta = "abc", comision = "xyz", recolectado = "4000")
-        viewModel.onEvent(CuadreUiEvent.Save)
+        viewModel.onEvent(CuadreUiEvent.PedirConfirmacion)
         advanceUntilIdle()
 
         viewModel.onEvent(CuadreUiEvent.VentaBrutaChanged("5000"))
@@ -166,7 +201,7 @@ class CuadreViewModelTest {
     }
 
     @Test
-    fun `guardar con exito enciende la bandera de navegacion`() = runTest {
+    fun `confirmar el guardado enciende la bandera de navegacion`() = runTest {
         coEvery { procesarRecoleccionUseCase(any(), any(), any(), any(), any(), any(), any(), any()) } returns
                 Result.success(1)
 
