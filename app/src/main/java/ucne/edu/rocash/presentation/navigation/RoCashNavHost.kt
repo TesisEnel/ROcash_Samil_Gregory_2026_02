@@ -24,8 +24,6 @@ import ucne.edu.rocash.presentation.hojaRuta.detalle.DetalleRutaScreen
 import ucne.edu.rocash.presentation.hojaRuta.historial.HistorialRutasScreen
 import ucne.edu.rocash.presentation.home.HomeScreen
 import ucne.edu.rocash.presentation.profile.ProfileScreen
-import ucne.edu.rocash.presentation.recolector.form.FormRecolectorScreen
-import ucne.edu.rocash.presentation.recolector.list.ListRecolectorScreen
 
 @Composable
 fun RoCashNavHost() {
@@ -49,10 +47,6 @@ fun RoCashNavHost() {
             navController.navigate(HomeRecolectorRoute) {
                 popUpTo(HomeRecolectorRoute) { inclusive = true }
             }
-        },
-        onNavigateToRecolectores = {
-            scope.launch { drawerState.close() }
-            navController.navigate(ListaRecolectoresRoute)
         },
         onNavigateToAgentes = {
             scope.launch { drawerState.close() }
@@ -107,7 +101,6 @@ fun RoCashNavHost() {
                         navController.navigate(DetalleRutaRoute(rutaId))
                     },
                     onNavigateToHistorial = { navController.navigate(HistorialRutaRoute) },
-                    onNavigateToRecolectores = { navController.navigate(ListaRecolectoresRoute) },
                     onNavigateToAgentes = { navController.navigate(AgenteListRoute) },
                     onNavigateToEstaciones = { navController.navigate(EstacionListRoute) },
                     onNavigateToProfile = { navController.navigate(ProfileRoute) }
@@ -180,23 +173,6 @@ fun RoCashNavHost() {
 
             composable<EstacionFormRoute> {
                 EstacionFormScreen(onNavigateBack = { navController.popBackStack() })
-            }
-
-            composable<ListaRecolectoresRoute> {
-                ListRecolectorScreen(
-                    onAbrirMenu = { scope.launch { drawerState.open() } },
-                    onNavigateToCrear = { navController.navigate(FormRecolectorRoute()) },
-                    onNavigateToEditar = { id -> navController.navigate(FormRecolectorRoute(recolectorId = id)) }
-                )
-            }
-
-            composable<FormRecolectorRoute> { backStackEntry ->
-                val argumentos = backStackEntry.toRoute<FormRecolectorRoute>()
-
-                FormRecolectorScreen(
-                    recolectorId = argumentos.recolectorId,
-                    onNavigateBack = { navController.popBackStack() }
-                )
             }
 
             composable<AgenteListRoute> {

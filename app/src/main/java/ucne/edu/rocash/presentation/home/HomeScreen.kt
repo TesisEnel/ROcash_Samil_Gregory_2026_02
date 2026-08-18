@@ -66,7 +66,6 @@ fun HomeScreen(
     onNavigateToCrearRuta: () -> Unit,
     onNavigateToDetalleRuta: (Int) -> Unit,
     onNavigateToHistorial: () -> Unit,
-    onNavigateToRecolectores: () -> Unit,
     onNavigateToAgentes: () -> Unit,
     onNavigateToEstaciones: () -> Unit,
     onNavigateToProfile: () -> Unit

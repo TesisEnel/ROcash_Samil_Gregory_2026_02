@@ -37,12 +37,6 @@ object EstacionListRoute
 data class EstacionFormRoute(val estacionId: Int? = null)
 
 @Serializable
-object ListaRecolectoresRoute
-
-@Serializable
-data class FormRecolectorRoute(val recolectorId: String? = null)
-
-@Serializable
 object AgenteListRoute
 
 @Serializable
