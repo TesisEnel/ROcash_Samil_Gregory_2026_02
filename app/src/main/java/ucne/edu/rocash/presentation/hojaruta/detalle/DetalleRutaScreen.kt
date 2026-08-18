@@ -78,8 +78,8 @@ fun DetalleRutaScreen(
         viewModel.onEvent(DetalleRutaUiEvent.Load(rutaId))
     }
 
-    LaunchedEffect(state.rutaCerrada) {
-        if (state.rutaCerrada) onRutaCerrada()
+    LaunchedEffect(state.cierreCompletado) {
+        if (state.cierreCompletado) onRutaCerrada()
     }
 
     DetalleRutaBody(
@@ -140,7 +140,7 @@ fun DetalleRutaBody(
             )
         },
         bottomBar = {
-            if (state.ruta != null && state.ruta.estado != EstadoRuta.CERRADA) {
+            if (state.mostrarAccionCierre) {
                 BottomAppBar(
                     containerColor = MaterialTheme.colorScheme.surface,
                     contentPadding = PaddingValues(16.dp)
@@ -158,7 +158,7 @@ fun DetalleRutaBody(
                                 color = MaterialTheme.colorScheme.onPrimary,
                                 modifier = Modifier.size(24.dp)
                             )
-                            state.estacionesPendientes > 0 -> Text(
+                            state.hayEstacionesPendientes -> Text(
                                 "Faltan ${state.estacionesPendientes} bancas por cuadrar"
                             )
                             else -> Text("Cerrar hoja de ruta")
@@ -216,7 +216,7 @@ fun DetalleRutaBody(
                     ) { item ->
                         EstacionDeRutaItem(
                             item = item,
-                            rutaCerrada = state.ruta.estado == EstadoRuta.CERRADA,
+                            rutaCerrada = state.rutaEstaCerrada,
                             onClick = {
                                 onNavigateToCuadre(
                                     state.ruta.id,
@@ -438,9 +438,8 @@ private fun DetalleRutaBodyPreview() {
 
     MaterialTheme {
         DetalleRutaBody(
-            state = DetalleRutaUiState(
-                isLoading = false,
-                rutaId = 7,
+            state = DetalleRutaReducer.conRuta(
+                estado = DetalleRutaUiState(rutaId = 7),
                 ruta = HojaRuta(
                     id = 7,
                     recolectorId = "uid",

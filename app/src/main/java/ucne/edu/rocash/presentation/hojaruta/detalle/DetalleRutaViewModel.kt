@@ -1,20 +1,16 @@
 package ucne.edu.rocash.presentation.hojaRuta.detalle
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import ucne.edu.rocash.domain.hojaRuta.usecase.CerrarHojaRutaUseCase
 import ucne.edu.rocash.domain.hojaRuta.usecase.ObserveHojaRutaUseCase
 import ucne.edu.rocash.domain.hojaRuta.usecase.OmitirEstacionUseCase
 import ucne.edu.rocash.domain.registroRecoleccion.usecase.ObservarResumenDeRutaUseCase
+import ucne.edu.rocash.presentation.core.MviViewModel
 import javax.inject.Inject
 
 @HiltViewModel
@@ -23,31 +19,28 @@ class DetalleRutaViewModel @Inject constructor(
     private val observarResumenDeRutaUseCase: ObservarResumenDeRutaUseCase,
     private val cerrarHojaRutaUseCase: CerrarHojaRutaUseCase,
     private val omitirEstacionUseCase: OmitirEstacionUseCase
-) : ViewModel() {
-
-    private val _state = MutableStateFlow(DetalleRutaUiState())
-    val state: StateFlow<DetalleRutaUiState> = _state.asStateFlow()
+) : MviViewModel<DetalleRutaUiState, DetalleRutaUiEvent>(DetalleRutaUiState()) {
 
     private var observacion: Job? = null
 
-    fun onEvent(event: DetalleRutaUiEvent) {
+    override fun onEvent(event: DetalleRutaUiEvent) {
         when (event) {
             is DetalleRutaUiEvent.Load -> cargar(event.rutaId)
             DetalleRutaUiEvent.PedirConfirmacionCierre ->
-                _state.update { it.copy(mostrarDialogoCierre = true) }
+                reduce(DetalleRutaReducer::pidiendoConfirmacion)
             DetalleRutaUiEvent.CancelarCierre ->
-                _state.update { it.copy(mostrarDialogoCierre = false) }
+                reduce(DetalleRutaReducer::cancelandoConfirmacion)
             DetalleRutaUiEvent.ConfirmarCierre -> cerrarRuta()
             is DetalleRutaUiEvent.OmitirEstacion -> omitirEstacion(event.estacionId)
-            DetalleRutaUiEvent.ErrorMostrado -> _state.update { it.copy(errorMessage = null) }
+            DetalleRutaUiEvent.ErrorMostrado -> reduce(DetalleRutaReducer::sinMensaje)
         }
     }
 
     private fun cargar(rutaId: Int) {
-        if (observacion != null && _state.value.rutaId == rutaId) return
+        if (observacion != null && estadoActual.rutaId == rutaId) return
 
         observacion?.cancel()
-        _state.update { it.copy(rutaId = rutaId, isLoading = true) }
+        reduce { DetalleRutaReducer.cargando(it, rutaId) }
 
         observacion = viewModelScope.launch {
             combine(
@@ -55,39 +48,35 @@ class DetalleRutaViewModel @Inject constructor(
                 observarResumenDeRutaUseCase(rutaId)
             ) { ruta, resumen -> ruta to resumen }
                 .catch { error ->
-                    _state.update {
-                        it.copy(isLoading = false, errorMessage = error.localizedMessage)
+                    reduce { estado ->
+                        DetalleRutaReducer.conFalloDeCarga(
+                            estado = estado,
+                            mensaje = error.localizedMessage ?: "No se pudo cargar la ruta"
+                        )
                     }
                 }
                 .collect { (ruta, resumen) ->
-                    _state.update {
-                        it.copy(
-                            isLoading = false,
-                            ruta = ruta,
-                            resumen = resumen,
-                            noEncontrada = ruta == null
-                        )
-                    }
+                    reduce { DetalleRutaReducer.conRuta(it, ruta, resumen) }
                 }
         }
     }
 
     private fun cerrarRuta() {
-        val rutaId = _state.value.rutaId
-        if (rutaId == 0) return
+        val rutaId = estadoActual.rutaId
+        if (rutaId == 0 || estadoActual.isCerrando) return
 
-        _state.update { it.copy(isCerrando = true, mostrarDialogoCierre = false) }
+        reduce(DetalleRutaReducer::iniciandoCierre)
 
         viewModelScope.launch {
             cerrarHojaRutaUseCase(rutaId)
                 .onSuccess {
-                    _state.update { it.copy(isCerrando = false, rutaCerrada = true) }
+                    reduce(DetalleRutaReducer::cierreExitoso)
                 }
                 .onFailure { error ->
-                    _state.update {
-                        it.copy(
-                            isCerrando = false,
-                            errorMessage = error.message ?: "No se pudo cerrar la ruta"
+                    reduce { estado ->
+                        DetalleRutaReducer.cierreFallido(
+                            estado = estado,
+                            mensaje = error.message ?: "No se pudo cerrar la ruta"
                         )
                     }
                 }
@@ -95,12 +84,15 @@ class DetalleRutaViewModel @Inject constructor(
     }
 
     private fun omitirEstacion(estacionId: Int) {
-        val rutaId = _state.value.rutaId
+        val rutaId = estadoActual.rutaId
 
         viewModelScope.launch {
             omitirEstacionUseCase(rutaId, estacionId).onFailure { error ->
-                _state.update {
-                    it.copy(errorMessage = error.message ?: "No se pudo omitir la estación")
+                reduce { estado ->
+                    DetalleRutaReducer.conMensaje(
+                        estado = estado,
+                        mensaje = error.message ?: "No se pudo omitir la estación"
+                    )
                 }
             }
         }

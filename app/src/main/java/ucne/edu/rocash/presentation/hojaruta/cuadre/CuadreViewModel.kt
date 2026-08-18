@@ -1,124 +1,130 @@
 package ucne.edu.rocash.presentation.hojaRuta.cuadre
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import ucne.edu.rocash.domain.estacion.usecase.GetEstacionUseCase
+import ucne.edu.rocash.domain.registroRecoleccion.usecase.CalcularCuadreUseCase
 import ucne.edu.rocash.domain.registroRecoleccion.usecase.ObtenerCuadreDeEstacionUseCase
 import ucne.edu.rocash.domain.registroRecoleccion.usecase.ProcesarRecoleccionUseCase
 import ucne.edu.rocash.domain.registroRecoleccion.usecase.validateMontoNumerico
+import ucne.edu.rocash.presentation.core.MviViewModel
 import javax.inject.Inject
 
+/**
+ * Orquesta el formulario de cuadre: lee intenciones, pide cálculos al dominio,
+ * reduce estado y emite efectos. No hace aritmética de dinero.
+ *
+ * Antes `actualizarValores()` contenía esto:
+ *
+ *     val esperado = vb - cc
+ *     deudaGenerada = (esperado - rec).coerceAtLeast(0.0)
+ *
+ * Es decir, la fórmula del cuadre escrita a mano en la capa de presentación,
+ * mientras `CalculoCuadre` en el dominio ya la tenía —y ProcesarRecoleccionUseCase
+ * la usaba al guardar—. La pantalla y la base de datos podían mostrar números
+ * distintos con sólo tocar una de las dos copias. Ahora ambas pasan por
+ * [CalcularCuadreUseCase].
+ */
 @HiltViewModel
 class CuadreViewModel @Inject constructor(
     private val procesarRecoleccionUseCase: ProcesarRecoleccionUseCase,
     private val obtenerCuadreDeEstacionUseCase: ObtenerCuadreDeEstacionUseCase,
+    private val calcularCuadreUseCase: CalcularCuadreUseCase,
     private val getEstacionUseCase: GetEstacionUseCase
-) : ViewModel() {
+) : MviViewModel<CuadreUiState, CuadreUiEvent>(CuadreUiState()) {
 
-    private val _state = MutableStateFlow(CuadreUiState())
-    val state: StateFlow<CuadreUiState> = _state.asStateFlow()
-
-    fun onEvent(event: CuadreUiEvent) {
+    override fun onEvent(event: CuadreUiEvent) {
         when (event) {
             is CuadreUiEvent.Load -> cargar(event)
-            is CuadreUiEvent.VentaBrutaChanged -> actualizarValores(ventaBruta = event.value)
-            is CuadreUiEvent.ComisionChanged -> actualizarValores(comision = event.value)
+
+            is CuadreUiEvent.VentaBrutaChanged ->
+                editarMonto(CampoMonto.VENTA_BRUTA, event.value)
+
+            is CuadreUiEvent.ComisionChanged ->
+                editarMonto(CampoMonto.COMISION, event.value)
+
             is CuadreUiEvent.MontoRecolectadoChanged ->
-                actualizarValores(recolectado = event.value)
-            is CuadreUiEvent.NotaChanged -> _state.update { it.copy(notaIncidencia = event.value) }
-            CuadreUiEvent.Save -> onSave()
-            CuadreUiEvent.ErrorMostrado -> _state.update { it.copy(errorMessage = null) }
+                editarMonto(CampoMonto.MONTO_RECOLECTADO, event.value)
+
+            is CuadreUiEvent.NotaChanged ->
+                reduce { CuadreReducer.conNota(it, event.value) }
+
+            CuadreUiEvent.Save -> guardar()
+
+            CuadreUiEvent.ErrorMostrado -> reduce(CuadreReducer::sinMensaje)
         }
     }
 
     private fun cargar(event: CuadreUiEvent.Load) {
-        _state.update {
-            it.copy(
+        reduce { estado ->
+            CuadreReducer.cargando(
+                estado = estado,
                 hojaRutaId = event.hojaRutaId,
                 estacionId = event.estacionId,
                 agenteId = event.agenteId,
-                nombreEstacion = event.nombre,
-                isLoading = true
+                nombreEstacion = event.nombre
             )
         }
 
         viewModelScope.launch {
             val estacion = getEstacionUseCase(event.estacionId)
-
             val previo = obtenerCuadreDeEstacionUseCase(event.hojaRutaId, event.estacionId)
 
-            _state.update { current ->
+            reduce { estado ->
                 if (previo == null) {
-                    current.copy(
-                        isLoading = false,
-                        isNew = true,
-                        agenteId2 = estacion?.agenteId2
-                    )
+                    CuadreReducer.comoCuadreNuevo(estado, estacion?.agenteId2)
                 } else {
-                    current.copy(
-                        isLoading = false,
-                        isNew = false,
-                        agenteId2 = estacion?.agenteId2,
-                        ventaBruta = previo.ventaBruta.toString(),
-                        comisionCliente = previo.comisionCliente.toString(),
-                        montoRecolectado = previo.montoRecolectado.toString(),
-                        notaIncidencia = previo.notaIncidencia.orEmpty(),
-                        montoEsperado = previo.montoEsperado,
-                        deudaGenerada = previo.montoDeuda
-                    )
+                    CuadreReducer.conCuadrePrevio(estado, previo, estacion?.agenteId2)
                 }
             }
         }
     }
 
-    private fun actualizarValores(
-        ventaBruta: String? = null,
-        comision: String? = null,
-        recolectado: String? = null
-    ) {
-        _state.update { current ->
-            val nuevaVentaBruta = ventaBruta ?: current.ventaBruta
-            val nuevaComision = comision ?: current.comisionCliente
-            val nuevoRecolectado = recolectado ?: current.montoRecolectado
+    /**
+     * Resuelve los tres textos, pide el cálculo al dominio y deposita el
+     * resultado. La única responsabilidad del ViewModel aquí es de coordinación.
+     */
+    private fun editarMonto(campo: CampoMonto, valor: String) {
+        val actual = estadoActual
 
-            val vb = nuevaVentaBruta.toDoubleOrNull() ?: 0.0
-            val cc = nuevaComision.toDoubleOrNull() ?: 0.0
-            val rec = nuevoRecolectado.toDoubleOrNull() ?: 0.0
+        val ventaBruta =
+            if (campo == CampoMonto.VENTA_BRUTA) valor else actual.ventaBruta
+        val comisionCliente =
+            if (campo == CampoMonto.COMISION) valor else actual.comisionCliente
+        val montoRecolectado =
+            if (campo == CampoMonto.MONTO_RECOLECTADO) valor else actual.montoRecolectado
 
-            val esperado = vb - cc
+        val calculo = calcularCuadreUseCase.desdeTexto(
+            ventaBruta = ventaBruta,
+            comisionCliente = comisionCliente,
+            montoRecolectado = montoRecolectado
+        )
 
-            current.copy(
-                ventaBruta = nuevaVentaBruta,
-                comisionCliente = nuevaComision,
-                montoRecolectado = nuevoRecolectado,
-                ventaBrutaError = if (ventaBruta != null) null else current.ventaBrutaError,
-                comisionError = if (comision != null) null else current.comisionError,
-                montoRecolectadoError =
-                    if (recolectado != null) null else current.montoRecolectadoError,
-                errorMessage = null,
-                montoEsperado = esperado,
-                deudaGenerada = (esperado - rec).coerceAtLeast(0.0)
+        reduce { estado ->
+            CuadreReducer.conMontos(
+                estado = estado,
+                campoEditado = campo,
+                ventaBruta = ventaBruta,
+                comisionCliente = comisionCliente,
+                montoRecolectado = montoRecolectado,
+                calculo = calculo
             )
         }
     }
 
-    private fun onSave() {
-        val current = _state.value
-        if (current.isSaving) return
+    private fun guardar() {
+        val actual = estadoActual
+        if (actual.isSaving) return
 
-        val vbResult = validateMontoNumerico(current.ventaBruta, "Venta Bruta")
-        val ccResult = validateMontoNumerico(current.comisionCliente, "Comisión Cliente")
-        val mrResult = validateMontoNumerico(current.montoRecolectado, "Monto Recolectado")
+        val vbResult = validateMontoNumerico(actual.ventaBruta, "Venta Bruta")
+        val ccResult = validateMontoNumerico(actual.comisionCliente, "Comisión Cliente")
+        val mrResult = validateMontoNumerico(actual.montoRecolectado, "Monto Recolectado")
 
         if (!vbResult.isValid || !ccResult.isValid || !mrResult.isValid) {
-            _state.update {
-                it.copy(
+            reduce { estado ->
+                CuadreReducer.conErroresDeValidacion(
+                    estado = estado,
                     ventaBrutaError = vbResult.error,
                     comisionError = ccResult.error,
                     montoRecolectadoError = mrResult.error
@@ -127,27 +133,27 @@ class CuadreViewModel @Inject constructor(
             return
         }
 
-        _state.update { it.copy(isSaving = true, errorMessage = null) }
+        reduce(CuadreReducer::guardando)
 
         viewModelScope.launch {
             procesarRecoleccionUseCase(
-                hojaRutaId = current.hojaRutaId,
-                estacionId = current.estacionId,
-                agenteId1 = current.agenteId,
-                agenteId2 = current.agenteId2,
-                ventaBrutaStr = current.ventaBruta,
-                comisionClienteStr = current.comisionCliente,
-                montoRecolectadoStr = current.montoRecolectado,
-                notaIncidencia = current.notaIncidencia.takeIf { it.isNotBlank() }
+                hojaRutaId = actual.hojaRutaId,
+                estacionId = actual.estacionId,
+                agenteId1 = actual.agenteId,
+                agenteId2 = actual.agenteId2,
+                ventaBrutaStr = actual.ventaBruta,
+                comisionClienteStr = actual.comisionCliente,
+                montoRecolectadoStr = actual.montoRecolectado,
+                notaIncidencia = actual.notaIncidencia.takeIf { it.isNotBlank() }
             )
                 .onSuccess {
-                    _state.update { it.copy(isSaving = false, saved = true) }
+                    reduce(CuadreReducer::guardadoExitoso)
                 }
                 .onFailure { error ->
-                    _state.update {
-                        it.copy(
-                            isSaving = false,
-                            errorMessage = error.message ?: "No se pudo guardar el cuadre"
+                    reduce { estado ->
+                        CuadreReducer.guardadoFallido(
+                            estado = estado,
+                            mensaje = error.message ?: "No se pudo guardar el cuadre"
                         )
                     }
                 }

@@ -223,7 +223,7 @@ fun CuadreBody(
                             .testTag("input_monto_recolectado")
                     )
 
-                    if (state.deudaGenerada > 0) {
+                    if (state.hayDeuda) {
                         Text(
                             text = "Deuda al agente: ${state.deudaGenerada.aMoneda()}",
                             color = MaterialTheme.colorScheme.error,
@@ -231,7 +231,7 @@ fun CuadreBody(
                             fontWeight = FontWeight.Bold,
                             modifier = Modifier.testTag("text_deuda_generada")
                         )
-                        if (state.agenteId2 != null) {
+                        if (state.deudaSeReparte) {
                             Text(
                                 text = "Se reparte en partes iguales entre los dos agentes.",
                                 style = MaterialTheme.typography.bodySmall,
@@ -260,12 +260,13 @@ fun CuadreBody(
 private fun CuadreBodyPreview() {
     MaterialTheme {
         CuadreBody(
-            state = CuadreUiState(
-                isLoading = false,
-                nombreEstacion = "Banca Principal",
+            state = CuadreReducer.conMontosDeTexto(
+                estado = CuadreUiState(
+                    isLoading = false,
+                    nombreEstacion = "Banca Principal"
+                ),
                 ventaBruta = "5000",
                 comisionCliente = "1000",
-                montoEsperado = 4000.0,
                 montoRecolectado = "4000"
             ),
             onEvent = {},
@@ -279,16 +280,16 @@ private fun CuadreBodyPreview() {
 private fun CuadreBodyConDeudaPreview() {
     MaterialTheme {
         CuadreBody(
-            state = CuadreUiState(
-                isLoading = false,
-                isNew = false,
-                nombreEstacion = "Banca Sur",
-                agenteId2 = 4,
+            state = CuadreReducer.conMontosDeTexto(
+                estado = CuadreUiState(
+                    isLoading = false,
+                    isNew = false,
+                    nombreEstacion = "Banca Sur",
+                    agenteId2 = 4
+                ),
                 ventaBruta = "10000",
                 comisionCliente = "2000",
-                montoEsperado = 8000.0,
-                montoRecolectado = "5000",
-                deudaGenerada = 3000.0
+                montoRecolectado = "5000"
             ),
             onEvent = {},
             onNavigateBack = {}

@@ -12,7 +12,8 @@ import javax.inject.Inject
 class ProcesarRecoleccionUseCase @Inject constructor(
     private val repository: RegistroRecoleccionRepository,
     private val hojaRutaRepository: HojaRutaRepository,
-    private val sumarDeudaAgenteUseCase: SumarDeudaAgenteUseCase
+    private val sumarDeudaAgenteUseCase: SumarDeudaAgenteUseCase,
+    private val calcularCuadreUseCase: CalcularCuadreUseCase
 ) {
     suspend operator fun invoke(
         hojaRutaId: Int,
@@ -52,25 +53,24 @@ class ProcesarRecoleccionUseCase @Inject constructor(
 
             val previo = repository.obtenerPorRutaYEstacion(hojaRutaId, estacionId)
 
-            val montoEsperado = ventaBruta - comisionCliente
-            val deuda = (montoEsperado - montoRecolectado).coerceAtLeast(0.0)
+            val calculo = calcularCuadreUseCase(
+                ventaBruta = ventaBruta,
+                comisionCliente = comisionCliente,
+                montoRecolectado = montoRecolectado
+            )
 
-            val registro = RegistroRecoleccion(
+            val registro = RegistroRecoleccion.desdeCalculo(
                 recoleccionId = previo?.recoleccionId ?: 0,
                 hojaRutaId = hojaRutaId,
                 estacionId = estacionId,
-                ventaBruta = ventaBruta,
-                comisionCliente = comisionCliente,
-                montoRecolectado = montoRecolectado,
-                montoEsperado = montoEsperado,
-                montoDeuda = deuda,
+                calculo = calculo,
                 estadoVisita = EstadoVisita.COMPLETADA,
                 notaIncidencia = notaIncidencia
             )
 
             val nuevoId = repository.upsert(registro)
 
-            val deudaDelta = deuda - (previo?.montoDeuda ?: 0.0)
+            val deudaDelta = calculo.montoDeuda - (previo?.montoDeuda ?: 0.0)
             if (deudaDelta != 0.0) {
                 if (agenteId2 != null) {
                     val mitad = deudaDelta / 2

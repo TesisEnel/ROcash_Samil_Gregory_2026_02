@@ -135,7 +135,7 @@ fun HomeBody(
             )
         },
         floatingActionButton = {
-            if (!state.isLoading && !state.sinSesion) {
+            if (state.mostrarAccionNuevaRuta) {
                 FloatingActionButton(
                     onClick = onNavigateToCrearRuta,
                     modifier = Modifier.testTag("fab_nueva_ruta")
@@ -260,8 +260,6 @@ private fun RutaAbiertaCard(
             }
 
             if (ruta.cantidadEstaciones > 0) {
-                val progreso = ruta.estacionesCuadradas.toFloat() / ruta.cantidadEstaciones
-
                 Text(
                     text = "${ruta.estacionesCuadradas} de ${ruta.cantidadEstaciones} bancas cuadradas",
                     style = MaterialTheme.typography.bodyMedium,
@@ -269,7 +267,7 @@ private fun RutaAbiertaCard(
                 )
 
                 LinearProgressIndicator(
-                    progress = { progreso },
+                    progress = { ruta.porcentajeAvance },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 6.dp)
@@ -367,11 +365,9 @@ private fun HomeBodyPreview() {
 
     MaterialTheme {
         HomeBody(
-            state = HomeUiState(
-                isLoading = false,
-                totalIngresos = 184_500.0,
-                rutasCompletadas = 12,
-                rutasAbiertas = listOf(
+            state = HomeReducer.conDatos(
+                estado = HomeUiState(),
+                rutas = listOf(
                     HojaRuta(
                         id = 7,
                         recolectorId = "uid",
@@ -384,7 +380,9 @@ private fun HomeBodyPreview() {
                         estado = EstadoRuta.PENDIENTE,
                         estaciones = listOf(banca(3, "Banca Central"))
                     )
-                )
+                ),
+                totalIngresos = 184_500.0,
+                rutasCompletadas = 12
             ),
             onEvent = {},
             onAbrirMenu = {},
@@ -401,7 +399,12 @@ private fun HomeBodyPreview() {
 private fun HomeBodyVacioPreview() {
     MaterialTheme {
         HomeBody(
-            state = HomeUiState(isLoading = false),
+            state = HomeReducer.conDatos(
+                estado = HomeUiState(),
+                rutas = emptyList(),
+                totalIngresos = 0.0,
+                rutasCompletadas = 0
+            ),
             onEvent = {},
             onAbrirMenu = {},
             onNavigateToCrearRuta = {},

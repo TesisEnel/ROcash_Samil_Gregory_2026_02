@@ -1,19 +1,15 @@
 package ucne.edu.rocash.presentation.home
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import ucne.edu.rocash.domain.auth.session.SesionRecolector
 import ucne.edu.rocash.domain.hojaRuta.usecase.GetTotalIngresosUseCase
 import ucne.edu.rocash.domain.hojaRuta.usecase.GetTotalRutasCompletadasUseCase
 import ucne.edu.rocash.domain.hojaRuta.usecase.ObserveRutasAbiertasUseCase
+import ucne.edu.rocash.presentation.core.MviViewModel
 import javax.inject.Inject
 
 @HiltViewModel
@@ -22,19 +18,16 @@ class HomeViewModel @Inject constructor(
     private val getTotalIngresosUseCase: GetTotalIngresosUseCase,
     private val getTotalRutasCompletadasUseCase: GetTotalRutasCompletadasUseCase,
     private val sesion: SesionRecolector
-) : ViewModel() {
-
-    private val _state = MutableStateFlow(HomeUiState())
-    val state: StateFlow<HomeUiState> = _state.asStateFlow()
+) : MviViewModel<HomeUiState, HomeUiEvent>(HomeUiState()) {
 
     init {
         onEvent(HomeUiEvent.CargarDatos)
     }
 
-    fun onEvent(event: HomeUiEvent) {
+    override fun onEvent(event: HomeUiEvent) {
         when (event) {
             HomeUiEvent.CargarDatos -> cargarDatos()
-            HomeUiEvent.ErrorMostrado -> _state.update { it.copy(errorMessage = null) }
+            HomeUiEvent.ErrorMostrado -> reduce(HomeReducer::sinMensaje)
         }
     }
 
@@ -42,7 +35,7 @@ class HomeViewModel @Inject constructor(
         val recolectorId = sesion.recolectorIdOrNull()
 
         if (recolectorId == null) {
-            _state.update { it.copy(isLoading = false, sinSesion = true) }
+            reduce(HomeReducer::sinSesion)
             return
         }
 
@@ -52,19 +45,27 @@ class HomeViewModel @Inject constructor(
                 getTotalIngresosUseCase(recolectorId),
                 getTotalRutasCompletadasUseCase(recolectorId)
             ) { rutas, ingresos, completadas ->
-                HomeUiState(
-                    isLoading = false,
-                    rutasAbiertas = rutas,
-                    totalIngresos = ingresos,
-                    rutasCompletadas = completadas
-                )
+                Triple(rutas, ingresos, completadas)
             }
                 .catch { error ->
-                    _state.update {
-                        it.copy(isLoading = false, errorMessage = error.localizedMessage)
+                    reduce { estado ->
+                        HomeReducer.conFalloDeCarga(
+                            estado = estado,
+                            mensaje = error.localizedMessage
+                                ?: "No se pudieron cargar los datos"
+                        )
                     }
                 }
-                .collect { nuevoEstado -> _state.value = nuevoEstado }
+                .collect { (rutas, ingresos, completadas) ->
+                    reduce { estado ->
+                        HomeReducer.conDatos(
+                            estado = estado,
+                            rutas = rutas,
+                            totalIngresos = ingresos,
+                            rutasCompletadas = completadas
+                        )
+                    }
+                }
         }
     }
 }
