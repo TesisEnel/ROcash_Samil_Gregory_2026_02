@@ -7,6 +7,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -26,7 +27,7 @@ import ucne.edu.rocash.domain.estacion.model.EstacionVentas
 @Composable
 fun EstacionListScreen(
     viewModel: EstacionListViewModel = hiltViewModel(),
-    onNavigateBack: () -> Unit,
+    onAbrirMenu: () -> Unit,
     onNavigateToCrear: () -> Unit,
     onNavigateToEditar: (Int) -> Unit
 ) {
@@ -47,7 +48,7 @@ fun EstacionListScreen(
     EstacionListBody(
         state = state,
         onEvent = viewModel::onEvent,
-        onNavigateBack = onNavigateBack
+        onAbrirMenu = onAbrirMenu
     )
 }
 
@@ -56,7 +57,7 @@ fun EstacionListScreen(
 fun EstacionListBody(
     state: EstacionListUiState,
     onEvent: (EstacionListUiEvent) -> Unit,
-    onNavigateBack: () -> Unit
+    onAbrirMenu: () -> Unit
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -73,8 +74,8 @@ fun EstacionListBody(
             TopAppBar(
                 title = { Text("Estaciones Registradas") },
                 navigationIcon = {
-                    IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Volver")
+                    IconButton(onClick = onAbrirMenu) {
+                        Icon(Icons.Default.Menu, contentDescription = "Menú")
                     }
                 }
             )
@@ -179,7 +180,7 @@ private fun EstacionListBodyPreview() {
                 )
             ),
             onEvent = {},
-            onNavigateBack = {}
+            onAbrirMenu = {}
         )
     }
 }

@@ -18,6 +18,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.SupportAgent
 import androidx.compose.material3.CircularProgressIndicator
@@ -53,7 +54,7 @@ import ucne.edu.rocash.domain.agenteVentas.model.AgenteVentas
 @Composable
 fun AgenteListScreen(
     viewModel: AgenteListViewModel = hiltViewModel(),
-    onNavigateBack: () -> Unit,
+    onAbrirMenu: () -> Unit,
     onNavigateToCrear: () -> Unit,
     onNavigateToEditar: (Int) -> Unit
 ) {
@@ -74,7 +75,7 @@ fun AgenteListScreen(
     AgenteListBody(
         state = state,
         onEvent = viewModel::onEvent,
-        onNavigateBack = onNavigateBack
+        onAbrirMenu = onAbrirMenu
     )
 }
 
@@ -83,7 +84,7 @@ fun AgenteListScreen(
 fun AgenteListBody(
     state: AgenteListUiState,
     onEvent: (AgenteListUiEvent) -> Unit,
-    onNavigateBack: () -> Unit
+    onAbrirMenu: () -> Unit
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -100,8 +101,8 @@ fun AgenteListBody(
             TopAppBar(
                 title = { Text("Gestión de Agentes") },
                 navigationIcon = {
-                    IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Volver")
+                    IconButton(onClick = onAbrirMenu) {
+                        Icon(Icons.Default.Menu, contentDescription = "Menú")
                     }
                 }
             )
@@ -225,7 +226,7 @@ private fun AgenteListBodyEmptyPreview() {
                 agentes = emptyList()
             ),
             onEvent = {},
-            onNavigateBack = {}
+            onAbrirMenu = {}
         )
     }
 }
@@ -255,7 +256,7 @@ private fun AgenteListBodyContentPreview() {
                 )
             ),
             onEvent = {},
-            onNavigateBack = {}
+            onAbrirMenu = {}
         )
     }
 }

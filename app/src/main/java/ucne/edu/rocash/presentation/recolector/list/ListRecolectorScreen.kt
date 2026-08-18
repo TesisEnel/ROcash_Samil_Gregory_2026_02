@@ -7,6 +7,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
@@ -22,7 +23,7 @@ import ucne.edu.rocash.domain.recolector.model.Recolector
 @Composable
 fun ListRecolectorScreen(
     viewModel: ListRecolectorViewModel = hiltViewModel(),
-    onNavigateBack: () -> Unit,
+    onAbrirMenu: () -> Unit,
     onNavigateToCrear: () -> Unit,
     onNavigateToEditar: (String) -> Unit
 ) {
@@ -33,8 +34,8 @@ fun ListRecolectorScreen(
             TopAppBar(
                 title = { Text("Gestión de Recolectores") },
                 navigationIcon = {
-                    IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Volver")
+                    IconButton(onClick = onAbrirMenu) {
+                        Icon(Icons.Default.Menu, contentDescription = "Menú")
                     }
                 }
             )

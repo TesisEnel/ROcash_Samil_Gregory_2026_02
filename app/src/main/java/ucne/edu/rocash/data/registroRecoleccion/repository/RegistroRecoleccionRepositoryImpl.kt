@@ -22,7 +22,6 @@ class RegistroRecoleccionRepositoryImpl @Inject constructor(
 
     override suspend fun upsert(registro: RegistroRecoleccion): Int {
         val rowId = localDataSource.upsert(registro.toEntity())
-        // En un update Room devuelve -1: se conserva el id que ya traia.
         return if (rowId > 0) rowId.toInt() else registro.recoleccionId
     }
 

@@ -47,7 +47,7 @@ class FormRecolectorViewModel @Inject constructor(
     }
 
     private fun cargarRecolector(id: String?) {
-        if (id == null) return // Si es null, es una creación nueva.
+        if (id == null) return
 
         _state.update { it.copy(isLoading = true, recolectorId = id) }
 
@@ -75,7 +75,6 @@ class FormRecolectorViewModel @Inject constructor(
     private fun validarYGuardar() {
         val currentState = _state.value
 
-        // 1. Validaciones
         val nombreError = if (currentState.nombre.isBlank()) "El nombre es obligatorio" else null
         val telefonoError = if (currentState.telefono.length < 10) "Debe tener al menos 10 dígitos" else null
         val cedulaError = if (currentState.cedula.length != 11) "La cédula debe tener exactamente 11 dígitos" else null

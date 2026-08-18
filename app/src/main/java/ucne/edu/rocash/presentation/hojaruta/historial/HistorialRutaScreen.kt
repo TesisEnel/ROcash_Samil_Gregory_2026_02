@@ -177,8 +177,6 @@ private fun RutaHistorialItem(
                     color = MaterialTheme.colorScheme.primary
                 )
                 Text(
-                    // Se muestra la fecha de cierre, que es la que importa en
-                    // el historial. Antes se mostraba la de creacion.
                     text = (ruta.fechaCierre ?: ruta.fechaCreacion).aFechaLegible(),
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant

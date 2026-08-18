@@ -44,8 +44,6 @@ class DetalleRutaViewModel @Inject constructor(
     }
 
     private fun cargar(rutaId: Int) {
-        // Load se dispara desde un LaunchedEffect; si la pantalla se recompone
-        // no se debe abrir una segunda suscripcion al mismo Flow.
         if (observacion != null && _state.value.rutaId == rutaId) return
 
         observacion?.cancel()
