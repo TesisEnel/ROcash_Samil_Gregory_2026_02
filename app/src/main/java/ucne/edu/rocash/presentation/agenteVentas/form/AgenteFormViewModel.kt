@@ -45,6 +45,7 @@ class AgenteFormViewModel @Inject constructor(
             }
             AgenteFormUiEvent.Save -> onSave()
             AgenteFormUiEvent.Delete -> onDelete()
+            AgenteFormUiEvent.ErrorMostrado -> _state.update { it.copy(errorMessage = null) }
         }
     }
 
@@ -62,7 +63,9 @@ class AgenteFormViewModel @Inject constructor(
                         isNew = false,
                         agenteId = agente.agenteId,
                         nombre = agente.nombre,
-                        telefono = agente.telefono
+                        telefono = agente.telefono,
+                        deudaAcumulada = agente.deudaAcumulada,
+                        estado = agente.estado
                     )
                 }
             } else {
@@ -93,9 +96,9 @@ class AgenteFormViewModel @Inject constructor(
                 agenteId = state.value.agenteId ?: 0,
                 nombre = nombre,
                 telefono = state.value.telefono,
-                // Conservar defaults o consultar el objeto real si necesitas actualizar
-                deudaAcumulada = 0.0,
-                estado = true
+                // Se devuelven tal cual: este formulario no los edita.
+                deudaAcumulada = state.value.deudaAcumulada,
+                estado = state.value.estado
             )
 
             val result = upsertAgenteUseCase(agente)
@@ -108,8 +111,13 @@ class AgenteFormViewModel @Inject constructor(
                         isNew = false
                     )
                 }
-            }.onFailure {
-                _state.update { it.copy(isSaving = false) }
+            }.onFailure { error ->
+                _state.update {
+                    it.copy(
+                        isSaving = false,
+                        errorMessage = error.message ?: "No se pudo guardar el agente"
+                    )
+                }
             }
         }
     }
