@@ -33,7 +33,9 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
@@ -43,6 +45,9 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ucne.edu.rocash.domain.estacion.model.EstacionVentas
+import ucne.edu.rocash.presentation.common.Confirmacion
+import ucne.edu.rocash.presentation.common.ConfirmacionOverlay
+import ucne.edu.rocash.presentation.common.PesoConfirmacion
 
 @Composable
 fun CrearRutaScreen(
@@ -51,16 +56,29 @@ fun CrearRutaScreen(
     onNavigateBack: () -> Unit
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    var confirmacion by remember { mutableStateOf<Confirmacion?>(null) }
 
     LaunchedEffect(state.rutaCreadaId) {
-        state.rutaCreadaId?.let(onRutaCreada)
+        if (state.rutaCreadaId != null && confirmacion == null) {
+            confirmacion = Confirmacion(
+                titulo = "Ruta armada",
+                detalle = "${state.cantidadSeleccionada} bancas por visitar",
+                peso = PesoConfirmacion.Ligera
+            )
+        }
     }
 
-    CrearRutaBody(
-        state = state,
-        onEvent = viewModel::onEvent,
-        onNavigateBack = onNavigateBack
-    )
+    Box(modifier = Modifier.fillMaxSize()) {
+        CrearRutaBody(
+            state = state,
+            onEvent = viewModel::onEvent,
+            onNavigateBack = onNavigateBack
+        )
+
+        ConfirmacionOverlay(confirmacion = confirmacion) {
+            state.rutaCreadaId?.let(onRutaCreada)
+        }
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

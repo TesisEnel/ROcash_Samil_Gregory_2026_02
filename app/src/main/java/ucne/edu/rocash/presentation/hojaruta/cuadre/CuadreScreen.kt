@@ -33,7 +33,9 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
@@ -44,6 +46,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import ucne.edu.rocash.presentation.common.Confirmacion
+import ucne.edu.rocash.presentation.common.ConfirmacionOverlay
+import ucne.edu.rocash.presentation.common.PesoConfirmacion
 import ucne.edu.rocash.presentation.common.aMoneda
 
 @Composable
@@ -63,15 +68,31 @@ fun CuadreScreen(
         )
     }
 
+    var confirmacion by remember { mutableStateOf<Confirmacion?>(null) }
+
     LaunchedEffect(state.saved) {
-        if (state.saved) onNavigateBack()
+        if (state.saved && confirmacion == null) {
+            confirmacion = Confirmacion(
+                titulo = if (state.isNew) "Banca cuadrada" else "Cuadre actualizado",
+                detalle = if (state.hayDeuda) {
+                    "Queda una deuda de ${state.deudaGenerada.aMoneda()}"
+                } else {
+                    state.nombreEstacion.ifBlank { null }
+                },
+                peso = PesoConfirmacion.Sello
+            )
+        }
     }
 
-    CuadreBody(
-        state = state,
-        onEvent = viewModel::onEvent,
-        onNavigateBack = onNavigateBack
-    )
+    Box(modifier = Modifier.fillMaxSize()) {
+        CuadreBody(
+            state = state,
+            onEvent = viewModel::onEvent,
+            onNavigateBack = onNavigateBack
+        )
+
+        ConfirmacionOverlay(confirmacion = confirmacion) { onNavigateBack() }
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

@@ -62,6 +62,9 @@ import ucne.edu.rocash.domain.hojaRuta.model.HojaRuta
 import ucne.edu.rocash.domain.registroRecoleccion.model.ResumenRecoleccionRuta
 import ucne.edu.rocash.presentation.common.EstadoRutaChip
 import ucne.edu.rocash.presentation.common.aFechaLegible
+import ucne.edu.rocash.presentation.common.Confirmacion
+import ucne.edu.rocash.presentation.common.ConfirmacionOverlay
+import ucne.edu.rocash.presentation.common.PesoConfirmacion
 import ucne.edu.rocash.presentation.common.aMoneda
 
 @Composable
@@ -78,16 +81,29 @@ fun DetalleRutaScreen(
         viewModel.onEvent(DetalleRutaUiEvent.Load(rutaId))
     }
 
+    var confirmacion by remember { mutableStateOf<Confirmacion?>(null) }
+
     LaunchedEffect(state.cierreCompletado) {
-        if (state.cierreCompletado) onRutaCerrada()
+        if (state.cierreCompletado && confirmacion == null) {
+            confirmacion = Confirmacion(
+                titulo = "Ruta cerrada",
+                detalle = "${state.resumen.cantidadRegistros} bancas cobradas",
+                monto = state.resumen.totalRecaudado,
+                peso = PesoConfirmacion.Cierre
+            )
+        }
     }
 
-    DetalleRutaBody(
-        state = state,
-        onEvent = viewModel::onEvent,
-        onNavigateToCuadre = onNavigateToCuadre,
-        onNavigateBack = onNavigateBack
-    )
+    Box(modifier = Modifier.fillMaxSize()) {
+        DetalleRutaBody(
+            state = state,
+            onEvent = viewModel::onEvent,
+            onNavigateToCuadre = onNavigateToCuadre,
+            onNavigateBack = onNavigateBack
+        )
+
+        ConfirmacionOverlay(confirmacion = confirmacion) { onRutaCerrada() }
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
