@@ -11,6 +11,11 @@ sealed interface AgenteListUiEvent {
     data object CreateNew : AgenteListUiEvent
     data class Edit(val id: Int) : AgenteListUiEvent
 
+    /** Tocar la tarjeta abre el menú de acciones. */
+    data class AgenteTocado(val agente: AgenteVentas) : AgenteListUiEvent
+    data object CerrarAcciones : AgenteListUiEvent
+    data class GestionarDeuda(val id: Int) : AgenteListUiEvent
+
     /**
      * La pantalla ya navego; apaga navigateToCreate y navigateToEditId.
      *

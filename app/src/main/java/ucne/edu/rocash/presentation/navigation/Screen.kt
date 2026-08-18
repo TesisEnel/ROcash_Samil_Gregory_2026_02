@@ -41,3 +41,6 @@ object AgenteListRoute
 
 @Serializable
 data class AgenteFormRoute(val agenteId: Int? = null)
+
+@Serializable
+data class GestionDeudaRoute(val agenteId: Int)

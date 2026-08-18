@@ -7,6 +7,8 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import ucne.edu.rocash.data.abonoDeuda.local.AbonoDeudaDao
+import ucne.edu.rocash.data.abonoDeuda.repository.AbonoDeudaRepositoryImpl
 import ucne.edu.rocash.data.agenteVentas.local.AgenteVentasDao
 import ucne.edu.rocash.data.agenteVentas.repository.AgenteVentasRepositoryImpl
 import ucne.edu.rocash.data.estacion.local.EstacionVentasDao
@@ -18,6 +20,7 @@ import ucne.edu.rocash.data.recolector.local.RecolectorDao
 import ucne.edu.rocash.data.recolector.repository.RecolectorRepositoryImpl
 import ucne.edu.rocash.data.registroRecoleccion.local.RegistroRecoleccionDao
 import ucne.edu.rocash.data.registroRecoleccion.repository.RegistroRecoleccionRepositoryImpl
+import ucne.edu.rocash.domain.abonoDeuda.repository.AbonoDeudaRepository
 import ucne.edu.rocash.domain.agenteVentas.repository.AgenteVentasRepository
 import ucne.edu.rocash.domain.estacion.repository.EstacionRepository
 import ucne.edu.rocash.domain.hojaRuta.repository.HojaRutaRepository
@@ -59,6 +62,16 @@ object DatabaseModule {
     @Singleton
     fun provideAgenteVentasRepository(dao: AgenteVentasDao): AgenteVentasRepository =
         AgenteVentasRepositoryImpl(dao)
+
+
+    @Provides
+    @Singleton
+    fun provideAbonoDeudaDao(db: RoCashDatabase): AbonoDeudaDao = db.abonoDeudaDao()
+
+    @Provides
+    @Singleton
+    fun provideAbonoDeudaRepository(dao: AbonoDeudaDao): AbonoDeudaRepository =
+        AbonoDeudaRepositoryImpl(dao)
 
 
     @Provides

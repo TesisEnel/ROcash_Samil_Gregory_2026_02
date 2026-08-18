@@ -12,6 +12,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
+import ucne.edu.rocash.presentation.agenteVentas.deuda.GestionDeudaScreen
 import ucne.edu.rocash.presentation.agenteVentas.form.AgenteFormScreen
 import ucne.edu.rocash.presentation.agenteVentas.list.AgenteListScreen
 import ucne.edu.rocash.presentation.auth.AuthScreen
@@ -179,7 +180,17 @@ fun RoCashNavHost() {
                 AgenteListScreen(
                     onAbrirMenu = { scope.launch { drawerState.open() } },
                     onNavigateToCrear = { navController.navigate(AgenteFormRoute()) },
-                    onNavigateToEditar = { id -> navController.navigate(AgenteFormRoute(agenteId = id)) }
+                    onNavigateToEditar = { id -> navController.navigate(AgenteFormRoute(agenteId = id)) },
+                    onNavigateToDeuda = { id -> navController.navigate(GestionDeudaRoute(agenteId = id)) }
+                )
+            }
+
+            composable<GestionDeudaRoute> { backStackEntry ->
+                val argumentos = backStackEntry.toRoute<GestionDeudaRoute>()
+
+                GestionDeudaScreen(
+                    agenteId = argumentos.agenteId,
+                    onNavigateBack = { navController.popBackStack() }
                 )
             }
 
