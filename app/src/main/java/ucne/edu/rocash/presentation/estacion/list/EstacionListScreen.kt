@@ -36,12 +36,14 @@ fun EstacionListScreen(
     LaunchedEffect(state.navigateToCreate) {
         if (state.navigateToCreate) {
             onNavigateToCrear()
+            viewModel.onEvent(EstacionListUiEvent.NavegacionConsumida)
         }
     }
 
     LaunchedEffect(state.navigateToEditId) {
         state.navigateToEditId?.let { id ->
             onNavigateToEditar(id)
+            viewModel.onEvent(EstacionListUiEvent.NavegacionConsumida)
         }
     }
 

@@ -63,12 +63,14 @@ fun AgenteListScreen(
     LaunchedEffect(state.navigateToCreate) {
         if (state.navigateToCreate) {
             onNavigateToCrear()
+            viewModel.onEvent(AgenteListUiEvent.NavegacionConsumida)
         }
     }
 
     LaunchedEffect(state.navigateToEditId) {
         state.navigateToEditId?.let { id ->
             onNavigateToEditar(id)
+            viewModel.onEvent(AgenteListUiEvent.NavegacionConsumida)
         }
     }
 

@@ -46,6 +46,10 @@ class AgenteListViewModel @Inject constructor(
             AgenteListUiEvent.CreateNew -> _state.update { it.copy(navigateToCreate = true) }
             is AgenteListUiEvent.Edit -> _state.update { it.copy(navigateToEditId = event.id) }
 
+            AgenteListUiEvent.NavegacionConsumida -> _state.update {
+                it.copy(navigateToCreate = false, navigateToEditId = null)
+            }
+
             is AgenteListUiEvent.SearchQueryChanged -> {
                 _state.update { it.copy(searchQuery = event.query) }
             }
