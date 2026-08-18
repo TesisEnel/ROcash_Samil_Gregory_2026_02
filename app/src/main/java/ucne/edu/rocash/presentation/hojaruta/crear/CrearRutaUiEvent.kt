@@ -1,8 +1,6 @@
 package ucne.edu.rocash.presentation.hojaRuta.crear
 
-import ucne.edu.rocash.presentation.core.UiEvent
-
-sealed interface CrearRutaUiEvent : UiEvent {
+sealed interface CrearRutaUiEvent {
     data object Load : CrearRutaUiEvent
     data class ToggleEstacion(val estacionId: Int) : CrearRutaUiEvent
     data object LimpiarSeleccion : CrearRutaUiEvent

@@ -438,8 +438,14 @@ private fun DetalleRutaBodyPreview() {
 
     MaterialTheme {
         DetalleRutaBody(
-            state = DetalleRutaReducer.conRuta(
-                estado = DetalleRutaUiState(rutaId = 7),
+            state = DetalleRutaUiState(
+                rutaId = 7,
+                isLoading = false,
+                estacionesPendientes = 1,
+                hayEstacionesPendientes = true,
+                rutaEstaCerrada = false,
+                mostrarAccionCierre = true,
+                puedeCerrarse = false,
                 ruta = HojaRuta(
                     id = 7,
                     recolectorId = "uid",

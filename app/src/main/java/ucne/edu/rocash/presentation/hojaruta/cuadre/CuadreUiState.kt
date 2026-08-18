@@ -1,7 +1,5 @@
 package ucne.edu.rocash.presentation.hojaRuta.cuadre
 
-import ucne.edu.rocash.presentation.core.UiState
-
 /**
  * Snapshot inerte del formulario de cuadre.
  *
@@ -15,8 +13,8 @@ import ucne.edu.rocash.presentation.core.UiState
  *
  * Eran cinco condiciones de habilitación evaluándose en cada recomposición, y
  * era la UI la que decidía cuándo un cuadre está listo para guardarse. Ahora esa
- * decisión la toma [CuadreReducer] una sola vez por transición y aquí sólo queda
- * el booleano ya resuelto.
+ * decisión la toma el ViewModel una sola vez por transición y aquí sólo queda el
+ * booleano ya resuelto.
  *
  * [saved] y [errorMessage] siguen siendo banderas de una sola vez dentro del
  * estado, consumidas con `LaunchedEffect` y apagadas con su evento
@@ -55,4 +53,4 @@ data class CuadreUiState(
 
     val saved: Boolean = false,
     val errorMessage: String? = null
-) : UiState
+)

@@ -1,14 +1,13 @@
 package ucne.edu.rocash.presentation.home
 
 import ucne.edu.rocash.domain.hojaRuta.model.HojaRuta
-import ucne.edu.rocash.presentation.core.UiState
 
 /**
  * Snapshot inerte del dashboard.
  *
  * Antes tenía `val hayRutasAbiertas: Boolean get() = rutasAbiertas.isNotEmpty()`.
- * Ahora es un campo: el ViewModel lo resuelve al reducir y la pantalla sólo lo
- * lee.
+ * Ahora es un campo: el ViewModel lo resuelve al actualizar el estado y la
+ * pantalla sólo lo lee.
  */
 data class HomeUiState(
     val isLoading: Boolean = true,
@@ -19,4 +18,4 @@ data class HomeUiState(
     val sinSesion: Boolean = false,
     val mostrarAccionNuevaRuta: Boolean = false,
     val errorMessage: String? = null
-) : UiState
+)

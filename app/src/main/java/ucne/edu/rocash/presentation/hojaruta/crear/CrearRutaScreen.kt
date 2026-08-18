@@ -246,17 +246,35 @@ private fun EstacionSeleccionableItem(
 private fun CrearRutaBodyPreview() {
     MaterialTheme {
         CrearRutaBody(
-            state = CrearRutaReducer.conEstacionAlternada(
-                estado = CrearRutaReducer.conEstaciones(
-                    estado = CrearRutaUiState(),
-                    disponibles = listOf(
-                        EstacionVentas(1, "Banca Norte", "Av. Principal 12", agenteId = 1),
-                        EstacionVentas(2, "Banca Sur", "Calle 8 esq. Duarte", agenteId = 2),
-                        EstacionVentas(3, "Banca Central", "Parque Duarte", agenteId = 1)
+            state = CrearRutaUiState(
+                isLoading = false,
+                estaciones = listOf(
+                    EstacionSeleccionableUi(
+                        estacion = EstacionVentas(
+                            1, "Banca Norte", "Av. Principal 12", agenteId = 1
+                        ),
+                        seleccionada = true,
+                        comprometida = false
                     ),
-                    comprometidas = setOf(3)
+                    EstacionSeleccionableUi(
+                        estacion = EstacionVentas(
+                            2, "Banca Sur", "Calle 8 esq. Duarte", agenteId = 2
+                        ),
+                        seleccionada = false,
+                        comprometida = false
+                    ),
+                    EstacionSeleccionableUi(
+                        estacion = EstacionVentas(
+                            3, "Banca Central", "Parque Duarte", agenteId = 1
+                        ),
+                        seleccionada = false,
+                        comprometida = true
+                    )
                 ),
-                estacionId = 1
+                hayEstaciones = true,
+                cantidadSeleccionada = 1,
+                haySeleccion = true,
+                puedeGuardar = true
             ),
             onEvent = {},
             onNavigateBack = {}
@@ -269,11 +287,7 @@ private fun CrearRutaBodyPreview() {
 private fun CrearRutaBodyVaciaPreview() {
     MaterialTheme {
         CrearRutaBody(
-            state = CrearRutaReducer.conEstaciones(
-                estado = CrearRutaUiState(),
-                disponibles = emptyList(),
-                comprometidas = emptySet()
-            ),
+            state = CrearRutaUiState(isLoading = false),
             onEvent = {},
             onNavigateBack = {}
         )

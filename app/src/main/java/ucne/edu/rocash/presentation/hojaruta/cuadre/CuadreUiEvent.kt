@@ -1,8 +1,6 @@
 package ucne.edu.rocash.presentation.hojaRuta.cuadre
 
-import ucne.edu.rocash.presentation.core.UiEvent
-
-sealed interface CuadreUiEvent : UiEvent {
+sealed interface CuadreUiEvent {
     data class Load(
         val hojaRutaId: Int,
         val estacionId: Int,

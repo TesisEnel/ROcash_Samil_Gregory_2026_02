@@ -2,7 +2,6 @@ package ucne.edu.rocash.presentation.hojaRuta.detalle
 
 import ucne.edu.rocash.domain.hojaRuta.model.HojaRuta
 import ucne.edu.rocash.domain.registroRecoleccion.model.ResumenRecoleccionRuta
-import ucne.edu.rocash.presentation.core.UiState
 
 /**
  * Snapshot inerte del detalle de una hoja de ruta.
@@ -43,4 +42,4 @@ data class DetalleRutaUiState(
 
     val cierreCompletado: Boolean = false,
     val errorMessage: String? = null
-) : UiState
+)

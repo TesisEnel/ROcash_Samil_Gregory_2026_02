@@ -365,9 +365,9 @@ private fun HomeBodyPreview() {
 
     MaterialTheme {
         HomeBody(
-            state = HomeReducer.conDatos(
-                estado = HomeUiState(),
-                rutas = listOf(
+            state = HomeUiState(
+                isLoading = false,
+                rutasAbiertas = listOf(
                     HojaRuta(
                         id = 7,
                         recolectorId = "uid",
@@ -381,8 +381,10 @@ private fun HomeBodyPreview() {
                         estaciones = listOf(banca(3, "Banca Central"))
                     )
                 ),
+                hayRutasAbiertas = true,
                 totalIngresos = 184_500.0,
-                rutasCompletadas = 12
+                rutasCompletadas = 12,
+                mostrarAccionNuevaRuta = true
             ),
             onEvent = {},
             onAbrirMenu = {},
@@ -399,11 +401,13 @@ private fun HomeBodyPreview() {
 private fun HomeBodyVacioPreview() {
     MaterialTheme {
         HomeBody(
-            state = HomeReducer.conDatos(
-                estado = HomeUiState(),
-                rutas = emptyList(),
+            state = HomeUiState(
+                isLoading = false,
+                rutasAbiertas = emptyList(),
+                hayRutasAbiertas = false,
                 totalIngresos = 0.0,
-                rutasCompletadas = 0
+                rutasCompletadas = 0,
+                mostrarAccionNuevaRuta = true
             ),
             onEvent = {},
             onAbrirMenu = {},

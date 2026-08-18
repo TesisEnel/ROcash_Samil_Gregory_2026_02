@@ -238,9 +238,11 @@ private fun FilaMonto(
 private fun HistorialRutasBodyPreview() {
     MaterialTheme {
         HistorialRutasBody(
-            state = HistorialRutasReducer.conHistorial(
-                estado = HistorialRutasUiState(),
+            state = HistorialRutasUiState(
+                isLoading = false,
                 totalRecaudadoHistorico = 88_400.0,
+                cantidadRutas = 2,
+                hayRutas = true,
                 rutas = listOf(
                     HojaRuta(
                         id = 5,

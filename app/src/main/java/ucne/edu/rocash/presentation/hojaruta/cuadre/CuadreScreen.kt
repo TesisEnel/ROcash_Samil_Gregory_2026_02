@@ -260,14 +260,16 @@ fun CuadreBody(
 private fun CuadreBodyPreview() {
     MaterialTheme {
         CuadreBody(
-            state = CuadreReducer.conMontosDeTexto(
-                estado = CuadreUiState(
-                    isLoading = false,
-                    nombreEstacion = "Banca Principal"
-                ),
+            state = CuadreUiState(
+                isLoading = false,
+                nombreEstacion = "Banca Principal",
                 ventaBruta = "5000",
                 comisionCliente = "1000",
-                montoRecolectado = "4000"
+                montoRecolectado = "4000",
+                montoEsperado = 4000.0,
+                deudaGenerada = 0.0,
+                hayDeuda = false,
+                puedeGuardar = true
             ),
             onEvent = {},
             onNavigateBack = {}
@@ -280,16 +282,19 @@ private fun CuadreBodyPreview() {
 private fun CuadreBodyConDeudaPreview() {
     MaterialTheme {
         CuadreBody(
-            state = CuadreReducer.conMontosDeTexto(
-                estado = CuadreUiState(
-                    isLoading = false,
-                    isNew = false,
-                    nombreEstacion = "Banca Sur",
-                    agenteId2 = 4
-                ),
+            state = CuadreUiState(
+                isLoading = false,
+                isNew = false,
+                nombreEstacion = "Banca Sur",
+                agenteId2 = 4,
                 ventaBruta = "10000",
                 comisionCliente = "2000",
-                montoRecolectado = "5000"
+                montoRecolectado = "5000",
+                montoEsperado = 8000.0,
+                deudaGenerada = 3000.0,
+                hayDeuda = true,
+                deudaSeReparte = true,
+                puedeGuardar = true
             ),
             onEvent = {},
             onNavigateBack = {}

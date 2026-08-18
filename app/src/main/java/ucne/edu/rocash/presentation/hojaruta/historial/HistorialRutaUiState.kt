@@ -1,7 +1,6 @@
 package ucne.edu.rocash.presentation.hojaRuta.historial
 
 import ucne.edu.rocash.domain.hojaRuta.model.HojaRuta
-import ucne.edu.rocash.presentation.core.UiState
 
 /**
  * Snapshot inerte del historial.
@@ -21,4 +20,4 @@ data class HistorialRutasUiState(
     val hayRutas: Boolean = false,
     val sinSesion: Boolean = false,
     val errorMessage: String? = null
-) : UiState
+)

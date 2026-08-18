@@ -1,8 +1,6 @@
 package ucne.edu.rocash.presentation.hojaRuta.detalle
 
-import ucne.edu.rocash.presentation.core.UiEvent
-
-sealed interface DetalleRutaUiEvent : UiEvent {
+sealed interface DetalleRutaUiEvent {
     data class Load(val rutaId: Int) : DetalleRutaUiEvent
     data object PedirConfirmacionCierre : DetalleRutaUiEvent
     data object CancelarCierre : DetalleRutaUiEvent
