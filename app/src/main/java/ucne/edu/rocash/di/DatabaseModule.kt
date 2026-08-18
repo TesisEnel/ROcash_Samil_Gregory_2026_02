@@ -40,7 +40,6 @@ object DatabaseModule {
             .fallbackToDestructiveMigration(dropAllTables = true)
             .build()
 
-    // ---------- Recolector ----------
 
     @Provides
     @Singleton
@@ -51,7 +50,6 @@ object DatabaseModule {
     fun provideRecolectorRepository(dao: RecolectorDao): RecolectorRepository =
         RecolectorRepositoryImpl(dao)
 
-    // ---------- Agente de ventas ----------
 
     @Provides
     @Singleton
@@ -62,7 +60,6 @@ object DatabaseModule {
     fun provideAgenteVentasRepository(dao: AgenteVentasDao): AgenteVentasRepository =
         AgenteVentasRepositoryImpl(dao)
 
-    // ---------- Estacion ----------
 
     @Provides
     @Singleton
@@ -73,7 +70,6 @@ object DatabaseModule {
     fun provideEstacionRepository(dao: EstacionVentasDao): EstacionRepository =
         EstacionRepositoryImpl(dao)
 
-    // ---------- Hoja de ruta ----------
 
     @Provides
     @Singleton
@@ -84,7 +80,6 @@ object DatabaseModule {
     fun provideHojaRutaRepository(dao: HojaRutaDao): HojaRutaRepository =
         HojaRutaRepositoryImpl(dao)
 
-    // ---------- Registro de recoleccion ----------
 
     @Provides
     @Singleton

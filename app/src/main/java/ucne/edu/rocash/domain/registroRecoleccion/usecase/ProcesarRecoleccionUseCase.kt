@@ -56,7 +56,6 @@ class ProcesarRecoleccionUseCase @Inject constructor(
             val deuda = (montoEsperado - montoRecolectado).coerceAtLeast(0.0)
 
             val registro = RegistroRecoleccion(
-                // Conservar el id existente convierte el insert en update.
                 recoleccionId = previo?.recoleccionId ?: 0,
                 hojaRutaId = hojaRutaId,
                 estacionId = estacionId,
@@ -71,8 +70,6 @@ class ProcesarRecoleccionUseCase @Inject constructor(
 
             val nuevoId = repository.upsert(registro)
 
-            // Si se esta corrigiendo un cuadre anterior solo se aplica la
-            // diferencia, para no cobrarle la deuda dos veces al agente.
             val deudaDelta = deuda - (previo?.montoDeuda ?: 0.0)
             if (deudaDelta != 0.0) {
                 if (agenteId2 != null) {

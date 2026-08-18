@@ -52,8 +52,6 @@ class CrearRutaViewModel @Inject constructor(
                     current.copy(
                         estacionesDisponibles = estaciones,
                         estacionesComprometidas = comprometidas,
-                        // Si una banca fue tomada por otra ruta mientras esta
-                        // pantalla estaba abierta, se retira de la seleccion.
                         estacionesSeleccionadas = current.estacionesSeleccionadas - comprometidas,
                         isLoading = false
                     )

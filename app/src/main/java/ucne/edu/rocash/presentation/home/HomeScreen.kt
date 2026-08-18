@@ -11,8 +11,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.AccountCircle
@@ -20,49 +18,38 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.MonetizationOn
-import androidx.compose.material.icons.filled.PersonSearch
 import androidx.compose.material.icons.filled.Route
-import androidx.compose.material.icons.filled.Store
-import androidx.compose.material.icons.filled.SupportAgent
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalDrawerSheet
-import androidx.compose.material3.ModalNavigationDrawer
-import androidx.compose.material3.NavigationDrawerItem
-import androidx.compose.material3.NavigationDrawerItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import kotlinx.coroutines.launch
 import ucne.edu.rocash.domain.estacion.model.EstacionVentas
 import ucne.edu.rocash.domain.hojaRuta.model.EstacionEnRuta
 import ucne.edu.rocash.domain.hojaRuta.model.EstadoRuta
@@ -75,6 +62,7 @@ import ucne.edu.rocash.presentation.common.aMoneda
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
+    onAbrirMenu: () -> Unit,
     onNavigateToCrearRuta: () -> Unit,
     onNavigateToDetalleRuta: (Int) -> Unit,
     onNavigateToHistorial: () -> Unit,
@@ -84,66 +72,16 @@ fun HomeScreen(
     onNavigateToProfile: () -> Unit
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
-    val scope = rememberCoroutineScope()
 
-    ModalNavigationDrawer(
-        drawerState = drawerState,
-        drawerContent = {
-            ModalDrawerSheet {
-                Text(
-                    text = "Menú RoCash",
-                    modifier = Modifier.padding(16.dp),
-                    style = MaterialTheme.typography.headlineMedium,
-                    fontWeight = FontWeight.Bold
-                )
-                HorizontalDivider()
-
-                NavigationDrawerItem(
-                    icon = { Icon(Icons.Default.PersonSearch, contentDescription = null) },
-                    label = { Text("Recolectores") },
-                    selected = false,
-                    onClick = {
-                        scope.launch { drawerState.close() }
-                        onNavigateToRecolectores()
-                    },
-                    modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
-                )
-
-                NavigationDrawerItem(
-                    icon = { Icon(Icons.Default.SupportAgent, contentDescription = null) },
-                    label = { Text("Agentes de Ventas") },
-                    selected = false,
-                    onClick = {
-                        scope.launch { drawerState.close() }
-                        onNavigateToAgentes()
-                    },
-                    modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
-                )
-
-                NavigationDrawerItem(
-                    icon = { Icon(Icons.Default.Store, contentDescription = null) },
-                    label = { Text("Estaciones (Bancas)") },
-                    selected = false,
-                    onClick = {
-                        scope.launch { drawerState.close() }
-                        onNavigateToEstaciones()
-                    },
-                    modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
-                )
-            }
-        }
-    ) {
-        HomeBody(
-            state = state,
-            onEvent = viewModel::onEvent,
-            onAbrirMenu = { scope.launch { drawerState.open() } },
-            onNavigateToCrearRuta = onNavigateToCrearRuta,
-            onNavigateToDetalleRuta = onNavigateToDetalleRuta,
-            onNavigateToHistorial = onNavigateToHistorial,
-            onNavigateToProfile = onNavigateToProfile
-        )
-    }
+    HomeBody(
+        state = state,
+        onEvent = viewModel::onEvent,
+        onAbrirMenu = onAbrirMenu,
+        onNavigateToCrearRuta = onNavigateToCrearRuta,
+        onNavigateToDetalleRuta = onNavigateToDetalleRuta,
+        onNavigateToHistorial = onNavigateToHistorial,
+        onNavigateToProfile = onNavigateToProfile
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -193,14 +131,10 @@ fun HomeBody(
                             tint = MaterialTheme.colorScheme.primary
                         )
                     }
-
                 }
             )
         },
         floatingActionButton = {
-            // Antes el FAB solo aparecia si no habia ninguna ruta activa. Ahora
-            // se pueden tener varias rutas abiertas a la vez, asi que siempre
-            // se puede armar una nueva.
             if (!state.isLoading && !state.sinSesion) {
                 FloatingActionButton(
                     onClick = onNavigateToCrearRuta,

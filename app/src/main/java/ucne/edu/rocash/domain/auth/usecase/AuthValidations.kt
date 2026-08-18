@@ -1,7 +1,6 @@
 package ucne.edu.rocash.domain.auth.usecase
 
 import android.util.Patterns
-import ucne.edu.rocash.domain.common.ValidationResult
 data class ValidationResult(
     val isValid: Boolean,
     val error: String? = null
