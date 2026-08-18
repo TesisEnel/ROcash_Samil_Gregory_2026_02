@@ -11,6 +11,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import ucne.edu.rocash.ui.theme.coloresAccion
 
 @Composable
 fun EstacionFormScreen(
@@ -123,6 +124,7 @@ fun EstacionFormBody(
             Spacer(modifier = Modifier.weight(1f))
 
             Button(
+                colors = coloresAccion(),
                 onClick = { onEvent(EstacionFormUiEvent.Save) },
                 modifier = Modifier.fillMaxWidth().height(50.dp).testTag("btn_save_estacion"),
                 enabled = !state.isSaving

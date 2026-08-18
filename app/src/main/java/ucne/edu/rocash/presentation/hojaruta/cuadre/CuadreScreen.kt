@@ -25,6 +25,9 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.AlertDialog
+import androidx.compose.foundation.layout.Row
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -50,6 +53,7 @@ import ucne.edu.rocash.presentation.common.Confirmacion
 import ucne.edu.rocash.presentation.common.ConfirmacionOverlay
 import ucne.edu.rocash.presentation.common.PesoConfirmacion
 import ucne.edu.rocash.presentation.common.aMoneda
+import ucne.edu.rocash.ui.theme.coloresAccion
 
 @Composable
 fun CuadreScreen(
@@ -102,6 +106,14 @@ fun CuadreBody(
     onEvent: (CuadreUiEvent) -> Unit,
     onNavigateBack: () -> Unit
 ) {
+    if (state.mostrarDialogoConfirmacion) {
+        ConfirmarCuadreDialog(
+            state = state,
+            onConfirmar = { onEvent(CuadreUiEvent.Save) },
+            onCancelar = { onEvent(CuadreUiEvent.CancelarConfirmacion) }
+        )
+    }
+
     val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(state.errorMessage) {
@@ -149,7 +161,8 @@ fun CuadreBody(
                 contentPadding = PaddingValues(16.dp)
             ) {
                 Button(
-                    onClick = { onEvent(CuadreUiEvent.Save) },
+                    colors = coloresAccion(),
+                    onClick = { onEvent(CuadreUiEvent.PedirConfirmacion) },
                     enabled = state.puedeGuardar,
                     modifier = Modifier
                         .fillMaxWidth()
@@ -275,6 +288,100 @@ fun CuadreBody(
         }
     }
 }
+
+/**
+ * Confirmación antes de dar la banca por recolectada.
+ *
+ * Guardar aquí no es solo escribir un registro: marca la estación como
+ * COMPLETADA en la ruta y suma la deuda a la cuenta del agente (repartida si la
+ * banca tiene dos). Es la operación con consecuencias reales de la app, así que
+ * se resume lo que está por comprometerse antes de hacerlo.
+ */
+@Composable
+private fun ConfirmarCuadreDialog(
+    state: CuadreUiState,
+    onConfirmar: () -> Unit,
+    onCancelar: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onCancelar,
+        title = { Text("¿Dar por recolectada esta banca?") },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                if (state.nombreEstacion.isNotBlank()) {
+                    Text(
+                        text = state.nombreEstacion,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                }
+
+                LineaConfirmacion("Venta bruta", state.ventaBruta.toDoubleOrNull().aMonedaOCero())
+                LineaConfirmacion(
+                    "Comisión del cliente",
+                    state.comisionCliente.toDoubleOrNull().aMonedaOCero()
+                )
+                LineaConfirmacion("Monto esperado", state.montoEsperado.aMoneda())
+                LineaConfirmacion(
+                    "Recolectado",
+                    state.montoRecolectado.toDoubleOrNull().aMonedaOCero()
+                )
+
+                if (state.hayDeuda) {
+                    LineaConfirmacion(
+                        etiqueta = "Deuda al agente",
+                        valor = state.deudaGenerada.aMoneda(),
+                        color = MaterialTheme.colorScheme.error
+                    )
+                    Text(
+                        text = if (state.deudaSeReparte) {
+                            "Se cargará por partes iguales a los dos agentes de la banca."
+                        } else {
+                            "Se cargará a la cuenta del agente."
+                        },
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(
+                onClick = onConfirmar,
+                modifier = Modifier.testTag("btn_confirmar_cuadre")
+            ) {
+                Text("Sí, recolectada")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onCancelar) {
+                Text("Revisar")
+            }
+        }
+    )
+}
+
+@Composable
+private fun LineaConfirmacion(
+    etiqueta: String,
+    valor: String,
+    color: androidx.compose.ui.graphics.Color = MaterialTheme.colorScheme.onSurface
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Text(text = etiqueta, style = MaterialTheme.typography.bodyMedium)
+        Text(
+            text = valor,
+            style = MaterialTheme.typography.bodyMedium,
+            fontWeight = FontWeight.SemiBold,
+            color = color
+        )
+    }
+}
+
+private fun Double?.aMonedaOCero(): String = (this ?: 0.0).aMoneda()
 
 @Preview(showBackground = true)
 @Composable

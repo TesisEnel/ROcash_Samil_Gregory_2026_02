@@ -1,5 +1,12 @@
 package ucne.edu.rocash.presentation.auth
 
+import ucne.edu.rocash.R
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.draw.clip
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
@@ -14,6 +21,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import ucne.edu.rocash.ui.theme.coloresAccion
 
 @Composable
 fun AuthScreen(
@@ -61,6 +69,16 @@ fun AuthBody(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier.fillMaxWidth()
                 ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.logo_rocash),
+                        contentDescription = "RoCash",
+                        modifier = Modifier
+                            .height(120.dp)
+                            .clip(RoundedCornerShape(16.dp))
+                    )
+
+                    Spacer(modifier = Modifier.height(24.dp))
+
                     Text("Bienvenido", style = MaterialTheme.typography.headlineLarge)
                     Text(
                         text = "Inicia sesión para continuar",
@@ -98,6 +116,7 @@ fun AuthBody(
                     Spacer(modifier = Modifier.height(24.dp))
 
                     Button(
+                        colors = coloresAccion(),
                         onClick = { onEvent(AuthUiEvent.SignInWithEmail) },
                         modifier = Modifier.fillMaxWidth().height(50.dp).testTag("btn_login_email"),
                         enabled = !state.isLoading

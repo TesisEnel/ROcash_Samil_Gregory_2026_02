@@ -85,7 +85,7 @@ fun EstacionListBody(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = { onEvent(EstacionListUiEvent.CreateNew) },
-                containerColor = MaterialTheme.colorScheme.primary,
+                containerColor = MaterialTheme.colorScheme.tertiary,
                 modifier = Modifier.testTag("fab_add_estacion")
             ) {
                 Icon(Icons.Default.Add, contentDescription = "Crear Estación")

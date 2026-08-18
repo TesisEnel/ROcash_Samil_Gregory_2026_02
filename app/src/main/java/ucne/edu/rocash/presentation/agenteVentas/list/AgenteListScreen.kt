@@ -112,7 +112,7 @@ fun AgenteListBody(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = { onEvent(AgenteListUiEvent.CreateNew) },
-                containerColor = MaterialTheme.colorScheme.primary,
+                containerColor = MaterialTheme.colorScheme.tertiary,
                 modifier = Modifier.testTag("fab_add")
             ) {
                 Icon(Icons.Default.Add, contentDescription = "Añadir Agente")

@@ -12,27 +12,32 @@ import androidx.compose.ui.graphics.Color
  *
  * `dynamicColor` quedó fuera a propósito. Con el color dinámico de Android 12+
  * la app tomaba los colores del fondo de pantalla de cada usuario, así que no
- * se veía igual en dos teléfonos y no tenía identidad propia en ninguno. Una
- * herramienta que maneja el efectivo de terceros gana más siendo reconocible
- * que siendo camaleónica.
+ * se veía igual en dos teléfonos y la marca no aparecía en ninguno.
  *
- * El rojo está reservado: `error` es el mismo ladrillo que se usa para las
- * deudas. Si aparece color de alarma en pantalla, siempre significa que hay
- * dinero pendiente o algo que atender, nunca decoración.
+ * Los roles cargan significado, no decoración:
+ *
+ *  - `primary` es el verde del logo. Marca, dinero y estados completados: lo
+ *    que la app INFORMA.
+ *  - `tertiary` es el azul. Botones y FAB: lo que el usuario PUEDE TOCAR.
+ *    Separarlos evita la ambigüedad de que un total y un botón compartan color.
+ *  - `error` es ladrillo, y es el mismo color de las deudas. Si aparece rojo en
+ *    pantalla siempre significa dinero pendiente.
  */
 private val EsquemaClaro = lightColorScheme(
-    primary = VerdeCuadre,
+    primary = VerdeROcash,
     onPrimary = Color.White,
     primaryContainer = VerdeContenedor,
     onPrimaryContainer = VerdeContenedorOscuro,
 
-    secondary = AmbarRuta,
+    secondary = VerdeROcash,
     onSecondary = Color.White,
-    secondaryContainer = AmbarContenedor,
-    onSecondaryContainer = AmbarContenedorOscuro,
+    secondaryContainer = VerdeContenedor,
+    onSecondaryContainer = VerdeContenedorOscuro,
 
-    tertiary = VerdeCuadreClaro,
-    onTertiary = VerdeContenedorOscuro,
+    tertiary = AzulAccion,
+    onTertiary = Color.White,
+    tertiaryContainer = AzulContenedor,
+    onTertiaryContainer = AzulContenedorOscuro,
 
     error = Ladrillo,
     onError = Color.White,
@@ -45,22 +50,24 @@ private val EsquemaClaro = lightColorScheme(
     onSurface = TintaClara,
     surfaceVariant = SuperficieVarianteClara,
     onSurfaceVariant = TintaTenueClara,
-    outline = Color(0xFF6F7B77)
+    outline = Color(0xFF737B70)
 )
 
 private val EsquemaOscuro = darkColorScheme(
-    primary = VerdeCuadreClaro,
+    primary = VerdeROcashClaro,
     onPrimary = VerdeContenedorOscuro,
     primaryContainer = VerdeContenedorOscuro,
     onPrimaryContainer = VerdeContenedor,
 
-    secondary = AmbarRutaClaro,
-    onSecondary = AmbarContenedorOscuro,
-    secondaryContainer = AmbarContenedorOscuro,
-    onSecondaryContainer = AmbarContenedor,
+    secondary = VerdeROcashClaro,
+    onSecondary = VerdeContenedorOscuro,
+    secondaryContainer = VerdeContenedorOscuro,
+    onSecondaryContainer = VerdeContenedor,
 
-    tertiary = VerdeContenedor,
-    onTertiary = VerdeContenedorOscuro,
+    tertiary = AzulAccionClaro,
+    onTertiary = AzulContenedorOscuro,
+    tertiaryContainer = AzulContenedorOscuro,
+    onTertiaryContainer = AzulContenedor,
 
     error = LadrilloClaro,
     onError = LadrilloContenedorOscuro,
@@ -73,7 +80,7 @@ private val EsquemaOscuro = darkColorScheme(
     onSurface = TintaOscura,
     surfaceVariant = SuperficieVarianteOscura,
     onSurfaceVariant = TintaTenueOscura,
-    outline = Color(0xFF89958F)
+    outline = Color(0xFF8C948A)
 )
 
 @Composable

@@ -31,6 +31,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import ucne.edu.rocash.ui.theme.coloresAccion
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -96,6 +97,7 @@ fun AgenteFormScreen(
             Spacer(modifier = Modifier.weight(1f))
 
             Button(
+                colors = coloresAccion(),
                 onClick = { viewModel.onEvent(AgenteFormUiEvent.Save) },
                 modifier = Modifier
                     .fillMaxWidth()

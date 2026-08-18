@@ -66,6 +66,7 @@ import ucne.edu.rocash.presentation.common.Confirmacion
 import ucne.edu.rocash.presentation.common.ConfirmacionOverlay
 import ucne.edu.rocash.presentation.common.PesoConfirmacion
 import ucne.edu.rocash.presentation.common.aMoneda
+import ucne.edu.rocash.ui.theme.coloresAccion
 
 @Composable
 fun DetalleRutaScreen(
@@ -162,6 +163,7 @@ fun DetalleRutaBody(
                     contentPadding = PaddingValues(16.dp)
                 ) {
                     Button(
+                        colors = coloresAccion(),
                         onClick = { onEvent(DetalleRutaUiEvent.PedirConfirmacionCierre) },
                         enabled = state.puedeCerrarse,
                         modifier = Modifier

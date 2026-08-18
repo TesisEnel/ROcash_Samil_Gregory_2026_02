@@ -51,6 +51,7 @@ data class CuadreUiState(
     val isNew: Boolean = true,
     val puedeGuardar: Boolean = false,
 
+    val mostrarDialogoConfirmacion: Boolean = false,
     val saved: Boolean = false,
     val errorMessage: String? = null
 )

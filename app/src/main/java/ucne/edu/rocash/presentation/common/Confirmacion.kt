@@ -33,6 +33,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
+import ucne.edu.rocash.ui.theme.VerdeROcashClaro
+import ucne.edu.rocash.ui.theme.VerdeSello
 
 /**
  * Cuánto pesa una confirmación.
@@ -168,7 +170,7 @@ fun ConfirmacionOverlay(
                 Text(
                     text = montoMostrado.toDouble().aMoneda(),
                     style = MaterialTheme.typography.headlineLarge,
-                    color = MaterialTheme.colorScheme.secondary,
+                    color = VerdeROcashClaro,
                     textAlign = TextAlign.Center
                 )
             }
@@ -198,7 +200,7 @@ private fun MarcaDeVisto(
     grande: Boolean
 ) {
     val lado = if (grande) 96.dp else 64.dp
-    val colorAnillo = MaterialTheme.colorScheme.primary
+    val colorAnillo = VerdeSello
     val colorMarca = MaterialTheme.colorScheme.inverseOnSurface
 
     val caminoCompleto = remember { Path() }
