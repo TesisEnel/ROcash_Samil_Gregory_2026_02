@@ -1,5 +1,7 @@
 ROcash 💸
 
+Integrantes: Samil De La Cruz Hernandez, Gregory Junior Rodriguez Serrano.
+
 ROcash es una aplicación móvil desarrollada nativamente para Android, diseñada para optimizar la logística operativa y la gestión financiera de los recolectores de efectivo en campo. La aplicación permite organizar rutas de recolección de manera eficiente y llevar un control riguroso de los flujos de caja, comisiones y deudas acumuladas por los agentes de ventas.
 
 🎯 Propósito del Proyecto
