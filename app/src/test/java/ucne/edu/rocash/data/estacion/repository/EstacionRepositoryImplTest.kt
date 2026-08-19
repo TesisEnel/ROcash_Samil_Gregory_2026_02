@@ -18,7 +18,6 @@ import ucne.edu.rocash.data.estacion.local.EstacionVentasEntity
 import ucne.edu.rocash.domain.estacion.model.EstacionVentas
 
 class EstacionRepositoryImplTest {
-
     private lateinit var dao: EstacionVentasDao
     private lateinit var repository: EstacionRepositoryImpl
 

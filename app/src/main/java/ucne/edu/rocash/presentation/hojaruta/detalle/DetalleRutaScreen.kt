@@ -240,10 +240,8 @@ fun DetalleRutaBody(
                             rutaCerrada = state.rutaEstaCerrada,
                             onClick = {
                                 if (state.rutaEstaCerrada) {
-                                    // Si la ruta está cerrada (historial), navegamos a la pantalla de detalle de la estación
                                     onNavigateToEstacionDetalle(item.estacionId)
                                 } else {
-                                    // Si la ruta está en progreso, navegamos al cuadre
                                     onNavigateToCuadre(
                                         state.ruta.id,
                                         item.estacionId,

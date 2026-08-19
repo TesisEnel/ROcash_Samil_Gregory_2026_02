@@ -8,7 +8,6 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface RegistroRecoleccionDao {
-
     @Upsert
     suspend fun upsert(entity: RegistroRecoleccionEntity): Long
 

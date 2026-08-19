@@ -23,7 +23,6 @@ import ucne.edu.rocash.domain.hojaRuta.model.EstadoVisitaEstacion
 import ucne.edu.rocash.domain.hojaRuta.model.HojaRuta
 
 class HojaRutaRepositoryImplTest {
-
     private lateinit var dao: HojaRutaDao
     private lateinit var repository: HojaRutaRepositoryImpl
 
@@ -32,8 +31,6 @@ class HojaRutaRepositoryImplTest {
         dao = mockk(relaxed = true)
         repository = HojaRutaRepositoryImpl(dao)
     }
-
-    // ---------- helpers ----------
 
     private fun rutaEntity(
         id: Int = 1,
@@ -67,8 +64,6 @@ class HojaRutaRepositoryImplTest {
         )
     )
 
-    // ---------- creación ----------
-
     @Test
     fun `crearRutaConEstaciones delega en el DAO con estado inicial PENDIENTE`() = runTest {
         coEvery { dao.crearRutaConEstaciones(any(), any(), any()) } returns 42
@@ -87,8 +82,6 @@ class HojaRutaRepositoryImplTest {
             )
         }
     }
-
-    // ---------- cierre ----------
 
     @Test
     fun `cerrarRuta envia el estado CERRADA y los totales recibidos`() = runTest {
@@ -127,8 +120,6 @@ class HojaRutaRepositoryImplTest {
 
         coVerify(exactly = 1) { dao.cambiarEstado(1, "EN_PROGRESO") }
     }
-
-    // ---------- lectura ----------
 
     @Test
     fun `observarRutasAbiertas consulta solo PENDIENTE y EN_PROGRESO`() = runTest {
@@ -202,15 +193,13 @@ class HojaRutaRepositoryImplTest {
             assertEquals(1, rutas.size)
             assertEquals(EstadoRuta.CERRADA, rutas.first().estado)
             assertEquals(5_000L, rutas.first().fechaCierre)
-            // El historial no arrastra estaciones: la consulta es sobre la cabecera.
+
             assertTrue(rutas.first().estaciones.isEmpty())
             awaitComplete()
         }
 
         coVerify { dao.observarHistorial("uid-1", "CERRADA") }
     }
-
-    // ---------- estaciones comprometidas ----------
 
     @Test
     fun `estacionesYaComprometidas no toca el DAO cuando la lista viene vacia`() = runTest {

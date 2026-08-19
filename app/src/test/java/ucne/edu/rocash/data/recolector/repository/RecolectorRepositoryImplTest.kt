@@ -17,7 +17,6 @@ import ucne.edu.rocash.data.recolector.local.RecolectorEntity
 import ucne.edu.rocash.domain.recolector.model.Recolector
 
 class RecolectorRepositoryImplTest {
-
     private lateinit var dao: RecolectorDao
     private lateinit var repository: RecolectorRepositoryImpl
 

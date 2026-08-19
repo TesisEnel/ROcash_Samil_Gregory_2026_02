@@ -18,7 +18,6 @@ import ucne.edu.rocash.data.agenteVentas.local.AgenteVentasEntity
 import ucne.edu.rocash.domain.agenteVentas.model.AgenteVentas
 
 class AgenteVentasRepositoryImplTest {
-
     private lateinit var dao: AgenteVentasDao
     private lateinit var repository: AgenteVentasRepositoryImpl
 
@@ -41,8 +40,6 @@ class AgenteVentasRepositoryImplTest {
         estado = true
     )
 
-    // ---------- deuda: el bug que perdía dinero en silencio ----------
-
     @Test
     fun `sumarDeuda delega directamente en el UPDATE atomico del DAO`() = runTest {
         repository.sumarDeuda(agenteId = 3, monto = 500.0)
@@ -59,20 +56,14 @@ class AgenteVentasRepositoryImplTest {
 
     @Test
     fun `sumarDeuda no lee el agente antes de escribir`() = runTest {
-        // La version anterior hacia read-modify-write y podia perder la deuda
-        // si el agente no pasaba las validaciones de nombre y telefono.
         repository.sumarDeuda(agenteId = 3, monto = 500.0)
 
         coVerify(exactly = 0) { dao.getById(any()) }
         coVerify(exactly = 0) { dao.upsert(any()) }
     }
 
-    // ---------- CRUD ----------
-
     @Test
     fun `upsert de un agente nuevo devuelve el id generado por Room`() = runTest {
-        // Un agente nuevo llega con agenteId = 0; el id real lo genera SQLite y
-        // solo se conoce por el rowId que devuelve el DAO.
         coEvery { dao.upsert(any()) } returns 17L
 
         val id = repository.upsert(

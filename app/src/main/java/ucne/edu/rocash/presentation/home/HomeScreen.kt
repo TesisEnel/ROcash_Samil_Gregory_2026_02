@@ -183,7 +183,7 @@ fun HomeBody(
                                 titulo = "Ingresos totales",
                                 valor = state.totalIngresos.aMoneda(),
                                 icono = Icons.Default.MonetizationOn,
-                                // 👇 DESGLOSE FINANCIERO
+
                                 detalle = "Rutas: ${state.totalIngresosRutas.aMoneda()}\nAbonos: ${state.totalAbonos.aMoneda()}"
                             )
                             StatCard(

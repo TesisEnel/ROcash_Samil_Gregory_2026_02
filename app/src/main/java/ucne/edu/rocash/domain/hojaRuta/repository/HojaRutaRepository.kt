@@ -6,7 +6,6 @@ import ucne.edu.rocash.domain.hojaRuta.model.EstadoVisitaEstacion
 import ucne.edu.rocash.domain.hojaRuta.model.HojaRuta
 
 interface HojaRutaRepository {
-
     suspend fun crearRutaConEstaciones(ruta: HojaRuta, estacionIds: List<Int>): Int
 
     suspend fun actualizarRuta(ruta: HojaRuta)

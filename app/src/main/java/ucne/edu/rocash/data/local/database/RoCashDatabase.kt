@@ -30,7 +30,6 @@ import ucne.edu.rocash.data.registroRecoleccion.local.RegistroRecoleccionEntity
     exportSchema = false
 )
 abstract class RoCashDatabase : RoomDatabase() {
-
     abstract fun recolectorDao(): RecolectorDao
 
     abstract fun agenteVentasDao(): AgenteVentasDao

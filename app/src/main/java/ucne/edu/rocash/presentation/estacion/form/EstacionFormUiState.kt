@@ -9,16 +9,6 @@ data class EstacionFormUiState(
     val agenteId: Int? = null,
     val agenteNombreSeleccionado: String = "",
 
-    /**
-     * Segundo agente de la banca. El formulario no lo edita, pero se carga y se
-     * devuelve tal cual al guardar.
-     *
-     * Antes onSave() construía el EstacionVentas sin este campo, así que editar
-     * el nombre de una banca de dos agentes le borraba el segundo. El daño no
-     * era solo perder un dato: `deudaSeReparte` en el cuadre depende de él, de
-     * modo que después de editar, la deuda de esa banca dejaba de repartirse y
-     * se le cargaba completa a un solo agente.
-     */
     val agenteId2: Int? = null,
     val agentesDisponibles: List<AgenteVentas> = emptyList(),
 

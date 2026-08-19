@@ -31,9 +31,6 @@ class UpsertEstacionUseCase @Inject constructor(
         }
 
         return runCatching {
-            // Un agente pertenece a una sola banca. La deuda se acumula por
-            // agente, así que tenerlo en dos bancas mezclaría faltantes de
-            // ambas en un mismo saldo.
             verificarAgenteLibre(estacion.agenteId, estacion.estacionId)
             estacion.agenteId2?.let { verificarAgenteLibre(it, estacion.estacionId) }
 

@@ -12,7 +12,6 @@ import javax.inject.Inject
 class AgenteVentasRepositoryImpl @Inject constructor(
     private val localDataSource: AgenteVentasDao
 ) : AgenteVentasRepository {
-
     override fun observeAgentes(): Flow<List<AgenteVentas>> =
         localDataSource.observeAll().map { entities -> entities.map { it.toDomain() } }
 

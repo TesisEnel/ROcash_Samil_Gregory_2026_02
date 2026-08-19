@@ -85,7 +85,6 @@ fun AgenteFormScreen(
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-
             OutlinedTextField(
                 value = state.nombre,
                 onValueChange = { viewModel.onEvent(AgenteFormUiEvent.NombreChanged(it)) },

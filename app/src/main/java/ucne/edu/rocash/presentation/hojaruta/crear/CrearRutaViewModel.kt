@@ -23,7 +23,6 @@ class CrearRutaViewModel @Inject constructor(
     private val crearHojaRutaUseCase: CrearHojaRutaUseCase,
     private val sesion: SesionRecolector
 ) : ViewModel() {
-
     private val _state = MutableStateFlow(CrearRutaUiState())
     val state: StateFlow<CrearRutaUiState> = _state.asStateFlow()
 
@@ -64,8 +63,7 @@ class CrearRutaViewModel @Inject constructor(
                             isLoading = false,
                             estacionesDisponibles = estaciones,
                             estacionesComprometidas = comprometidas,
-                            // Una estación que pasó a estar comprometida deja de
-                            // ser seleccionable.
+
                             estacionesSeleccionadas =
                                 actual.estacionesSeleccionadas - comprometidas,
                             errorMessage = null

@@ -14,7 +14,6 @@ import javax.inject.Inject
 class HojaRutaRepositoryImpl @Inject constructor(
     private val localDataSource: HojaRutaDao
 ) : HojaRutaRepository {
-
     override suspend fun crearRutaConEstaciones(ruta: HojaRuta, estacionIds: List<Int>): Int {
         return localDataSource.crearRutaConEstaciones(
             ruta = ruta.toEntity(),

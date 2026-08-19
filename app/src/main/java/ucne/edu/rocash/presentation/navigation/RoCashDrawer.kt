@@ -19,20 +19,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
-/**
- * Envuelve el contenido en el menú lateral, pero SOLO en las pantallas que
- * tienen menú.
- *
- * Antes el `ModalNavigationDrawer` se componía siempre y el menú se ocultaba
- * con un `if (gesturesEnabled)` dentro de `drawerContent`. Eso dejaba el drawer
- * con contenido vacío en Login y Registro, y ahí es donde se colgaba la app:
- * `ModalNavigationDrawer` mide el ancho de su hoja para calcular la fracción de
- * apertura del velo. Con una hoja de ancho cero esa fracción es una división
- * entre cero, el velo queda con alpha NaN y se pinta sobre toda la pantalla
- * interceptando cada toque. El login se veía normal pero no respondía a nada.
- *
- * La solución es no montar el drawer cuando no hace falta.
- */
 @Composable
 fun RoCashDrawer(
     drawerState: DrawerState,

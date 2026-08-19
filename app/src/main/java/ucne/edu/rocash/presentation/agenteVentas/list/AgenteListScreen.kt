@@ -53,7 +53,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ucne.edu.rocash.domain.agenteVentas.model.AgenteVentas
 
-
 @Composable
 fun AgenteListScreen(
     viewModel: AgenteListViewModel = hiltViewModel(),
@@ -259,7 +258,6 @@ fun AgenteItem(
         }
     }
 }
-
 
 @Preview(showBackground = true)
 @Composable

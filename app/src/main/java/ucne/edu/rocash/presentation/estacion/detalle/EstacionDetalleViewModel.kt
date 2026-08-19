@@ -21,7 +21,6 @@ class EstacionDetalleViewModel @Inject constructor(
     private val observarAgenteUseCase: ObservarAgenteUseCase,
     private val observarAbonosUseCase: ObservarAbonosDeAgenteUseCase
 ) : ViewModel() {
-
     private val _state = MutableStateFlow(EstacionDetalleUiState())
     val state: StateFlow<EstacionDetalleUiState> = _state.asStateFlow()
 

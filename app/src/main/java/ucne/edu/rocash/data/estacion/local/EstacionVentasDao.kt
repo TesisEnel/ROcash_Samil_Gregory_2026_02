@@ -26,11 +26,6 @@ interface EstacionVentasDao {
     @Query("SELECT EXISTS(SELECT 1 FROM estacion_ventas WHERE estacionId = :id)")
     suspend fun exists(id: Int): Boolean
 
-    /**
-     * Bancas distintas de [estacionIdExcluida] donde ya figura este agente, sea
-     * como titular o como segundo. Se excluye la banca que se está editando
-     * para que guardarla sin cambiar de agente no se rechace a sí misma.
-     */
     @Query(
         """
         SELECT nombre FROM estacion_ventas
@@ -48,5 +43,4 @@ interface EstacionVentasDao {
         """
     )
     fun search(query: String): Flow<List<EstacionVentasEntity>>
-
 }

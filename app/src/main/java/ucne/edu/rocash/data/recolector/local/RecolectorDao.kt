@@ -7,7 +7,6 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface RecolectorDao {
-
     @Upsert
     suspend fun upsert(recolector: RecolectorEntity)
 

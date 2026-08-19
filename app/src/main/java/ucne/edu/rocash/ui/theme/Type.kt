@@ -6,19 +6,10 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 
-/**
- * Cifras de ancho fijo para todo lo que sea dinero.
- *
- * Con las cifras proporcionales que trae la fuente por defecto, un 1 ocupa
- * menos que un 8, así que un total que cambia de $1.111 a $8.888 se mueve de
- * ancho y "baila". En el cierre de ruta, donde el total se cuenta hacia arriba
- * dígito a dígito, ese temblor es imposible de ignorar. `tnum` fija el ancho de
- * cada cifra y el número queda quieto mientras cambia.
- */
 private val CifrasFijas = "tnum"
 
 val Typography = Typography(
-    // Titulares: apretados, para que un nombre de banca largo respire.
+
     headlineLarge = TextStyle(
         fontFamily = FontFamily.Default,
         fontWeight = FontWeight.Bold,
@@ -76,7 +67,6 @@ val Typography = Typography(
         fontFeatureSettings = CifrasFijas
     ),
 
-    // Etiquetas: en versalitas espaciadas, como la rotulación de un recibo.
     labelLarge = TextStyle(
         fontFamily = FontFamily.Default,
         fontWeight = FontWeight.Medium,

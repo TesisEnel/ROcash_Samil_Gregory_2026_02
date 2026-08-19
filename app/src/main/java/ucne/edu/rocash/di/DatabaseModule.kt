@@ -31,7 +31,6 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object DatabaseModule {
-
     @Provides
     @Singleton
     fun provideRoCashDatabase(@ApplicationContext context: Context): RoCashDatabase =
@@ -43,7 +42,6 @@ object DatabaseModule {
             .fallbackToDestructiveMigration(dropAllTables = true)
             .build()
 
-
     @Provides
     @Singleton
     fun provideRecolectorDao(db: RoCashDatabase): RecolectorDao = db.recolectorDao()
@@ -52,7 +50,6 @@ object DatabaseModule {
     @Singleton
     fun provideRecolectorRepository(dao: RecolectorDao): RecolectorRepository =
         RecolectorRepositoryImpl(dao)
-
 
     @Provides
     @Singleton
@@ -63,7 +60,6 @@ object DatabaseModule {
     fun provideAgenteVentasRepository(dao: AgenteVentasDao): AgenteVentasRepository =
         AgenteVentasRepositoryImpl(dao)
 
-
     @Provides
     @Singleton
     fun provideAbonoDeudaDao(db: RoCashDatabase): AbonoDeudaDao = db.abonoDeudaDao()
@@ -72,7 +68,6 @@ object DatabaseModule {
     @Singleton
     fun provideAbonoDeudaRepository(dao: AbonoDeudaDao): AbonoDeudaRepository =
         AbonoDeudaRepositoryImpl(dao)
-
 
     @Provides
     @Singleton
@@ -83,7 +78,6 @@ object DatabaseModule {
     fun provideEstacionRepository(dao: EstacionVentasDao): EstacionRepository =
         EstacionRepositoryImpl(dao)
 
-
     @Provides
     @Singleton
     fun provideHojaRutaDao(db: RoCashDatabase): HojaRutaDao = db.hojaRutaDao()
@@ -92,7 +86,6 @@ object DatabaseModule {
     @Singleton
     fun provideHojaRutaRepository(dao: HojaRutaDao): HojaRutaRepository =
         HojaRutaRepositoryImpl(dao)
-
 
     @Provides
     @Singleton

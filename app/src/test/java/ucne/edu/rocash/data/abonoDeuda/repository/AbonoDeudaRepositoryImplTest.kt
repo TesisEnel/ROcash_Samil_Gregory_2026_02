@@ -16,7 +16,6 @@ import ucne.edu.rocash.data.abonoDeuda.local.AbonoDeudaEntity
 import ucne.edu.rocash.domain.abonoDeuda.model.AbonoDeuda
 
 class AbonoDeudaRepositoryImplTest {
-
     private lateinit var dao: AbonoDeudaDao
     private lateinit var repository: AbonoDeudaRepositoryImpl
 
@@ -79,7 +78,6 @@ class AbonoDeudaRepositoryImplTest {
 
     @Test
     fun `observarTotalAbonado delega en el DAO`() = runTest {
-        // La suma la hace SQLite: el repositorio no recorre la lista.
         every { dao.observarTotalAbonado(7) } returns flowOf(9_500.0)
 
         repository.observarTotalAbonado(7).test {

@@ -12,7 +12,6 @@ import javax.inject.Inject
 class AbonoDeudaRepositoryImpl @Inject constructor(
     private val dao: AbonoDeudaDao
 ) : AbonoDeudaRepository {
-
     override fun observarAbonosDeAgente(agenteId: Int): Flow<List<AbonoDeuda>> =
         dao.observarPorAgente(agenteId).map { lista -> lista.map { it.toDomain() } }
 

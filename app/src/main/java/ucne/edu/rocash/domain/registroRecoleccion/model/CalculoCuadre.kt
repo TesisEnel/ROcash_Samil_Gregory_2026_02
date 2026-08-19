@@ -8,7 +8,6 @@ data class CalculoCuadre(
     val montoDeuda: Double
 ) {
     companion object {
-
         fun desde(
             ventaBruta: Double,
             comisionCliente: Double,

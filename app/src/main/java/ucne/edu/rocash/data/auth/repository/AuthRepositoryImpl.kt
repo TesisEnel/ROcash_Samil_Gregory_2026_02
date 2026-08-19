@@ -17,7 +17,6 @@ class AuthRepositoryImpl @Inject constructor(
     private val auth: FirebaseAuth,
     private val credentialManager: CredentialManager
 ) : AuthRepository {
-
     override suspend fun signInWithGoogle(context: Context): Result<FirebaseUser> {
         return try {
             val googleIdOption = GetGoogleIdOption.Builder()

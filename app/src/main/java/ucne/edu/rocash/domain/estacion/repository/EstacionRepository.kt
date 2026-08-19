@@ -10,7 +10,6 @@ interface EstacionRepository {
     suspend fun delete(id: Int)
     suspend fun exists(id: Int): Boolean
 
-    /** Nombres de otras bancas donde ya figura el agente. */
     suspend fun bancasDelAgente(agenteId: Int, estacionIdExcluida: Int): List<String>
     fun buscarEstaciones(query: String): Flow<List<EstacionVentas>>
 }

@@ -25,7 +25,6 @@ class EstacionListViewModel @Inject constructor(
     private val searchEstacionesUseCase: SearchEstacionesUseCase,
     private val deleteEstacionUseCase: DeleteEstacionUseCase
 ) : ViewModel() {
-
     private val _state = MutableStateFlow(EstacionListUiState(isLoading = true))
     val state: StateFlow<EstacionListUiState> = _state.asStateFlow()
 
