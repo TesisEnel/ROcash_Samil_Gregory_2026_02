@@ -2,13 +2,6 @@ package ucne.edu.rocash.presentation.home
 
 import ucne.edu.rocash.domain.hojaRuta.model.HojaRuta
 
-/**
- * Snapshot inerte del dashboard.
- *
- * Antes tenía `val hayRutasAbiertas: Boolean get() = rutasAbiertas.isNotEmpty()`.
- * Ahora es un campo: el ViewModel lo resuelve al actualizar el estado y la
- * pantalla sólo lo lee.
- */
 data class HomeUiState(
     val isLoading: Boolean = true,
     val rutasAbiertas: List<HojaRuta> = emptyList(),

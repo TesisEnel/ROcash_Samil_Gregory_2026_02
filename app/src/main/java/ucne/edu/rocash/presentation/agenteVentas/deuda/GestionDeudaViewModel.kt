@@ -57,11 +57,6 @@ class GestionDeudaViewModel @Inject constructor(
         }
     }
 
-    /**
-     * El agente, sus abonos y el total abonado se observan juntos. Tras
-     * registrar un abono, tanto la deuda como el total se actualizan solos
-     * porque vienen de Flows de Room: aquí no se resta ni se suma nada.
-     */
     private fun cargar(agenteId: Int) {
         if (observacion != null && _state.value.agenteId == agenteId) return
 
@@ -118,8 +113,6 @@ class GestionDeudaViewModel @Inject constructor(
                     }
                 }
                 .onFailure { error ->
-                    // Los fallos de validación pertenecen al campo del monto;
-                    // los de infraestructura, al snackbar.
                     val esValidacion = error is IllegalArgumentException
                     _state.update {
                         it.copy(
@@ -168,7 +161,6 @@ class GestionDeudaViewModel @Inject constructor(
         }
     }
 
-    /** Único lugar donde se decide qué se habilita y qué se pinta. */
     private fun GestionDeudaUiState.conDerivadosResueltos(): GestionDeudaUiState = copy(
         tieneDeuda = deudaActual > 0.0,
         hayAbonos = abonos.isNotEmpty(),

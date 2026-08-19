@@ -14,22 +14,8 @@ import ucne.edu.rocash.domain.registroRecoleccion.usecase.ObtenerCuadreDeEstacio
 import ucne.edu.rocash.domain.registroRecoleccion.usecase.ProcesarRecoleccionUseCase
 import ucne.edu.rocash.domain.registroRecoleccion.usecase.validateMontoNumerico
 import javax.inject.Inject
-
-/** Cuál de los tres campos de dinero acaba de tocar el usuario. */
 private enum class CampoMonto { VENTA_BRUTA, COMISION, MONTO_RECOLECTADO }
 
-/**
- * Antes `actualizarValores()` contenía esto:
- *
- *     val esperado = vb - cc
- *     deudaGenerada = (esperado - rec).coerceAtLeast(0.0)
- *
- * Es decir, la fórmula del cuadre escrita a mano en la capa de presentación,
- * mientras `CalculoCuadre` en el dominio ya la tenía —y ProcesarRecoleccionUseCase
- * la usaba al guardar—. La pantalla y la base de datos podían mostrar números
- * distintos con sólo tocar una de las dos copias. Ahora ambas pasan por
- * [CalcularCuadreUseCase] y el ViewModel no hace aritmética de dinero.
- */
 @HiltViewModel
 class CuadreViewModel @Inject constructor(
     private val procesarRecoleccionUseCase: ProcesarRecoleccionUseCase,
@@ -108,11 +94,6 @@ class CuadreViewModel @Inject constructor(
         }
     }
 
-    /**
-     * Resuelve los tres textos, le pide el cálculo al dominio y deposita el
-     * resultado. Sólo se limpia el error del campo que el usuario acaba de
-     * editar; los otros dos se conservan.
-     */
     private fun editarMonto(campo: CampoMonto, valor: String) {
         val actual = _state.value
 
@@ -148,11 +129,6 @@ class CuadreViewModel @Inject constructor(
         }
     }
 
-    /**
-     * Valida antes de abrir el diálogo. Si los montos están mal, se muestran los
-     * errores en los campos y no se abre nada: no tiene sentido pedirle al
-     * usuario que confirme cifras que ni siquiera son números.
-     */
     private fun pedirConfirmacion() {
         val actual = _state.value
         if (actual.isSaving) return
@@ -215,13 +191,6 @@ class CuadreViewModel @Inject constructor(
         }
     }
 
-    /**
-     * Único lugar donde se decide qué se habilita y qué se pinta.
-     *
-     * `puedeGuardar` es exactamente la regla que antes vivía dentro del UiState;
-     * la diferencia es que ahora se evalúa una vez por transición y no una vez
-     * por recomposición.
-     */
     private fun CuadreUiState.conDerivadosResueltos(): CuadreUiState = copy(
         hayDeuda = deudaGenerada > 0.0,
         deudaSeReparte = deudaGenerada > 0.0 && agenteId2 != null,

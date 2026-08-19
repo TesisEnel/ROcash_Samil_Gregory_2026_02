@@ -4,15 +4,6 @@ import ucne.edu.rocash.domain.abonoDeuda.model.AbonoDeuda
 import ucne.edu.rocash.domain.abonoDeuda.repository.AbonoDeudaRepository
 import ucne.edu.rocash.domain.agenteVentas.repository.AgenteVentasRepository
 import javax.inject.Inject
-
-/**
- * Registra un abono y baja la deuda del agente en el mismo movimiento.
- *
- * El descuento se hace con `sumarDeuda(-monto)` en lugar de leer, restar y
- * escribir desde aquí. La resta ocurre dentro del UPDATE de SQLite, así que dos
- * abonos simultáneos no pueden pisarse: leer 5000, restar 2000 y escribir 3000
- * dos veces dejaría 3000 en vez de 1000.
- */
 class RegistrarAbonoUseCase @Inject constructor(
     private val abonoRepository: AbonoDeudaRepository,
     private val agenteRepository: AgenteVentasRepository

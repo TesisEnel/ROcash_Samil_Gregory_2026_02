@@ -6,11 +6,6 @@ import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import ucne.edu.rocash.data.agenteVentas.local.AgenteVentasEntity
 
-/**
- * Historial de abonos. `CASCADE` al borrar el agente: si el agente ya no
- * existe, sus abonos no le sirven a nadie y dejarlos huérfanos bloquearía el
- * borrado.
- */
 @Entity(
     tableName = "abono_deuda",
     foreignKeys = [

@@ -75,7 +75,6 @@ class HomeViewModel @Inject constructor(
                             isLoading = false,
                             sinSesion = false,
                             rutasAbiertas = rutas,
-                            // Derivado aquí, no dentro del UiState.
                             hayRutasAbiertas = rutas.isNotEmpty(),
                             totalIngresos = ingresos,
                             rutasCompletadas = completadas,

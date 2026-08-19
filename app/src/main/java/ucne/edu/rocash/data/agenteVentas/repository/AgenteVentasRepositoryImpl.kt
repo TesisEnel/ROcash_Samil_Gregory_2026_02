@@ -19,11 +19,6 @@ class AgenteVentasRepositoryImpl @Inject constructor(
     override suspend fun getAgente(id: Int): AgenteVentas? =
         localDataSource.getById(id)?.toDomain()
 
-    /**
-     * En una inserción el rowId generado es el id nuevo; en una actualización
-     * SQLite devuelve el rowId de la fila tocada, que coincide con la clave
-     * primaria. Si por lo que sea viniera -1, se conserva el id de entrada.
-     */
     override suspend fun upsert(agente: AgenteVentas): Int {
         val rowId = localDataSource.upsert(agente.toEntity())
         return if (rowId > 0) rowId.toInt() else agente.agenteId

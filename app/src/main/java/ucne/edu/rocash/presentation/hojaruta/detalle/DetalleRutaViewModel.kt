@@ -124,16 +124,6 @@ class DetalleRutaViewModel @Inject constructor(
         }
     }
 
-    /**
-     * Único lugar donde se combinan las reglas de dominio de [HojaRuta]
-     * (`puedeCerrarse`, `estacionesPendientes`) con el estado de presentación
-     * (`isCerrando`).
-     *
-     * Toda transición que toque `ruta` o `isCerrando` termina llamando aquí, así
-     * que las banderas derivadas no pueden quedar desfasadas del dato crudo.
-     * Antes esto vivía como propiedades `get()` dentro del UiState y se
-     * reevaluaba en cada recomposición.
-     */
     private fun DetalleRutaUiState.conDerivadosResueltos(): DetalleRutaUiState {
         val pendientes = ruta?.estacionesPendientes ?: 0
         val estaCerrada = ruta?.estado == EstadoRuta.CERRADA

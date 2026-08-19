@@ -45,7 +45,6 @@ class HistorialRutasViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            // El total ya no se suma en la UI: lo agrega SQLite y viaja como Flow.
             combine(
                 getHistorialRutasUseCase(recolectorId),
                 getTotalIngresosUseCase(recolectorId)
@@ -65,7 +64,6 @@ class HistorialRutasViewModel @Inject constructor(
                             isLoading = false,
                             sinSesion = false,
                             rutas = rutas,
-                            // Derivados aquí, no dentro del UiState.
                             cantidadRutas = rutas.size,
                             hayRutas = rutas.isNotEmpty(),
                             totalRecaudadoHistorico = total,

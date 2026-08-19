@@ -54,8 +54,8 @@ dependencies {
     implementation(libs.androidx.compose.material.icons.extended)
 
     // Navigation & Serialization
-    implementation("androidx.navigation:navigation-compose:2.8.0")
-        implementation(libs.kotlinx.serialization.json)
+    implementation(libs.navigation.compose)
+    implementation(libs.kotlinx.serialization.json)
 
     // Room Database
     implementation(libs.androidx.room.runtime)
@@ -63,9 +63,9 @@ dependencies {
     ksp(libs.androidx.room.compiler)
 
     // Hilt Dependency Injection
-    implementation("com.google.dagger:hilt-android:2.60.1")
-    implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
-    ksp("com.google.dagger:hilt-android-compiler:2.60.1")
+    implementation(libs.hilt.android)
+    ksp(libs.hilt.android.compiler)
+    implementation(libs.hilt.navigation.compose)
 
     // Firebase
     implementation(platform(libs.firebase.bom))
@@ -92,4 +92,6 @@ dependencies {
     testImplementation(libs.turbine)
     testImplementation(libs.mockk)
     testImplementation(libs.kotlinx.coroutines.test)
+
+    implementation(libs.coil.compose)
 }
