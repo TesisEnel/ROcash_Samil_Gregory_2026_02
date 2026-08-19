@@ -133,6 +133,44 @@ class EstacionFormViewModelTest {
     }
 
     @Test
+    fun `editar una banca de dos agentes conserva el segundo`() = runTest {
+        coEvery { getEstacionUseCase(5) } returns EstacionVentas(
+            estacionId = 5,
+            nombre = "Banca Norte",
+            direccion = "Av. Principal 12",
+            agenteId = 1,
+            agenteId2 = 4
+        )
+
+        val viewModel = crearViewModel(estacionId = 5)
+        advanceUntilIdle()
+
+        viewModel.onEvent(EstacionFormUiEvent.NombreChanged("Banca Norte II"))
+        viewModel.onEvent(EstacionFormUiEvent.Save)
+        advanceUntilIdle()
+
+        // El formulario no edita agenteId2, pero antes lo omitía al construir
+        // el EstacionVentas y lo borraba. El daño no era solo perder el dato:
+        // `deudaSeReparte` en el cuadre depende de él, así que tras editar la
+        // banca la deuda dejaba de repartirse entre los dos agentes.
+        coVerify(exactly = 1) { upsertEstacionUseCase(match { it.agenteId2 == 4 }) }
+    }
+
+    @Test
+    fun `una banca de un solo agente sigue sin segundo`() = runTest {
+        val viewModel = crearViewModel()
+        advanceUntilIdle()
+
+        viewModel.onEvent(EstacionFormUiEvent.NombreChanged("Banca Sur"))
+        viewModel.onEvent(EstacionFormUiEvent.DireccionChanged("Calle 8"))
+        viewModel.onEvent(EstacionFormUiEvent.AgenteSeleccionado(1, "Ramón Peralta"))
+        viewModel.onEvent(EstacionFormUiEvent.Save)
+        advanceUntilIdle()
+
+        coVerify(exactly = 1) { upsertEstacionUseCase(match { it.agenteId2 == null }) }
+    }
+
+    @Test
     fun `guardar sin agente marca el error y no llama al caso de uso`() = runTest {
         val viewModel = crearViewModel()
         advanceUntilIdle()

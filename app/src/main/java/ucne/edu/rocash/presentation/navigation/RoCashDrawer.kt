@@ -19,6 +19,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
+/**
+ * Envuelve el contenido en el menú lateral, pero SOLO en las pantallas que
+ * tienen menú.
+ *
+ * Antes el `ModalNavigationDrawer` se componía siempre y el menú se ocultaba
+ * con un `if (gesturesEnabled)` dentro de `drawerContent`. Eso dejaba el drawer
+ * con contenido vacío en Login y Registro, y ahí es donde se colgaba la app:
+ * `ModalNavigationDrawer` mide el ancho de su hoja para calcular la fracción de
+ * apertura del velo. Con una hoja de ancho cero esa fracción es una división
+ * entre cero, el velo queda con alpha NaN y se pinta sobre toda la pantalla
+ * interceptando cada toque. El login se veía normal pero no respondía a nada.
+ *
+ * La solución es no montar el drawer cuando no hace falta.
+ */
 @Composable
 fun RoCashDrawer(
     drawerState: DrawerState,
@@ -29,44 +43,47 @@ fun RoCashDrawer(
     onNavigateToEstaciones: () -> Unit,
     content: @Composable () -> Unit
 ) {
+    if (!gesturesEnabled) {
+        content()
+        return
+    }
+
     ModalNavigationDrawer(
         drawerState = drawerState,
-        gesturesEnabled = gesturesEnabled,
+        gesturesEnabled = true,
         drawerContent = {
-            if (gesturesEnabled) {
-                ModalDrawerSheet {
-                    Text(
-                        text = "Menú RoCash",
-                        modifier = Modifier.padding(16.dp),
-                        style = MaterialTheme.typography.headlineMedium,
-                        fontWeight = FontWeight.Bold
-                    )
-                    HorizontalDivider()
+            ModalDrawerSheet {
+                Text(
+                    text = "Menú RoCash",
+                    modifier = Modifier.padding(16.dp),
+                    style = MaterialTheme.typography.headlineMedium,
+                    fontWeight = FontWeight.Bold
+                )
+                HorizontalDivider()
 
-                    NavigationDrawerItem(
-                        icon = { Icon(Icons.Default.Home, contentDescription = null) },
-                        label = { Text("Dashboard (Inicio)") },
-                        selected = currentRoute.contains("HomeRecolectorRoute"),
-                        onClick = onNavigateToHome,
-                        modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
-                    )
+                NavigationDrawerItem(
+                    icon = { Icon(Icons.Default.Home, contentDescription = null) },
+                    label = { Text("Dashboard (Inicio)") },
+                    selected = currentRoute.contains("HomeRecolectorRoute"),
+                    onClick = onNavigateToHome,
+                    modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
+                )
 
-                    NavigationDrawerItem(
-                        icon = { Icon(Icons.Default.SupportAgent, contentDescription = null) },
-                        label = { Text("Agentes de Ventas") },
-                        selected = currentRoute.contains("AgenteListRoute"),
-                        onClick = onNavigateToAgentes,
-                        modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
-                    )
+                NavigationDrawerItem(
+                    icon = { Icon(Icons.Default.SupportAgent, contentDescription = null) },
+                    label = { Text("Agentes de Ventas") },
+                    selected = currentRoute.contains("AgenteListRoute"),
+                    onClick = onNavigateToAgentes,
+                    modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
+                )
 
-                    NavigationDrawerItem(
-                        icon = { Icon(Icons.Default.Store, contentDescription = null) },
-                        label = { Text("Estaciones (Bancas)") },
-                        selected = currentRoute.contains("EstacionListRoute"),
-                        onClick = onNavigateToEstaciones,
-                        modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
-                    )
-                }
+                NavigationDrawerItem(
+                    icon = { Icon(Icons.Default.Store, contentDescription = null) },
+                    label = { Text("Estaciones (Bancas)") },
+                    selected = currentRoute.contains("EstacionListRoute"),
+                    onClick = onNavigateToEstaciones,
+                    modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
+                )
             }
         },
         content = content
