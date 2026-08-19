@@ -33,7 +33,9 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
@@ -43,6 +45,10 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ucne.edu.rocash.domain.estacion.model.EstacionVentas
+import ucne.edu.rocash.presentation.common.Confirmacion
+import ucne.edu.rocash.presentation.common.ConfirmacionOverlay
+import ucne.edu.rocash.presentation.common.PesoConfirmacion
+import ucne.edu.rocash.ui.theme.coloresAccion
 
 @Composable
 fun CrearRutaScreen(
@@ -51,16 +57,29 @@ fun CrearRutaScreen(
     onNavigateBack: () -> Unit
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    var confirmacion by remember { mutableStateOf<Confirmacion?>(null) }
 
     LaunchedEffect(state.rutaCreadaId) {
-        state.rutaCreadaId?.let(onRutaCreada)
+        if (state.rutaCreadaId != null && confirmacion == null) {
+            confirmacion = Confirmacion(
+                titulo = "Ruta armada",
+                detalle = "${state.cantidadSeleccionada} bancas por visitar",
+                peso = PesoConfirmacion.Ligera
+            )
+        }
     }
 
-    CrearRutaBody(
-        state = state,
-        onEvent = viewModel::onEvent,
-        onNavigateBack = onNavigateBack
-    )
+    Box(modifier = Modifier.fillMaxSize()) {
+        CrearRutaBody(
+            state = state,
+            onEvent = viewModel::onEvent,
+            onNavigateBack = onNavigateBack
+        )
+
+        ConfirmacionOverlay(confirmacion = confirmacion) {
+            state.rutaCreadaId?.let(onRutaCreada)
+        }
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -93,7 +112,7 @@ fun CrearRutaBody(
                     }
                 },
                 actions = {
-                    if (state.cantidadSeleccionada > 0) {
+                    if (state.haySeleccion) {
                         TextButton(
                             onClick = { onEvent(CrearRutaUiEvent.LimpiarSeleccion) },
                             modifier = Modifier.testTag("btn_limpiar_seleccion")
@@ -110,6 +129,7 @@ fun CrearRutaBody(
                 contentPadding = PaddingValues(16.dp)
             ) {
                 Button(
+                    colors = coloresAccion(),
                     onClick = { onEvent(CrearRutaUiEvent.GenerarHojaRuta) },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -141,7 +161,7 @@ fun CrearRutaBody(
                         .testTag("loading")
                 )
 
-                state.estacionesDisponibles.isEmpty() -> Text(
+                !state.hayEstaciones -> Text(
                     text = "No hay estaciones registradas en el sistema.",
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -159,15 +179,15 @@ fun CrearRutaBody(
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     items(
-                        items = state.estacionesDisponibles,
-                        key = { it.estacionId }
-                    ) { estacion ->
+                        items = state.estaciones,
+                        key = { it.estacion.estacionId }
+                    ) { fila ->
                         EstacionSeleccionableItem(
-                            estacion = estacion,
-                            seleccionada = state.estaSeleccionada(estacion.estacionId),
-                            comprometida = state.estaComprometida(estacion.estacionId),
+                            fila = fila,
                             onToggle = {
-                                onEvent(CrearRutaUiEvent.ToggleEstacion(estacion.estacionId))
+                                onEvent(
+                                    CrearRutaUiEvent.ToggleEstacion(fila.estacion.estacionId)
+                                )
                             }
                         )
                     }
@@ -180,21 +200,21 @@ fun CrearRutaBody(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun EstacionSeleccionableItem(
-    estacion: EstacionVentas,
-    seleccionada: Boolean,
-    comprometida: Boolean,
+    fila: EstacionSeleccionableUi,
     onToggle: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val estacion = fila.estacion
+
     val contenedor = when {
-        comprometida -> MaterialTheme.colorScheme.surfaceVariant
-        seleccionada -> MaterialTheme.colorScheme.secondaryContainer
+        fila.comprometida -> MaterialTheme.colorScheme.surfaceVariant
+        fila.seleccionada -> MaterialTheme.colorScheme.secondaryContainer
         else -> MaterialTheme.colorScheme.surface
     }
 
     ElevatedCard(
         onClick = onToggle,
-        enabled = !comprometida,
+        enabled = !fila.comprometida,
         colors = CardDefaults.elevatedCardColors(containerColor = contenedor),
         modifier = modifier
             .fillMaxWidth()
@@ -221,7 +241,7 @@ private fun EstacionSeleccionableItem(
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis
                 )
-                if (comprometida) {
+                if (fila.comprometida) {
                     Text(
                         text = "Ya asignada a una ruta abierta",
                         style = MaterialTheme.typography.labelSmall,
@@ -232,9 +252,9 @@ private fun EstacionSeleccionableItem(
             }
 
             Checkbox(
-                checked = seleccionada,
+                checked = fila.seleccionada,
                 onCheckedChange = { onToggle() },
-                enabled = !comprometida,
+                enabled = !fila.comprometida,
                 modifier = Modifier.testTag("checkbox_${estacion.estacionId}")
             )
         }
@@ -248,13 +268,33 @@ private fun CrearRutaBodyPreview() {
         CrearRutaBody(
             state = CrearRutaUiState(
                 isLoading = false,
-                estacionesDisponibles = listOf(
-                    EstacionVentas(1, "Banca Norte", "Av. Principal 12", agenteId = 1),
-                    EstacionVentas(2, "Banca Sur", "Calle 8 esq. Duarte", agenteId = 2),
-                    EstacionVentas(3, "Banca Central", "Parque Duarte", agenteId = 1)
+                estaciones = listOf(
+                    EstacionSeleccionableUi(
+                        estacion = EstacionVentas(
+                            1, "Banca Norte", "Av. Principal 12", agenteId = 1
+                        ),
+                        seleccionada = true,
+                        comprometida = false
+                    ),
+                    EstacionSeleccionableUi(
+                        estacion = EstacionVentas(
+                            2, "Banca Sur", "Calle 8 esq. Duarte", agenteId = 2
+                        ),
+                        seleccionada = false,
+                        comprometida = false
+                    ),
+                    EstacionSeleccionableUi(
+                        estacion = EstacionVentas(
+                            3, "Banca Central", "Parque Duarte", agenteId = 1
+                        ),
+                        seleccionada = false,
+                        comprometida = true
+                    )
                 ),
-                estacionesSeleccionadas = setOf(1),
-                estacionesComprometidas = setOf(3)
+                hayEstaciones = true,
+                cantidadSeleccionada = 1,
+                haySeleccion = true,
+                puedeGuardar = true
             ),
             onEvent = {},
             onNavigateBack = {}

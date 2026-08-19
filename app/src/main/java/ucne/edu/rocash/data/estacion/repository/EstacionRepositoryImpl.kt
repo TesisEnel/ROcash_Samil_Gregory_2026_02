@@ -20,8 +20,8 @@ class EstacionRepositoryImpl @Inject constructor(
         localDataSource.getById(id)?.toDomain()
 
     override suspend fun upsert(estacion: EstacionVentas): Int {
-        localDataSource.upsert(estacion.toEntity())
-        return estacion.estacionId
+        val rowId = localDataSource.upsert(estacion.toEntity())
+        return if (rowId > 0) rowId.toInt() else estacion.estacionId
     }
 
     override suspend fun delete(id: Int) = localDataSource.deleteById(id)

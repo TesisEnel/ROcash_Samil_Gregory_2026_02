@@ -1,5 +1,8 @@
 package ucne.edu.rocash.presentation.estacion.form
 
+import androidx.compose.runtime.remember
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarHost
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -11,6 +14,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import ucne.edu.rocash.ui.theme.coloresAccion
 
 @Composable
 fun EstacionFormScreen(
@@ -41,9 +45,19 @@ fun EstacionFormBody(
     onEvent: (EstacionFormUiEvent) -> Unit,
     onNavigateBack: () -> Unit
 ) {
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(state.errorMessage) {
+        state.errorMessage?.let { mensaje ->
+            snackbarHostState.showSnackbar(mensaje)
+            onEvent(EstacionFormUiEvent.ErrorMostrado)
+        }
+    }
+
     var expanded by remember { mutableStateOf(false) }
 
     Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             TopAppBar(
                 title = { Text(if (state.isNew) "Nueva Estación" else "Editar Estación") },
@@ -123,6 +137,7 @@ fun EstacionFormBody(
             Spacer(modifier = Modifier.weight(1f))
 
             Button(
+                colors = coloresAccion(),
                 onClick = { onEvent(EstacionFormUiEvent.Save) },
                 modifier = Modifier.fillMaxWidth().height(50.dp).testTag("btn_save_estacion"),
                 enabled = !state.isSaving

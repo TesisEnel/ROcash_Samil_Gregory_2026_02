@@ -1,5 +1,8 @@
 package ucne.edu.rocash.presentation.agenteVentas.list
 
+import ucne.edu.rocash.presentation.common.aMoneda
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.AlertDialog
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -56,19 +59,29 @@ fun AgenteListScreen(
     viewModel: AgenteListViewModel = hiltViewModel(),
     onAbrirMenu: () -> Unit,
     onNavigateToCrear: () -> Unit,
-    onNavigateToEditar: (Int) -> Unit
+    onNavigateToEditar: (Int) -> Unit,
+    onNavigateToDeuda: (Int) -> Unit
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     LaunchedEffect(state.navigateToCreate) {
         if (state.navigateToCreate) {
             onNavigateToCrear()
+            viewModel.onEvent(AgenteListUiEvent.NavegacionConsumida)
         }
     }
 
     LaunchedEffect(state.navigateToEditId) {
         state.navigateToEditId?.let { id ->
             onNavigateToEditar(id)
+            viewModel.onEvent(AgenteListUiEvent.NavegacionConsumida)
+        }
+    }
+
+    LaunchedEffect(state.navigateToDeudaId) {
+        state.navigateToDeudaId?.let { id ->
+            onNavigateToDeuda(id)
+            viewModel.onEvent(AgenteListUiEvent.NavegacionConsumida)
         }
     }
 
@@ -86,6 +99,38 @@ fun AgenteListBody(
     onEvent: (AgenteListUiEvent) -> Unit,
     onAbrirMenu: () -> Unit
 ) {
+    state.agenteSeleccionado?.let { agente ->
+        AlertDialog(
+            onDismissRequest = { onEvent(AgenteListUiEvent.CerrarAcciones) },
+            title = { Text(agente.nombre) },
+            text = {
+                Text(
+                    if (agente.deudaAcumulada > 0) {
+                        "Debe ${agente.deudaAcumulada.aMoneda()}. ¿Qué quieres hacer?"
+                    } else {
+                        "No tiene deuda pendiente. ¿Qué quieres hacer?"
+                    }
+                )
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = { onEvent(AgenteListUiEvent.GestionarDeuda(agente.agenteId)) },
+                    modifier = Modifier.testTag("btn_gestionar_deuda")
+                ) {
+                    Text("Gestionar deuda")
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = { onEvent(AgenteListUiEvent.Edit(agente.agenteId)) },
+                    modifier = Modifier.testTag("btn_editar_agente")
+                ) {
+                    Text("Editar datos")
+                }
+            }
+        )
+    }
+
     val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(state.message) {
@@ -110,7 +155,7 @@ fun AgenteListBody(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = { onEvent(AgenteListUiEvent.CreateNew) },
-                containerColor = MaterialTheme.colorScheme.primary,
+                containerColor = MaterialTheme.colorScheme.tertiary,
                 modifier = Modifier.testTag("fab_add")
             ) {
                 Icon(Icons.Default.Add, contentDescription = "Añadir Agente")
@@ -176,7 +221,7 @@ fun AgenteItem(
         modifier = Modifier
             .fillMaxWidth()
             .testTag("agente_item_${agente.agenteId}")
-            .clickable { onEvent(AgenteListUiEvent.Edit(agente.agenteId)) }
+            .clickable { onEvent(AgenteListUiEvent.AgenteTocado(agente)) }
     ) {
         Row(
             modifier = Modifier
@@ -195,7 +240,7 @@ fun AgenteItem(
                 Text(text = agente.nombre, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
                 Text(text = agente.telefono, style = MaterialTheme.typography.bodyMedium)
                 Text(
-                    text = "Deuda: $${agente.deudaAcumulada}",
+                    text = "Deuda: ${agente.deudaAcumulada.aMoneda()}",
                     style = MaterialTheme.typography.labelMedium,
                     color = if (agente.deudaAcumulada > 0) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
                 )

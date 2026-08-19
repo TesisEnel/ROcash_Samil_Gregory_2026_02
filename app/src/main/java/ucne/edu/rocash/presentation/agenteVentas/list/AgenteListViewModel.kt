@@ -44,7 +44,27 @@ class AgenteListViewModel @Inject constructor(
             is AgenteListUiEvent.ShowMessage -> _state.update { it.copy(message = event.message) }
             AgenteListUiEvent.ClearMessage -> _state.update { it.copy(message = null) }
             AgenteListUiEvent.CreateNew -> _state.update { it.copy(navigateToCreate = true) }
-            is AgenteListUiEvent.Edit -> _state.update { it.copy(navigateToEditId = event.id) }
+            is AgenteListUiEvent.Edit -> _state.update {
+                it.copy(navigateToEditId = event.id, agenteSeleccionado = null)
+            }
+
+            is AgenteListUiEvent.AgenteTocado ->
+                _state.update { it.copy(agenteSeleccionado = event.agente) }
+
+            AgenteListUiEvent.CerrarAcciones ->
+                _state.update { it.copy(agenteSeleccionado = null) }
+
+            is AgenteListUiEvent.GestionarDeuda -> _state.update {
+                it.copy(navigateToDeudaId = event.id, agenteSeleccionado = null)
+            }
+
+            AgenteListUiEvent.NavegacionConsumida -> _state.update {
+                it.copy(
+                    navigateToCreate = false,
+                    navigateToEditId = null,
+                    navigateToDeudaId = null
+                )
+            }
 
             is AgenteListUiEvent.SearchQueryChanged -> {
                 _state.update { it.copy(searchQuery = event.query) }

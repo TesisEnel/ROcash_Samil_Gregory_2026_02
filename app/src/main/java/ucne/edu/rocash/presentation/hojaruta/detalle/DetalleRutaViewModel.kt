@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import ucne.edu.rocash.domain.hojaRuta.model.EstadoRuta
 import ucne.edu.rocash.domain.hojaRuta.usecase.CerrarHojaRutaUseCase
 import ucne.edu.rocash.domain.hojaRuta.usecase.ObserveHojaRutaUseCase
 import ucne.edu.rocash.domain.hojaRuta.usecase.OmitirEstacionUseCase
@@ -33,13 +34,19 @@ class DetalleRutaViewModel @Inject constructor(
     fun onEvent(event: DetalleRutaUiEvent) {
         when (event) {
             is DetalleRutaUiEvent.Load -> cargar(event.rutaId)
+
             DetalleRutaUiEvent.PedirConfirmacionCierre ->
                 _state.update { it.copy(mostrarDialogoCierre = true) }
+
             DetalleRutaUiEvent.CancelarCierre ->
                 _state.update { it.copy(mostrarDialogoCierre = false) }
+
             DetalleRutaUiEvent.ConfirmarCierre -> cerrarRuta()
+
             is DetalleRutaUiEvent.OmitirEstacion -> omitirEstacion(event.estacionId)
-            DetalleRutaUiEvent.ErrorMostrado -> _state.update { it.copy(errorMessage = null) }
+
+            DetalleRutaUiEvent.ErrorMostrado ->
+                _state.update { it.copy(errorMessage = null) }
         }
     }
 
@@ -56,7 +63,11 @@ class DetalleRutaViewModel @Inject constructor(
             ) { ruta, resumen -> ruta to resumen }
                 .catch { error ->
                     _state.update {
-                        it.copy(isLoading = false, errorMessage = error.localizedMessage)
+                        it.copy(
+                            isLoading = false,
+                            errorMessage = error.localizedMessage
+                                ?: "No se pudo cargar la ruta"
+                        )
                     }
                 }
                 .collect { (ruta, resumen) ->
@@ -66,7 +77,7 @@ class DetalleRutaViewModel @Inject constructor(
                             ruta = ruta,
                             resumen = resumen,
                             noEncontrada = ruta == null
-                        )
+                        ).conDerivadosResueltos()
                     }
                 }
         }
@@ -74,21 +85,26 @@ class DetalleRutaViewModel @Inject constructor(
 
     private fun cerrarRuta() {
         val rutaId = _state.value.rutaId
-        if (rutaId == 0) return
+        if (rutaId == 0 || _state.value.isCerrando) return
 
-        _state.update { it.copy(isCerrando = true, mostrarDialogoCierre = false) }
+        _state.update {
+            it.copy(isCerrando = true, mostrarDialogoCierre = false).conDerivadosResueltos()
+        }
 
         viewModelScope.launch {
             cerrarHojaRutaUseCase(rutaId)
                 .onSuccess {
-                    _state.update { it.copy(isCerrando = false, rutaCerrada = true) }
+                    _state.update {
+                        it.copy(isCerrando = false, cierreCompletado = true)
+                            .conDerivadosResueltos()
+                    }
                 }
                 .onFailure { error ->
                     _state.update {
                         it.copy(
                             isCerrando = false,
                             errorMessage = error.message ?: "No se pudo cerrar la ruta"
-                        )
+                        ).conDerivadosResueltos()
                     }
                 }
         }
@@ -100,9 +116,34 @@ class DetalleRutaViewModel @Inject constructor(
         viewModelScope.launch {
             omitirEstacionUseCase(rutaId, estacionId).onFailure { error ->
                 _state.update {
-                    it.copy(errorMessage = error.message ?: "No se pudo omitir la estación")
+                    it.copy(
+                        errorMessage = error.message ?: "No se pudo omitir la estación"
+                    )
                 }
             }
         }
+    }
+
+    /**
+     * Único lugar donde se combinan las reglas de dominio de [HojaRuta]
+     * (`puedeCerrarse`, `estacionesPendientes`) con el estado de presentación
+     * (`isCerrando`).
+     *
+     * Toda transición que toque `ruta` o `isCerrando` termina llamando aquí, así
+     * que las banderas derivadas no pueden quedar desfasadas del dato crudo.
+     * Antes esto vivía como propiedades `get()` dentro del UiState y se
+     * reevaluaba en cada recomposición.
+     */
+    private fun DetalleRutaUiState.conDerivadosResueltos(): DetalleRutaUiState {
+        val pendientes = ruta?.estacionesPendientes ?: 0
+        val estaCerrada = ruta?.estado == EstadoRuta.CERRADA
+
+        return copy(
+            estacionesPendientes = pendientes,
+            hayEstacionesPendientes = pendientes > 0,
+            rutaEstaCerrada = estaCerrada,
+            mostrarAccionCierre = ruta != null && !estaCerrada,
+            puedeCerrarse = ruta?.puedeCerrarse == true && !isCerrando
+        )
     }
 }

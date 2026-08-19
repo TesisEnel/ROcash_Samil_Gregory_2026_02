@@ -14,6 +14,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import ucne.edu.rocash.ui.theme.coloresAccion
 
 @Composable
 fun SignUpScreen(
@@ -78,6 +79,7 @@ fun SignUpBody(
             Spacer(modifier = Modifier.height(32.dp))
 
             Button(
+                colors = coloresAccion(),
                 onClick = { onEvent(SignUpUiEvent.SignUp) },
                 modifier = Modifier.fillMaxWidth().height(50.dp),
                 enabled = !state.isLoading

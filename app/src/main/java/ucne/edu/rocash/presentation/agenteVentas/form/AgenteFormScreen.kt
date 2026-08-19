@@ -1,5 +1,8 @@
 package ucne.edu.rocash.presentation.agenteVentas.form
 
+import androidx.compose.runtime.remember
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarHost
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -31,6 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import ucne.edu.rocash.ui.theme.coloresAccion
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -52,7 +56,17 @@ fun AgenteFormScreen(
         }
     }
 
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(state.errorMessage) {
+        state.errorMessage?.let { mensaje ->
+            snackbarHostState.showSnackbar(mensaje)
+            viewModel.onEvent(AgenteFormUiEvent.ErrorMostrado)
+        }
+    }
+
     Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             TopAppBar(
                 title = { Text(if (state.isNew) "Nuevo Agente" else "Editar Agente") },
@@ -96,6 +110,7 @@ fun AgenteFormScreen(
             Spacer(modifier = Modifier.weight(1f))
 
             Button(
+                colors = coloresAccion(),
                 onClick = { viewModel.onEvent(AgenteFormUiEvent.Save) },
                 modifier = Modifier
                     .fillMaxWidth()

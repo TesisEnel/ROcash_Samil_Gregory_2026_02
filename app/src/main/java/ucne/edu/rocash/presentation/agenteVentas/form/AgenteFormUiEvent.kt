@@ -6,4 +6,7 @@ sealed interface AgenteFormUiEvent {
     data class TelefonoChanged(val value: String) : AgenteFormUiEvent
     data object Save : AgenteFormUiEvent
     data object Delete : AgenteFormUiEvent
+
+    /** La pantalla ya mostró el snackbar; apaga la bandera. */
+    data object ErrorMostrado : AgenteFormUiEvent
 }

@@ -7,15 +7,18 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import ucne.edu.rocash.domain.auth.session.SesionRecolector
 import ucne.edu.rocash.domain.hojaRuta.usecase.GetHistorialRutasUseCase
+import ucne.edu.rocash.domain.hojaRuta.usecase.GetTotalIngresosUseCase
 import javax.inject.Inject
 
 @HiltViewModel
 class HistorialRutasViewModel @Inject constructor(
     private val getHistorialRutasUseCase: GetHistorialRutasUseCase,
+    private val getTotalIngresosUseCase: GetTotalIngresosUseCase,
     private val sesion: SesionRecolector
 ) : ViewModel() {
 
@@ -42,14 +45,33 @@ class HistorialRutasViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            getHistorialRutasUseCase(recolectorId)
+            // El total ya no se suma en la UI: lo agrega SQLite y viaja como Flow.
+            combine(
+                getHistorialRutasUseCase(recolectorId),
+                getTotalIngresosUseCase(recolectorId)
+            ) { rutas, total -> rutas to total }
                 .catch { error ->
                     _state.update {
-                        it.copy(isLoading = false, errorMessage = error.localizedMessage)
+                        it.copy(
+                            isLoading = false,
+                            errorMessage = error.localizedMessage
+                                ?: "No se pudo cargar el historial"
+                        )
                     }
                 }
-                .collect { rutas ->
-                    _state.update { it.copy(isLoading = false, rutas = rutas) }
+                .collect { (rutas, total) ->
+                    _state.update {
+                        it.copy(
+                            isLoading = false,
+                            sinSesion = false,
+                            rutas = rutas,
+                            // Derivados aquí, no dentro del UiState.
+                            cantidadRutas = rutas.size,
+                            hayRutas = rutas.isNotEmpty(),
+                            totalRecaudadoHistorico = total,
+                            errorMessage = null
+                        )
+                    }
                 }
         }
     }

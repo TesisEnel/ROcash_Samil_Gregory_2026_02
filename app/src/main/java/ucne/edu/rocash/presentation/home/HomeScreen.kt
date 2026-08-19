@@ -58,6 +58,7 @@ import ucne.edu.rocash.domain.hojaRuta.model.HojaRuta
 import ucne.edu.rocash.presentation.common.EstadoRutaChip
 import ucne.edu.rocash.presentation.common.aFechaLegible
 import ucne.edu.rocash.presentation.common.aMoneda
+import ucne.edu.rocash.ui.theme.coloresAccion
 
 @Composable
 fun HomeScreen(
@@ -66,7 +67,6 @@ fun HomeScreen(
     onNavigateToCrearRuta: () -> Unit,
     onNavigateToDetalleRuta: (Int) -> Unit,
     onNavigateToHistorial: () -> Unit,
-    onNavigateToRecolectores: () -> Unit,
     onNavigateToAgentes: () -> Unit,
     onNavigateToEstaciones: () -> Unit,
     onNavigateToProfile: () -> Unit
@@ -135,9 +135,11 @@ fun HomeBody(
             )
         },
         floatingActionButton = {
-            if (!state.isLoading && !state.sinSesion) {
+            if (state.mostrarAccionNuevaRuta) {
                 FloatingActionButton(
                     onClick = onNavigateToCrearRuta,
+                    containerColor = MaterialTheme.colorScheme.tertiary,
+                    contentColor = MaterialTheme.colorScheme.onTertiary,
                     modifier = Modifier.testTag("fab_nueva_ruta")
                 ) {
                     Icon(Icons.Default.Add, contentDescription = "Nueva ruta")
@@ -260,8 +262,6 @@ private fun RutaAbiertaCard(
             }
 
             if (ruta.cantidadEstaciones > 0) {
-                val progreso = ruta.estacionesCuadradas.toFloat() / ruta.cantidadEstaciones
-
                 Text(
                     text = "${ruta.estacionesCuadradas} de ${ruta.cantidadEstaciones} bancas cuadradas",
                     style = MaterialTheme.typography.bodyMedium,
@@ -269,7 +269,7 @@ private fun RutaAbiertaCard(
                 )
 
                 LinearProgressIndicator(
-                    progress = { progreso },
+                    progress = { ruta.porcentajeAvance },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 6.dp)
@@ -309,6 +309,7 @@ private fun RutasVaciasCard(
                 modifier = Modifier.padding(top = 16.dp)
             )
             Button(
+                colors = coloresAccion(),
                 onClick = onNavigateToCrearRuta,
                 modifier = Modifier
                     .padding(top = 8.dp)
@@ -369,8 +370,6 @@ private fun HomeBodyPreview() {
         HomeBody(
             state = HomeUiState(
                 isLoading = false,
-                totalIngresos = 184_500.0,
-                rutasCompletadas = 12,
                 rutasAbiertas = listOf(
                     HojaRuta(
                         id = 7,
@@ -384,7 +383,11 @@ private fun HomeBodyPreview() {
                         estado = EstadoRuta.PENDIENTE,
                         estaciones = listOf(banca(3, "Banca Central"))
                     )
-                )
+                ),
+                hayRutasAbiertas = true,
+                totalIngresos = 184_500.0,
+                rutasCompletadas = 12,
+                mostrarAccionNuevaRuta = true
             ),
             onEvent = {},
             onAbrirMenu = {},
@@ -401,7 +404,14 @@ private fun HomeBodyPreview() {
 private fun HomeBodyVacioPreview() {
     MaterialTheme {
         HomeBody(
-            state = HomeUiState(isLoading = false),
+            state = HomeUiState(
+                isLoading = false,
+                rutasAbiertas = emptyList(),
+                hayRutasAbiertas = false,
+                totalIngresos = 0.0,
+                rutasCompletadas = 0,
+                mostrarAccionNuevaRuta = true
+            ),
             onEvent = {},
             onAbrirMenu = {},
             onNavigateToCrearRuta = {},

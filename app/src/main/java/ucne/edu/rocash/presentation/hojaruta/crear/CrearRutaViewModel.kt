@@ -6,6 +6,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -47,58 +48,110 @@ class CrearRutaViewModel @Inject constructor(
                 observeEstacionesComprometidasUseCase()
             ) { estaciones, comprometidas ->
                 estaciones to comprometidas
-            }.collect { (estaciones, comprometidas) ->
-                _state.update { current ->
-                    current.copy(
-                        estacionesDisponibles = estaciones,
-                        estacionesComprometidas = comprometidas,
-                        estacionesSeleccionadas = current.estacionesSeleccionadas - comprometidas,
-                        isLoading = false
-                    )
-                }
             }
+                .catch { error ->
+                    _state.update {
+                        it.copy(
+                            isLoading = false,
+                            errorMessage = error.localizedMessage
+                                ?: "No se pudieron cargar las bancas"
+                        ).conDerivadosResueltos()
+                    }
+                }
+                .collect { (estaciones, comprometidas) ->
+                    _state.update { actual ->
+                        actual.copy(
+                            isLoading = false,
+                            estacionesDisponibles = estaciones,
+                            estacionesComprometidas = comprometidas,
+                            // Una estación que pasó a estar comprometida deja de
+                            // ser seleccionable.
+                            estacionesSeleccionadas =
+                                actual.estacionesSeleccionadas - comprometidas,
+                            errorMessage = null
+                        ).conDerivadosResueltos()
+                    }
+                }
         }
     }
 
     private fun toggleEstacion(estacionId: Int) {
-        _state.update { current ->
-            if (current.estaComprometida(estacionId)) return@update current
+        _state.update { actual ->
+            if (estacionId in actual.estacionesComprometidas) return@update actual
 
-            val seleccionadas = current.estacionesSeleccionadas.toMutableSet()
-            if (!seleccionadas.add(estacionId)) seleccionadas.remove(estacionId)
+            val seleccionadas =
+                if (estacionId in actual.estacionesSeleccionadas) {
+                    actual.estacionesSeleccionadas - estacionId
+                } else {
+                    actual.estacionesSeleccionadas + estacionId
+                }
 
-            current.copy(estacionesSeleccionadas = seleccionadas, errorMessage = null)
+            actual.copy(
+                estacionesSeleccionadas = seleccionadas,
+                errorMessage = null
+            ).conDerivadosResueltos()
         }
     }
 
     private fun limpiarSeleccion() {
-        _state.update { it.copy(estacionesSeleccionadas = emptySet()) }
+        _state.update {
+            it.copy(estacionesSeleccionadas = emptySet()).conDerivadosResueltos()
+        }
     }
 
     private fun generarRuta() {
-        val current = _state.value
-        if (current.isSaving) return
+        val actual = _state.value
+        if (actual.isSaving) return
 
-        _state.update { it.copy(isSaving = true, errorMessage = null) }
+        _state.update {
+            it.copy(isSaving = true, errorMessage = null).conDerivadosResueltos()
+        }
 
         viewModelScope.launch {
-            val resultado = crearHojaRutaUseCase(
+            crearHojaRutaUseCase(
                 recolectorId = sesion.recolectorIdOrNull(),
-                estacionIds = current.estacionesSeleccionadas.toList()
+                estacionIds = actual.estacionesSeleccionadas.toList()
             )
-
-            resultado
                 .onSuccess { rutaId ->
-                    _state.update { it.copy(isSaving = false, rutaCreadaId = rutaId) }
+                    _state.update {
+                        it.copy(isSaving = false, rutaCreadaId = rutaId)
+                            .conDerivadosResueltos()
+                    }
                 }
                 .onFailure { error ->
                     _state.update {
                         it.copy(
                             isSaving = false,
-                            errorMessage = error.message ?: "No se pudo crear la hoja de ruta"
-                        )
+                            errorMessage = error.message
+                                ?: "No se pudo crear la hoja de ruta"
+                        ).conDerivadosResueltos()
                     }
                 }
         }
+    }
+
+    /**
+     * Único lugar donde se cruzan estaciones, comprometidas y seleccionadas.
+     *
+     * El cruce se hace una vez por transición en lugar de una vez por fila y por
+     * recomposición, que es lo que ocurría cuando la pantalla llamaba a
+     * `state.estaSeleccionada(...)` dentro del `items { }`.
+     */
+    private fun CrearRutaUiState.conDerivadosResueltos(): CrearRutaUiState {
+        val filas = estacionesDisponibles.map { estacion ->
+            EstacionSeleccionableUi(
+                estacion = estacion,
+                seleccionada = estacion.estacionId in estacionesSeleccionadas,
+                comprometida = estacion.estacionId in estacionesComprometidas
+            )
+        }
+
+        return copy(
+            estaciones = filas,
+            hayEstaciones = filas.isNotEmpty(),
+            cantidadSeleccionada = estacionesSeleccionadas.size,
+            haySeleccion = estacionesSeleccionadas.isNotEmpty(),
+            puedeGuardar = !isSaving && estacionesSeleccionadas.isNotEmpty()
+        )
     }
 }

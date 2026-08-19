@@ -112,7 +112,7 @@ fun HistorialRutasBody(
                         .testTag("sin_sesion")
                 )
 
-                state.rutas.isEmpty() -> Text(
+                !state.hayRutas -> Text(
                     text = "Todavía no has cerrado ninguna ruta.",
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -129,7 +129,7 @@ fun HistorialRutasBody(
                 ) {
                     item {
                         Text(
-                            text = "${state.rutas.size} rutas cerradas · " +
+                            text = "${state.cantidadRutas} rutas cerradas · " +
                                     state.totalRecaudadoHistorico.aMoneda(),
                             style = MaterialTheme.typography.labelLarge,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -240,6 +240,9 @@ private fun HistorialRutasBodyPreview() {
         HistorialRutasBody(
             state = HistorialRutasUiState(
                 isLoading = false,
+                totalRecaudadoHistorico = 88_400.0,
+                cantidadRutas = 2,
+                hayRutas = true,
                 rutas = listOf(
                     HojaRuta(
                         id = 5,

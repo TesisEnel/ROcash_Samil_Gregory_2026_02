@@ -42,7 +42,13 @@ class HomeViewModel @Inject constructor(
         val recolectorId = sesion.recolectorIdOrNull()
 
         if (recolectorId == null) {
-            _state.update { it.copy(isLoading = false, sinSesion = true) }
+            _state.update {
+                it.copy(
+                    isLoading = false,
+                    sinSesion = true,
+                    mostrarAccionNuevaRuta = false
+                )
+            }
             return
         }
 
@@ -52,19 +58,32 @@ class HomeViewModel @Inject constructor(
                 getTotalIngresosUseCase(recolectorId),
                 getTotalRutasCompletadasUseCase(recolectorId)
             ) { rutas, ingresos, completadas ->
-                HomeUiState(
-                    isLoading = false,
-                    rutasAbiertas = rutas,
-                    totalIngresos = ingresos,
-                    rutasCompletadas = completadas
-                )
+                Triple(rutas, ingresos, completadas)
             }
                 .catch { error ->
                     _state.update {
-                        it.copy(isLoading = false, errorMessage = error.localizedMessage)
+                        it.copy(
+                            isLoading = false,
+                            errorMessage = error.localizedMessage
+                                ?: "No se pudieron cargar los datos"
+                        )
                     }
                 }
-                .collect { nuevoEstado -> _state.value = nuevoEstado }
+                .collect { (rutas, ingresos, completadas) ->
+                    _state.update {
+                        it.copy(
+                            isLoading = false,
+                            sinSesion = false,
+                            rutasAbiertas = rutas,
+                            // Derivado aquí, no dentro del UiState.
+                            hayRutasAbiertas = rutas.isNotEmpty(),
+                            totalIngresos = ingresos,
+                            rutasCompletadas = completadas,
+                            mostrarAccionNuevaRuta = true,
+                            errorMessage = null
+                        )
+                    }
+                }
         }
     }
 }
