@@ -5,15 +5,6 @@ data class AgenteFormUiState(
     val nombre: String = "",
     val telefono: String = "",
 
-    /**
-     * Se cargan del agente existente y se devuelven tal cual al guardar.
-     *
-     * Antes el formulario construía el AgenteVentas con `deudaAcumulada = 0.0`
-     * y `estado = true` fijos, así que editar el teléfono de un agente le
-     * borraba la deuda acumulada y reactivaba a uno dado de baja. El formulario
-     * no edita ninguno de los dos campos, así que lo único correcto es
-     * conservarlos.
-     */
     val deudaAcumulada: Double = 0.0,
     val estado: Boolean = true,
 

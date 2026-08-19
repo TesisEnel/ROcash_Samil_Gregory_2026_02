@@ -130,13 +130,6 @@ class CrearRutaViewModel @Inject constructor(
         }
     }
 
-    /**
-     * Único lugar donde se cruzan estaciones, comprometidas y seleccionadas.
-     *
-     * El cruce se hace una vez por transición en lugar de una vez por fila y por
-     * recomposición, que es lo que ocurría cuando la pantalla llamaba a
-     * `state.estaSeleccionada(...)` dentro del `items { }`.
-     */
     private fun CrearRutaUiState.conDerivadosResueltos(): CrearRutaUiState {
         val filas = estacionesDisponibles.map { estacion ->
             EstacionSeleccionableUi(

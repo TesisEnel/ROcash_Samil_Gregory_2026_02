@@ -8,11 +8,6 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface AgenteVentasDao {
-        /**
-         * Devuelve el rowId generado. Antes era `Unit` y el repositorio
-         * respondía con el id que venía en el objeto, que para un agente nuevo
-         * siempre es 0.
-         */
         @Upsert
         suspend fun upsert(entity: AgenteVentasEntity): Long
 

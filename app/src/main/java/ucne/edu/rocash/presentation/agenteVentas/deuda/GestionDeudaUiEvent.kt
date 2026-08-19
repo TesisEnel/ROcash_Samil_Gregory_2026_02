@@ -11,7 +11,6 @@ sealed interface GestionDeudaUiEvent {
     data object CancelarSaldar : GestionDeudaUiEvent
     data object Saldar : GestionDeudaUiEvent
 
-    /** La pantalla ya mostró el snackbar; apaga la bandera. */
     data object MensajeMostrado : GestionDeudaUiEvent
     data object ErrorMostrado : GestionDeudaUiEvent
 }

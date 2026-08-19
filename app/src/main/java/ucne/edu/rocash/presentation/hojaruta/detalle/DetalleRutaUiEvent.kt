@@ -7,6 +7,5 @@ sealed interface DetalleRutaUiEvent {
     data object ConfirmarCierre : DetalleRutaUiEvent
     data class OmitirEstacion(val estacionId: Int) : DetalleRutaUiEvent
 
-    /** La pantalla ya mostró el snackbar; apaga la bandera. */
     data object ErrorMostrado : DetalleRutaUiEvent
 }

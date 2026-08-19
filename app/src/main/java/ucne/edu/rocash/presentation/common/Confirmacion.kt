@@ -35,42 +35,21 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import ucne.edu.rocash.ui.theme.VerdeROcashClaro
 import ucne.edu.rocash.ui.theme.VerdeSello
-
-/**
- * Cuánto pesa una confirmación.
- *
- * Deliberadamente no son iguales. Si las tres celebraran lo mismo, ninguna
- * significaría nada. El cierre de ruta es el final de la jornada del cobrador
- * y es el único que se toma su tiempo.
- */
 enum class PesoConfirmacion(val duracionMs: Int) {
-    /** Guardaste algo. Un parpadeo y sigue. */
     Ligera(750),
 
-    /** Cuadraste una banca. Como sellar un recibo. */
     Sello(1_100),
 
-    /** Cerraste la hoja de ruta. Se cuenta el dinero. */
     Cierre(2_000)
 }
 
 data class Confirmacion(
     val titulo: String,
     val detalle: String? = null,
-    /** Si viene, se cuenta hacia arriba en vez de aparecer de golpe. */
     val monto: Double? = null,
     val peso: PesoConfirmacion = PesoConfirmacion.Ligera
 )
 
-/**
- * Overlay de confirmación. Aparece cuando [confirmacion] deja de ser null y
- * llama a [onTerminado] al acabar, que es donde va la navegación.
- *
- * Respeta la configuración de accesibilidad: si el usuario desactivó las
- * animaciones del sistema —común en equipos de gama baja, y los cobradores
- * probablemente los tengan— el overlay se salta por completo y navega directo.
- * La app no lo hace esperar por una animación que pidió no ver.
- */
 @Composable
 fun ConfirmacionOverlay(
     confirmacion: Confirmacion?,
@@ -101,7 +80,6 @@ fun ConfirmacionOverlay(
     LaunchedEffect(confirmacion) {
         val peso = confirmacion.peso
 
-        // El sello llega con rebote; los otros dos entran sin dramatismo.
         escala.animateTo(
             targetValue = 1f,
             animationSpec = if (peso == PesoConfirmacion.Sello) {
@@ -122,7 +100,6 @@ fun ConfirmacionOverlay(
             )
         )
 
-        // Contar el dinero es el gesto propio del oficio.
         val total = confirmacion.monto
         if (total != null) {
             val contador = Animatable(0f)
@@ -187,12 +164,6 @@ fun ConfirmacionOverlay(
     }
 }
 
-/**
- * El visto se dibuja trazo a trazo en vez de aparecer hecho.
- *
- * [PathMeasure.getSegment] recorta el camino completo a la fracción ya
- * "escrita", así que el trazo avanza como lo haría una mano.
- */
 @Composable
 private fun MarcaDeVisto(
     progreso: Float,

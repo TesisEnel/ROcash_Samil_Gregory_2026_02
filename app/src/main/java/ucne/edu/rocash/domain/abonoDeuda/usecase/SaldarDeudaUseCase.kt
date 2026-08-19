@@ -4,13 +4,6 @@ import ucne.edu.rocash.domain.abonoDeuda.model.AbonoDeuda
 import ucne.edu.rocash.domain.abonoDeuda.repository.AbonoDeudaRepository
 import ucne.edu.rocash.domain.agenteVentas.repository.AgenteVentasRepository
 import javax.inject.Inject
-
-/**
- * Deja la deuda del agente en cero y lo registra como un abono por el total.
- *
- * Saldar es un abono, no una operación aparte: si desapareciera del historial,
- * la deuda bajaría de golpe sin nada que lo explique.
- */
 class SaldarDeudaUseCase @Inject constructor(
     private val abonoRepository: AbonoDeudaRepository,
     private val agenteRepository: AgenteVentasRepository

@@ -289,14 +289,6 @@ fun CuadreBody(
     }
 }
 
-/**
- * Confirmación antes de dar la banca por recolectada.
- *
- * Guardar aquí no es solo escribir un registro: marca la estación como
- * COMPLETADA en la ruta y suma la deuda a la cuenta del agente (repartida si la
- * banca tiene dos). Es la operación con consecuencias reales de la app, así que
- * se resume lo que está por comprometerse antes de hacerlo.
- */
 @Composable
 private fun ConfirmarCuadreDialog(
     state: CuadreUiState,

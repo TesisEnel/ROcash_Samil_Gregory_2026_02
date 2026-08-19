@@ -117,10 +117,6 @@ class EstacionFormViewModel @Inject constructor(
             result.onSuccess { newId ->
                 _state.update { it.copy(isSaving = false, saved = true, estacionId = newId, isNew = false) }
             }.onFailure { error ->
-                // Antes el fallo se descartaba en silencio: la pantalla se
-                // quedaba quieta sin decir nada y parecía que no había pasado
-                // nada. Una violación de clave foránea o una validación del
-                // caso de uso terminaban invisibles.
                 _state.update {
                     it.copy(
                         isSaving = false,

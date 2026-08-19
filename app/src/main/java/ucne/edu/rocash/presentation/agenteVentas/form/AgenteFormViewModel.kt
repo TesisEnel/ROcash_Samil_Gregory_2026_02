@@ -96,7 +96,6 @@ class AgenteFormViewModel @Inject constructor(
                 agenteId = state.value.agenteId ?: 0,
                 nombre = nombre,
                 telefono = state.value.telefono,
-                // Se devuelven tal cual: este formulario no los edita.
                 deudaAcumulada = state.value.deudaAcumulada,
                 estado = state.value.estado
             )
