@@ -9,5 +9,8 @@ interface EstacionRepository {
     suspend fun upsert(estacion: EstacionVentas): Int
     suspend fun delete(id: Int)
     suspend fun exists(id: Int): Boolean
+
+    /** Nombres de otras bancas donde ya figura el agente. */
+    suspend fun bancasDelAgente(agenteId: Int, estacionIdExcluida: Int): List<String>
     fun buscarEstaciones(query: String): Flow<List<EstacionVentas>>
 }
