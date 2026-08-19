@@ -73,6 +73,7 @@ fun DetalleRutaScreen(
     rutaId: Int,
     viewModel: DetalleRutaViewModel = hiltViewModel(),
     onNavigateToCuadre: (rutaId: Int, estacionId: Int, agenteId: Int, nombre: String) -> Unit,
+    onNavigateToEstacionDetalle: (Int) -> Unit,
     onRutaCerrada: () -> Unit,
     onNavigateBack: () -> Unit
 ) {
@@ -100,6 +101,7 @@ fun DetalleRutaScreen(
             state = state,
             onEvent = viewModel::onEvent,
             onNavigateToCuadre = onNavigateToCuadre,
+            onNavigateToEstacionDetalle = onNavigateToEstacionDetalle,
             onNavigateBack = onNavigateBack
         )
 
@@ -113,6 +115,7 @@ fun DetalleRutaBody(
     state: DetalleRutaUiState,
     onEvent: (DetalleRutaUiEvent) -> Unit,
     onNavigateToCuadre: (rutaId: Int, estacionId: Int, agenteId: Int, nombre: String) -> Unit,
+    onNavigateToEstacionDetalle: (Int) -> Unit,
     onNavigateBack: () -> Unit
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
@@ -236,12 +239,18 @@ fun DetalleRutaBody(
                             item = item,
                             rutaCerrada = state.rutaEstaCerrada,
                             onClick = {
-                                onNavigateToCuadre(
-                                    state.ruta.id,
-                                    item.estacionId,
-                                    item.estacion.agenteId,
-                                    item.nombre
-                                )
+                                if (state.rutaEstaCerrada) {
+                                    // Si la ruta está cerrada (historial), navegamos a la pantalla de detalle de la estación
+                                    onNavigateToEstacionDetalle(item.estacionId)
+                                } else {
+                                    // Si la ruta está en progreso, navegamos al cuadre
+                                    onNavigateToCuadre(
+                                        state.ruta.id,
+                                        item.estacionId,
+                                        item.estacion.agenteId,
+                                        item.nombre
+                                    )
+                                }
                             },
                             onOmitir = {
                                 onEvent(DetalleRutaUiEvent.OmitirEstacion(item.estacionId))
@@ -346,7 +355,6 @@ private fun EstacionDeRutaItem(
 
     ElevatedCard(
         onClick = onClick,
-        enabled = !rutaCerrada,
         modifier = modifier
             .fillMaxWidth()
             .testTag("estacion_ruta_${item.estacionId}")
@@ -484,6 +492,7 @@ private fun DetalleRutaBodyPreview() {
             ),
             onEvent = {},
             onNavigateToCuadre = { _, _, _, _ -> },
+            onNavigateToEstacionDetalle = {},
             onNavigateBack = {}
         )
     }
