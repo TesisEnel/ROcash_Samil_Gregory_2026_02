@@ -23,7 +23,6 @@ class CuadreViewModel @Inject constructor(
     private val calcularCuadreUseCase: CalcularCuadreUseCase,
     private val getEstacionUseCase: GetEstacionUseCase
 ) : ViewModel() {
-
     private val _state = MutableStateFlow(CuadreUiState())
     val state: StateFlow<CuadreUiState> = _state.asStateFlow()
 

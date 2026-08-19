@@ -25,7 +25,6 @@ class DetalleRutaViewModel @Inject constructor(
     private val cerrarHojaRutaUseCase: CerrarHojaRutaUseCase,
     private val omitirEstacionUseCase: OmitirEstacionUseCase
 ) : ViewModel() {
-
     private val _state = MutableStateFlow(DetalleRutaUiState())
     val state: StateFlow<DetalleRutaUiState> = _state.asStateFlow()
 

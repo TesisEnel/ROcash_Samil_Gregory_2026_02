@@ -8,6 +8,8 @@ data class EstacionFormUiState(
     val direccion: String = "",
     val agenteId: Int? = null,
     val agenteNombreSeleccionado: String = "",
+
+    val agenteId2: Int? = null,
     val agentesDisponibles: List<AgenteVentas> = emptyList(),
 
     val nombreError: String? = null,

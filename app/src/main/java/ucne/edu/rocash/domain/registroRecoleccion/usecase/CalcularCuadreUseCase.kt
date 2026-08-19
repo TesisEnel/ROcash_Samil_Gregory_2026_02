@@ -3,7 +3,6 @@ package ucne.edu.rocash.domain.registroRecoleccion.usecase
 import ucne.edu.rocash.domain.registroRecoleccion.model.CalculoCuadre
 import javax.inject.Inject
 class CalcularCuadreUseCase @Inject constructor() {
-
     operator fun invoke(
         ventaBruta: Double,
         comisionCliente: Double,

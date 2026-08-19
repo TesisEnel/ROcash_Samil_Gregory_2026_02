@@ -12,7 +12,6 @@ import javax.inject.Inject
 class EstacionRepositoryImpl @Inject constructor(
     private val localDataSource: EstacionVentasDao
 ) : EstacionRepository {
-
     override fun observeEstaciones(): Flow<List<EstacionVentas>> =
         localDataSource.observeAll().map { entities -> entities.map { it.toDomain() } }
 
@@ -27,6 +26,9 @@ class EstacionRepositoryImpl @Inject constructor(
     override suspend fun delete(id: Int) = localDataSource.deleteById(id)
 
     override suspend fun exists(id: Int): Boolean = localDataSource.exists(id)
+
+    override suspend fun bancasDelAgente(agenteId: Int, estacionIdExcluida: Int): List<String> =
+        localDataSource.bancasDelAgente(agenteId, estacionIdExcluida)
 
     override fun buscarEstaciones(query: String): Flow<List<EstacionVentas>> =
         localDataSource.search(query).map { lista -> lista.map { it.toDomain() } }

@@ -78,7 +78,8 @@ class EstacionFormViewModel @Inject constructor(
                         estacionId = estacion.estacionId,
                         nombre = estacion.nombre,
                         direccion = estacion.direccion,
-                        agenteId = estacion.agenteId
+                        agenteId = estacion.agenteId,
+                        agenteId2 = estacion.agenteId2
                     )
                 }
             }
@@ -110,7 +111,9 @@ class EstacionFormViewModel @Inject constructor(
                 estacionId = currentState.estacionId ?: 0,
                 nombre = currentState.nombre,
                 direccion = currentState.direccion,
-                agenteId = currentState.agenteId!!
+                agenteId = currentState.agenteId!!,
+
+                agenteId2 = currentState.agenteId2
             )
 
             val result = upsertEstacionUseCase(estacion)

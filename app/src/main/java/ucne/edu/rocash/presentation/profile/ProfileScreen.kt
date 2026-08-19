@@ -134,8 +134,6 @@ fun ProfileBody(
 
                 ElevatedCard(modifier = Modifier.fillMaxWidth()) {
                     Column(modifier = Modifier.padding(vertical = 8.dp)) {
-
-                        // Correo (Solo lectura)
                         ListItem(
                             headlineContent = { Text("Correo Electrónico") },
                             supportingContent = { Text(state.email) },

@@ -1,9 +1,6 @@
 package ucne.edu.rocash.domain.estacion.usecase
 
-data class ValidationResult(
-    val isValid: Boolean,
-    val error: String? = null
-)
+import ucne.edu.rocash.domain.common.ValidationResult
 
 fun validateEstacionNombre(nombre: String): ValidationResult {
     return when {
@@ -25,4 +22,21 @@ fun validateAgenteAsignado(agenteId: Int?): ValidationResult {
         agenteId == null || agenteId == 0 -> ValidationResult(false, "Debe seleccionar un agente")
         else -> ValidationResult(true)
     }
+}
+fun validateAgentesDistintos(agenteId: Int?, agenteId2: Int?): ValidationResult = when {
+    agenteId2 == null -> ValidationResult(true)
+    agenteId2 == agenteId ->
+        ValidationResult(false, "El segundo agente debe ser distinto del titular")
+    else -> ValidationResult(true)
+}
+
+fun validateAgenteLibre(
+    nombreAgente: String,
+    bancasDondeYaFigura: List<String>
+): ValidationResult = when {
+    bancasDondeYaFigura.isEmpty() -> ValidationResult(true)
+    else -> ValidationResult(
+        false,
+        "$nombreAgente ya está asignado a: " + bancasDondeYaFigura.joinToString(", ")
+    )
 }

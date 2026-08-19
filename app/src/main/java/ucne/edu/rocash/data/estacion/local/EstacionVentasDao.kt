@@ -28,11 +28,19 @@ interface EstacionVentasDao {
 
     @Query(
         """
+        SELECT nombre FROM estacion_ventas
+        WHERE (agenteId = :agenteId OR agenteId2 = :agenteId)
+          AND estacionId != :estacionIdExcluida
+        """
+    )
+    suspend fun bancasDelAgente(agenteId: Int, estacionIdExcluida: Int): List<String>
+
+    @Query(
+        """
         SELECT * FROM estacion_ventas
         WHERE nombre LIKE '%' || :query || '%' OR direccion LIKE '%' || :query || '%'
         ORDER BY nombre ASC
         """
     )
     fun search(query: String): Flow<List<EstacionVentasEntity>>
-
 }

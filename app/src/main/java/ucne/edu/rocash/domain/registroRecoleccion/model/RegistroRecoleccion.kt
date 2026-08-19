@@ -2,7 +2,6 @@ package ucne.edu.rocash.domain.registroRecoleccion.model
 
 enum class EstadoVisita { COMPLETADA, OMITIDA }
 
-
 data class RegistroRecoleccion(
     val recoleccionId: Int = 0,
     val hojaRutaId: Int,
@@ -16,7 +15,6 @@ data class RegistroRecoleccion(
     val notaIncidencia: String? = null
 ) {
     companion object {
-
         fun desdeCalculo(
             recoleccionId: Int = 0,
             hojaRutaId: Int,

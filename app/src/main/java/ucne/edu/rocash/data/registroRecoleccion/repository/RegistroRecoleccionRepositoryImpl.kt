@@ -13,7 +13,6 @@ import javax.inject.Inject
 class RegistroRecoleccionRepositoryImpl @Inject constructor(
     private val localDataSource: RegistroRecoleccionDao
 ) : RegistroRecoleccionRepository {
-
     override fun observeRecolecciones(): Flow<List<RegistroRecoleccion>> =
         localDataSource.observeAll().map { list -> list.map { it.toDomain() } }
 

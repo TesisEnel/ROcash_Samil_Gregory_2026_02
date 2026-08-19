@@ -28,7 +28,6 @@ class AgenteListViewModel @Inject constructor(
     private val deleteAgenteUseCase: DeleteAgenteUseCase,
     private val upsertAgenteUseCase: UpsertAgenteUseCase
 ) : ViewModel() {
-
     private val _state = MutableStateFlow(AgenteListUiState(isLoading = true))
     val state: StateFlow<AgenteListUiState> = _state.asStateFlow()
 

@@ -7,22 +7,6 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
-/**
- * Tema de RoCash.
- *
- * `dynamicColor` quedó fuera a propósito. Con el color dinámico de Android 12+
- * la app tomaba los colores del fondo de pantalla de cada usuario, así que no
- * se veía igual en dos teléfonos y la marca no aparecía en ninguno.
- *
- * Los roles cargan significado, no decoración:
- *
- *  - `primary` es el verde del logo. Marca, dinero y estados completados: lo
- *    que la app INFORMA.
- *  - `tertiary` es el azul. Botones y FAB: lo que el usuario PUEDE TOCAR.
- *    Separarlos evita la ambigüedad de que un total y un botón compartan color.
- *  - `error` es ladrillo, y es el mismo color de las deudas. Si aparece rojo en
- *    pantalla siempre significa dinero pendiente.
- */
 private val EsquemaClaro = lightColorScheme(
     primary = VerdeROcash,
     onPrimary = Color.White,

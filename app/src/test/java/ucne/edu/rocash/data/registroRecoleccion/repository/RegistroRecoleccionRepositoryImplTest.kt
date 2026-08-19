@@ -18,7 +18,6 @@ import ucne.edu.rocash.domain.registroRecoleccion.model.EstadoVisita
 import ucne.edu.rocash.domain.registroRecoleccion.model.RegistroRecoleccion
 
 class RegistroRecoleccionRepositoryImplTest {
-
     private lateinit var dao: RegistroRecoleccionDao
     private lateinit var repository: RegistroRecoleccionRepositoryImpl
 
@@ -54,11 +53,8 @@ class RegistroRecoleccionRepositoryImplTest {
         notaIncidencia = "Cliente pidió plazo"
     )
 
-    // ---------- upsert: el bug del id ----------
-
     @Test
     fun `upsert de un registro nuevo devuelve el id que genera Room`() = runTest {
-        // Room devuelve el rowId de la fila insertada.
         coEvery { dao.upsert(any()) } returns 17L
 
         val id = repository.upsert(registro(id = 0))
@@ -68,8 +64,6 @@ class RegistroRecoleccionRepositoryImplTest {
 
     @Test
     fun `upsert de un registro existente conserva su id cuando Room devuelve -1`() = runTest {
-        // En un update Room devuelve -1: si se retornara tal cual, el cuadre
-        // corregido perderia su identidad y se volveria a insertar.
         coEvery { dao.upsert(any()) } returns -1L
 
         val id = repository.upsert(registro(id = 8))
@@ -93,8 +87,6 @@ class RegistroRecoleccionRepositoryImplTest {
             )
         }
     }
-
-    // ---------- búsqueda del cuadre previo ----------
 
     @Test
     fun `obtenerPorRutaYEstacion mapea la entity a dominio`() = runTest {
@@ -124,8 +116,6 @@ class RegistroRecoleccionRepositoryImplTest {
 
         assertEquals(EstadoVisita.COMPLETADA, previo.estadoVisita)
     }
-
-    // ---------- resumen: la base del cierre ----------
 
     @Test
     fun `obtenerResumenDeRuta mapea los agregados a dominio`() = runTest {

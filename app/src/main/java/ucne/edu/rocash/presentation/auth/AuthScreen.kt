@@ -64,7 +64,6 @@ fun AuthBody(
 
     Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
         Box(contentAlignment = Alignment.Center, modifier = Modifier.padding(24.dp)) {
-
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
@@ -123,7 +122,6 @@ fun AuthBody(
                     modifier = Modifier.fillMaxWidth().height(50.dp).testTag("btn_login_email"),
                     enabled = !state.isLoading
                 ) {
-                    // El spinner ahora vive de forma limpia dentro del botón
                     if (state.isLoading) {
                         CircularProgressIndicator(
                             color = MaterialTheme.colorScheme.onPrimary,

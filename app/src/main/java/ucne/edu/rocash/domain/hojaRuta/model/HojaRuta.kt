@@ -33,7 +33,6 @@ data class HojaRuta(
     val estacionesPendientes: Int
         get() = estaciones.count { it.estado == EstadoVisitaEstacion.PENDIENTE }
 
-    /** Avance entre 0f y 1f. Una ruta sin estaciones no tiene avance, no divide por cero. */
     val porcentajeAvance: Float
         get() = if (cantidadEstaciones == 0) 0f
         else estacionesCuadradas.toFloat() / cantidadEstaciones

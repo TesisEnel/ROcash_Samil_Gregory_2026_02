@@ -21,7 +21,6 @@ class HistorialRutasViewModel @Inject constructor(
     private val getTotalIngresosUseCase: GetTotalIngresosUseCase,
     private val sesion: SesionRecolector
 ) : ViewModel() {
-
     private val _state = MutableStateFlow(HistorialRutasUiState())
     val state: StateFlow<HistorialRutasUiState> = _state.asStateFlow()
 

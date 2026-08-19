@@ -29,44 +29,47 @@ fun RoCashDrawer(
     onNavigateToEstaciones: () -> Unit,
     content: @Composable () -> Unit
 ) {
+    if (!gesturesEnabled) {
+        content()
+        return
+    }
+
     ModalNavigationDrawer(
         drawerState = drawerState,
-        gesturesEnabled = gesturesEnabled,
+        gesturesEnabled = true,
         drawerContent = {
-            if (gesturesEnabled) {
-                ModalDrawerSheet {
-                    Text(
-                        text = "Menú RoCash",
-                        modifier = Modifier.padding(16.dp),
-                        style = MaterialTheme.typography.headlineMedium,
-                        fontWeight = FontWeight.Bold
-                    )
-                    HorizontalDivider()
+            ModalDrawerSheet {
+                Text(
+                    text = "Menú RoCash",
+                    modifier = Modifier.padding(16.dp),
+                    style = MaterialTheme.typography.headlineMedium,
+                    fontWeight = FontWeight.Bold
+                )
+                HorizontalDivider()
 
-                    NavigationDrawerItem(
-                        icon = { Icon(Icons.Default.Home, contentDescription = null) },
-                        label = { Text("Dashboard (Inicio)") },
-                        selected = currentRoute.contains("HomeRecolectorRoute"),
-                        onClick = onNavigateToHome,
-                        modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
-                    )
+                NavigationDrawerItem(
+                    icon = { Icon(Icons.Default.Home, contentDescription = null) },
+                    label = { Text("Dashboard (Inicio)") },
+                    selected = currentRoute.contains("HomeRecolectorRoute"),
+                    onClick = onNavigateToHome,
+                    modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
+                )
 
-                    NavigationDrawerItem(
-                        icon = { Icon(Icons.Default.SupportAgent, contentDescription = null) },
-                        label = { Text("Agentes de Ventas") },
-                        selected = currentRoute.contains("AgenteListRoute"),
-                        onClick = onNavigateToAgentes,
-                        modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
-                    )
+                NavigationDrawerItem(
+                    icon = { Icon(Icons.Default.SupportAgent, contentDescription = null) },
+                    label = { Text("Agentes de Ventas") },
+                    selected = currentRoute.contains("AgenteListRoute"),
+                    onClick = onNavigateToAgentes,
+                    modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
+                )
 
-                    NavigationDrawerItem(
-                        icon = { Icon(Icons.Default.Store, contentDescription = null) },
-                        label = { Text("Estaciones (Bancas)") },
-                        selected = currentRoute.contains("EstacionListRoute"),
-                        onClick = onNavigateToEstaciones,
-                        modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
-                    )
-                }
+                NavigationDrawerItem(
+                    icon = { Icon(Icons.Default.Store, contentDescription = null) },
+                    label = { Text("Estaciones (Bancas)") },
+                    selected = currentRoute.contains("EstacionListRoute"),
+                    onClick = onNavigateToEstaciones,
+                    modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
+                )
             }
         },
         content = content
