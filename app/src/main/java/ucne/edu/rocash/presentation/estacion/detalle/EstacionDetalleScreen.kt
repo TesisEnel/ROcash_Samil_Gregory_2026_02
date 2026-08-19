@@ -40,10 +40,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ucne.edu.rocash.domain.abonoDeuda.model.AbonoDeuda
+import ucne.edu.rocash.domain.agenteVentas.model.AgenteVentas
+import ucne.edu.rocash.domain.estacion.model.EstacionVentas
 import ucne.edu.rocash.presentation.common.aFechaLegible
 import ucne.edu.rocash.presentation.common.aMoneda
 import ucne.edu.rocash.ui.theme.coloresAccion
@@ -208,5 +211,80 @@ fun ItemAbono(abono: AbonoDeuda) {
                 style = MaterialTheme.typography.bodyMedium
             )
         }
+    }
+}
+
+@Preview(showBackground = true, name = "Agente con Deuda y Abonos")
+@Composable
+private fun EstacionDetalleBodyConDeudaPreview() {
+    MaterialTheme {
+        EstacionDetalleBody(
+            state = EstacionDetalleUiState(
+                isLoading = false,
+                estacion = EstacionVentas(
+                    estacionId = 1,
+                    nombre = "La Banca Blanca",
+                    direccion = "La Yaguiza",
+                    agenteId = 1
+                ),
+                agente = AgenteVentas(
+                    agenteId = 1,
+                    nombre = "Carlos Duran",
+                    telefono = "809-555-1234",
+                    deudaAcumulada = 3000.0,
+                    estado = true
+                ),
+                historialAbonos = listOf(
+                    AbonoDeuda(
+                        abonoId = 1,
+                        agenteId = 1,
+                        monto = 5000.0,
+                        deudaAntes = 8000.0,
+                        deudaDespues = 3000.0,
+                        fecha = System.currentTimeMillis() - 86400000
+                    ),
+                    AbonoDeuda(
+                        abonoId = 2,
+                        agenteId = 1,
+                        monto = 3000.0,
+                        deudaAntes = 11000.0,
+                        deudaDespues = 8000.0,
+                        fecha = System.currentTimeMillis() - 172800000
+                    )
+                )
+            ),
+            onEvent = {},
+            onNavigateToGestionarDeuda = {},
+            onNavigateBack = {}
+        )
+    }
+}
+
+@Preview(showBackground = true, name = "Agente Sin Deuda")
+@Composable
+private fun EstacionDetalleBodySinDeudaPreview() {
+    MaterialTheme {
+        EstacionDetalleBody(
+            state = EstacionDetalleUiState(
+                isLoading = false,
+                estacion = EstacionVentas(
+                    estacionId = 2,
+                    nombre = "Banca El Sol",
+                    direccion = "Calle Duarte, Esquina 5",
+                    agenteId = 2
+                ),
+                agente = AgenteVentas(
+                    agenteId = 2,
+                    nombre = "María López",
+                    telefono = "829-987-6543",
+                    deudaAcumulada = 0.0,
+                    estado = true
+                ),
+                historialAbonos = emptyList()
+            ),
+            onEvent = {},
+            onNavigateToGestionarDeuda = {},
+            onNavigateBack = {}
+        )
     }
 }
