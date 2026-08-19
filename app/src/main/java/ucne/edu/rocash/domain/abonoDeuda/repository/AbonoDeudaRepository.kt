@@ -7,4 +7,5 @@ interface AbonoDeudaRepository {
     fun observarAbonosDeAgente(agenteId: Int): Flow<List<AbonoDeuda>>
     fun observarTotalAbonado(agenteId: Int): Flow<Double>
     suspend fun registrar(abono: AbonoDeuda): Int
+    fun observarTotalAbonosGlobal(): Flow<Double>
 }

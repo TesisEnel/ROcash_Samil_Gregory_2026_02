@@ -21,4 +21,7 @@ class AbonoDeudaRepositoryImpl @Inject constructor(
 
     override suspend fun registrar(abono: AbonoDeuda): Int =
         dao.insertar(abono.toEntity()).toInt()
+
+    override fun observarTotalAbonosGlobal(): Flow<Double> =
+        dao.observarTotalAbonosGlobal()
 }

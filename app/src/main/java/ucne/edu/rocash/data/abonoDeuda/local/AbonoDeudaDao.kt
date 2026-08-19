@@ -16,4 +16,7 @@ interface AbonoDeudaDao {
 
     @Query("SELECT COALESCE(SUM(monto), 0) FROM abono_deuda WHERE agenteId = :agenteId")
     fun observarTotalAbonado(agenteId: Int): Flow<Double>
+
+    @Query("SELECT COALESCE(SUM(monto), 0) FROM abono_deuda")
+    fun observarTotalAbonosGlobal(): Flow<Double>
 }
