@@ -10,7 +10,6 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface HojaRutaDao {
-
     @Insert
     suspend fun insertar(ruta: HojaRutaEntity): Long
 
@@ -75,7 +74,6 @@ interface HojaRutaDao {
         totalRecaudado: Double,
         totalDeudas: Double
     )
-
 
     @Transaction
     @Query("SELECT * FROM hoja_ruta WHERE id = :rutaId")

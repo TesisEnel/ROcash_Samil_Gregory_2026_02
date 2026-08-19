@@ -25,7 +25,6 @@ class GestionDeudaViewModel @Inject constructor(
     private val registrarAbonoUseCase: RegistrarAbonoUseCase,
     private val saldarDeudaUseCase: SaldarDeudaUseCase
 ) : ViewModel() {
-
     private val _state = MutableStateFlow(GestionDeudaUiState())
     val state: StateFlow<GestionDeudaUiState> = _state.asStateFlow()
 

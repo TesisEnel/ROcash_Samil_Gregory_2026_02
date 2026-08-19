@@ -25,7 +25,6 @@ class HomeViewModel @Inject constructor(
     private val getTotalAbonosGlobalUseCase: GetTotalAbonosGlobalUseCase,
     private val sesion: SesionRecolector
 ) : ViewModel() {
-
     private val _state = MutableStateFlow(HomeUiState())
     val state: StateFlow<HomeUiState> = _state.asStateFlow()
 

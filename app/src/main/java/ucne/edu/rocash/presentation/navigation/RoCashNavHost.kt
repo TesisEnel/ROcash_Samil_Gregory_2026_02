@@ -63,7 +63,6 @@ fun RoCashNavHost() {
             navController = navController,
             startDestination = rutaInicial
         ) {
-
             composable<AuthRoute> {
                 AuthScreen(
                     onLoginSuccess = {
@@ -135,7 +134,7 @@ fun RoCashNavHost() {
                             )
                         )
                     },
-                    // 👇 AQUÍ ESTÁ LA NUEVA NAVEGACIÓN AGREGADA
+
                     onNavigateToEstacionDetalle = { estacionId ->
                         navController.navigate(EstacionDetalleRoute(estacionId))
                     },

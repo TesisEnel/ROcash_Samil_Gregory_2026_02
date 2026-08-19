@@ -112,7 +112,7 @@ class EstacionFormViewModel @Inject constructor(
                 nombre = currentState.nombre,
                 direccion = currentState.direccion,
                 agenteId = currentState.agenteId!!,
-                // Se devuelve tal cual: este formulario no lo edita.
+
                 agenteId2 = currentState.agenteId2
             )
 

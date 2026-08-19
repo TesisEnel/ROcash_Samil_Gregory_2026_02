@@ -20,7 +20,6 @@ class ProfileViewModel @Inject constructor(
     private val authRepository: AuthRepository,
     private val recolectorRepository: RecolectorRepository
 ) : ViewModel() {
-
     private val _state = MutableStateFlow(ProfileUiState())
     val state: StateFlow<ProfileUiState> = _state.asStateFlow()
 
@@ -89,5 +88,4 @@ class ProfileViewModel @Inject constructor(
             }
         }
     }
-
 }

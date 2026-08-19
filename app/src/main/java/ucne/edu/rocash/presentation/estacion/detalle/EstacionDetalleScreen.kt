@@ -111,7 +111,6 @@ fun EstacionDetalleBody(
                     contentPadding = PaddingValues(16.dp),
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-
                     item {
                         state.estacion?.let { estacion ->
                             ElevatedCard(modifier = Modifier.fillMaxWidth()) {

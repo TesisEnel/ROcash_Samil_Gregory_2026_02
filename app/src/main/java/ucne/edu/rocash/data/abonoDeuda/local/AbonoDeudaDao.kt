@@ -7,7 +7,6 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface AbonoDeudaDao {
-
     @Insert
     suspend fun insertar(entity: AbonoDeudaEntity): Long
 

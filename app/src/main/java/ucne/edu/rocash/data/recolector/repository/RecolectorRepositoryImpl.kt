@@ -12,7 +12,6 @@ import javax.inject.Inject
 class RecolectorRepositoryImpl @Inject constructor(
     private val recolectorDao: RecolectorDao
 ) : RecolectorRepository {
-
     override suspend fun insertarRecolector(recolector: Recolector) {
         recolectorDao.upsert(recolector.toEntity())
     }
