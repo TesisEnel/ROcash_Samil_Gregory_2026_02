@@ -45,3 +45,5 @@ Imágenes: Coil (Carga optimizada de perfiles desde Firebase/Google)
 🏗 Arquitectura de Datos
 
 El sistema maneja la contabilidad mediante un flujo de eventos donde las deudas, generadas en el cuadre de ruta, son tratadas como saldos pendientes que el sistema gestiona mediante un DAO centralizado, permitiendo aplicar abonos que reducen la deuda acumulada del agente de manera sincronizada y consistente.
+
+Youtube Link: https://youtu.be/ELfKCJ-W41A?si=_zVt9XUUayyrlJj4
