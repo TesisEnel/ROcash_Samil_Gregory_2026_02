@@ -17,6 +17,7 @@ import ucne.edu.rocash.presentation.agenteVentas.form.AgenteFormScreen
 import ucne.edu.rocash.presentation.agenteVentas.list.AgenteListScreen
 import ucne.edu.rocash.presentation.auth.AuthScreen
 import ucne.edu.rocash.presentation.auth.signup.SignUpScreen
+import ucne.edu.rocash.presentation.estacion.detalle.EstacionDetalleScreen
 import ucne.edu.rocash.presentation.estacion.form.EstacionFormScreen
 import ucne.edu.rocash.presentation.estacion.list.EstacionListScreen
 import ucne.edu.rocash.presentation.hojaRuta.crear.CrearRutaScreen
@@ -134,6 +135,10 @@ fun RoCashNavHost() {
                             )
                         )
                     },
+                    // 👇 AQUÍ ESTÁ LA NUEVA NAVEGACIÓN AGREGADA
+                    onNavigateToEstacionDetalle = { estacionId ->
+                        navController.navigate(EstacionDetalleRoute(estacionId))
+                    },
                     onRutaCerrada = {
                         navController.navigate(HomeRecolectorRoute) {
                             popUpTo(HomeRecolectorRoute) { inclusive = true }
@@ -196,6 +201,20 @@ fun RoCashNavHost() {
 
             composable<AgenteFormRoute> {
                 AgenteFormScreen(onBack = { navController.popBackStack() })
+            }
+
+            composable<EstacionDetalleRoute> { backStackEntry ->
+                val argumentos = backStackEntry.toRoute<EstacionDetalleRoute>()
+
+                EstacionDetalleScreen(
+                    estacionId = argumentos.estacionId,
+                    onNavigateToGestionarDeuda = { agenteId ->
+                        navController.navigate(GestionDeudaRoute(agenteId))
+                    },
+                    onNavigateBack = {
+                        navController.popBackStack()
+                    }
+                )
             }
         }
     }
