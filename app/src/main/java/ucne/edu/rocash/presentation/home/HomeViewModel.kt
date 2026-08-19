@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import ucne.edu.rocash.domain.abonoDeuda.usecase.GetTotalAbonosGlobalUseCase
 import ucne.edu.rocash.domain.auth.session.SesionRecolector
 import ucne.edu.rocash.domain.hojaRuta.usecase.GetTotalIngresosUseCase
 import ucne.edu.rocash.domain.hojaRuta.usecase.GetTotalRutasCompletadasUseCase
@@ -21,6 +22,7 @@ class HomeViewModel @Inject constructor(
     private val observeRutasAbiertasUseCase: ObserveRutasAbiertasUseCase,
     private val getTotalIngresosUseCase: GetTotalIngresosUseCase,
     private val getTotalRutasCompletadasUseCase: GetTotalRutasCompletadasUseCase,
+    private val getTotalAbonosGlobalUseCase: GetTotalAbonosGlobalUseCase,
     private val sesion: SesionRecolector
 ) : ViewModel() {
 
@@ -43,11 +45,7 @@ class HomeViewModel @Inject constructor(
 
         if (recolectorId == null) {
             _state.update {
-                it.copy(
-                    isLoading = false,
-                    sinSesion = true,
-                    mostrarAccionNuevaRuta = false
-                )
+                it.copy(isLoading = false, sinSesion = true, mostrarAccionNuevaRuta = false)
             }
             return
         }
@@ -56,33 +54,34 @@ class HomeViewModel @Inject constructor(
             combine(
                 observeRutasAbiertasUseCase(recolectorId),
                 getTotalIngresosUseCase(recolectorId),
-                getTotalRutasCompletadasUseCase(recolectorId)
-            ) { rutas, ingresos, completadas ->
-                Triple(rutas, ingresos, completadas)
-            }
-                .catch { error ->
-                    _state.update {
-                        it.copy(
-                            isLoading = false,
-                            errorMessage = error.localizedMessage
-                                ?: "No se pudieron cargar los datos"
-                        )
-                    }
+                getTotalRutasCompletadasUseCase(recolectorId),
+                getTotalAbonosGlobalUseCase()
+            ) { rutas, ingresosRutas, completadas, abonosTotales ->
+
+                val granTotal = ingresosRutas + abonosTotales
+
+                _state.update { actual ->
+                    actual.copy(
+                        isLoading = false,
+                        sinSesion = false,
+                        rutasAbiertas = rutas,
+                        hayRutasAbiertas = rutas.isNotEmpty(),
+                        totalIngresosRutas = ingresosRutas,
+                        totalAbonos = abonosTotales,
+                        totalIngresos = granTotal,
+                        rutasCompletadas = completadas,
+                        mostrarAccionNuevaRuta = true,
+                        errorMessage = null
+                    )
                 }
-                .collect { (rutas, ingresos, completadas) ->
-                    _state.update {
-                        it.copy(
-                            isLoading = false,
-                            sinSesion = false,
-                            rutasAbiertas = rutas,
-                            hayRutasAbiertas = rutas.isNotEmpty(),
-                            totalIngresos = ingresos,
-                            rutasCompletadas = completadas,
-                            mostrarAccionNuevaRuta = true,
-                            errorMessage = null
-                        )
-                    }
+            }.catch { error ->
+                _state.update {
+                    it.copy(
+                        isLoading = false,
+                        errorMessage = error.localizedMessage ?: "No se pudieron cargar los datos"
+                    )
                 }
+            }.collect {}
         }
     }
 }

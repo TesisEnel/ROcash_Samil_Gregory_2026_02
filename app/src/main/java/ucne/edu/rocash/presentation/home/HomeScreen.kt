@@ -182,7 +182,9 @@ fun HomeBody(
                                 modifier = Modifier.weight(1f),
                                 titulo = "Ingresos totales",
                                 valor = state.totalIngresos.aMoneda(),
-                                icono = Icons.Default.MonetizationOn
+                                icono = Icons.Default.MonetizationOn,
+                                // 👇 DESGLOSE FINANCIERO
+                                detalle = "Rutas: ${state.totalIngresosRutas.aMoneda()}\nAbonos: ${state.totalAbonos.aMoneda()}"
                             )
                             StatCard(
                                 modifier = Modifier.weight(1f),
@@ -326,7 +328,8 @@ fun StatCard(
     titulo: String,
     valor: String,
     icono: ImageVector,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    detalle: String? = null
 ) {
     ElevatedCard(modifier = modifier) {
         Column(modifier = Modifier.padding(16.dp)) {
@@ -350,6 +353,14 @@ fun StatCard(
                 overflow = TextOverflow.Ellipsis,
                 color = Color.Unspecified
             )
+            if (detalle != null) {
+                Text(
+                    text = detalle,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.padding(top = 4.dp)
+                )
+            }
         }
     }
 }
@@ -386,6 +397,8 @@ private fun HomeBodyPreview() {
                 ),
                 hayRutasAbiertas = true,
                 totalIngresos = 184_500.0,
+                totalIngresosRutas = 150_000.0,
+                totalAbonos = 34_500.0,
                 rutasCompletadas = 12,
                 mostrarAccionNuevaRuta = true
             ),
@@ -409,6 +422,8 @@ private fun HomeBodyVacioPreview() {
                 rutasAbiertas = emptyList(),
                 hayRutasAbiertas = false,
                 totalIngresos = 0.0,
+                totalIngresosRutas = 0.0,
+                totalAbonos = 0.0,
                 rutasCompletadas = 0,
                 mostrarAccionNuevaRuta = true
             ),
