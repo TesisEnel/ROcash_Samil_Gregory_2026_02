@@ -34,14 +34,6 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
-    testOptions {
-        unitTests {
-            // Robolectric necesita los recursos de Android para que las
-            // validaciones que usan android.util.Patterns puedan ejecutarse
-            // como tests de JVM, sin emulador.
-            isIncludeAndroidResources = true
-        }
-    }
 
     buildFeatures {
         compose = true
